@@ -24,6 +24,7 @@ module params_module
   
   ! timestep parameters
   real (kind=dp_t), save :: tmax = 1.0_dp_t
+  real (kind=dp_t), save :: cfl = 0.8
 
   ! eos parameters
   real (kind=dp_t), save :: gamma = 1.4

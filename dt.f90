@@ -39,6 +39,8 @@ contains
 
     enddo    
 
+    dt = cfl*dt
+
   end subroutine compute_dt
 
 end module dt_module

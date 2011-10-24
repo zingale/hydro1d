@@ -8,6 +8,9 @@ program hydro1d
   use output_module
   use bcs_module
   use dt_module
+  use interface_states_module
+  use riemann_module
+  use update_module
 
   implicit none
 
@@ -26,9 +29,11 @@ program hydro1d
 
   ! build the grid and storage for grid variables, interface states, and fluxes
   call build(grid, nx, ng, xmin, xmax)
+
   call build(U, grid, ncons)
   call build(U_l, grid, ncons)
   call build(U_r, grid, ncons)
+
   call build(fluxes, grid, ncons)
 
   ! set the initial conditions
@@ -54,7 +59,7 @@ program hydro1d
      call make_interface_states(U, U_l, U_r, dt)
 
      ! compute the fluxes
-     call riemann(U_l, U_r, fluxes)
+     call solve_riemann(U_l, U_r, fluxes)
 
      ! do the conservative update
      call update(U, fluxes, dt)
