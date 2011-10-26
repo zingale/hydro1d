@@ -36,6 +36,10 @@ program hydro1d
 
   call build(fluxes, grid, ncons)
 
+  do i = U%grid%lo, U%grid%hi
+     print *, i, U%grid%xl(i), U%grid%x(i), U%grid%xr(i)
+  enddo
+
   ! set the initial conditions
   n = 0
   t = 0.0_dp_t

@@ -50,7 +50,9 @@ module grid_module
      integer :: nx = -1
      integer :: ng = -1
      real (kind=dp_t) :: xmin, xmax, dx
-     real (kind=dp_t), allocatable :: x(:), xl(:), xr(:)
+     real (kind=dp_t), pointer :: x(:) => Null()
+     real (kind=dp_t), pointer :: xl(:) => Null()
+     real (kind=dp_t), pointer :: xr(:) => Null()     
   end type grid_t
 
   ! the datatype for a variable that lives in a zone on the grid 
@@ -137,8 +139,7 @@ contains
        print *, "ERROR: grid not initialized"
     endif
 
-    ! first build gridvar's grid type and then initialize it
-    call build(gridvar%grid, grid%nx, grid%ng, grid%xmin, grid%xmax)
+    ! gridvar's grid type is simply a copy of the input grid
     gridvar%grid = grid
 
     ! now initialize the storage for the grid data
@@ -152,7 +153,6 @@ contains
 
     type(gridvar_t), intent(inout) :: gridvar
 
-    call destroy(gridvar%grid)
     deallocate(gridvar%data)
 
   end subroutine destroy_gridvar
@@ -168,8 +168,7 @@ contains
        print *, "ERROR: grid not initialized"
     endif
 
-    ! first build gridvar's grid type and then initialize it
-    call build(gridedgevar%grid, grid%nx, grid%ng, grid%xmin, grid%xmax)
+    ! gridedgevar's grid type is simply a copy of the input grid
     gridedgevar%grid = grid
 
     ! now initialize the storage for the grid data
@@ -183,7 +182,6 @@ contains
 
     type(gridedgevar_t), intent(inout) :: gridedgevar
 
-    call destroy(gridedgevar%grid)
     deallocate(gridedgevar%data)
     
   end subroutine destroy_gridedgevar
