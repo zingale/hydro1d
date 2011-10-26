@@ -14,7 +14,7 @@ dt.o : dt.f90 variables.o eos.o params.o grid.o datatypes.o
 eos.o : eos.f90 params.o datatypes.o 
 grid.o : grid.f90 datatypes.o 
 init.o : init.f90 variables.o eos.o grid.o params.o datatypes.o 
-interface_states.o : interface_states.f90 variables.o grid.o datatypes.o 
+interface_states.o : interface_states.f90 variables.o grid.o datatypes.o params.o
 main.o : main.f90 update.o riemann.o interface_states.o dt.o bcs.o output.o variables.o init.o params.o grid.o datatypes.o 
 output.o : output.f90 eos.o variables.o params.o datatypes.o grid.o 
 params.o : params.f90 datatypes.o 

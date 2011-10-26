@@ -3,6 +3,7 @@ module interface_states_module
   use datatypes_module
   use grid_module
   use variables_module
+  use params_module
 
   implicit none
 
@@ -14,11 +15,18 @@ contains
     type(gridedgevar_t), intent(  out) :: U_l, U_r
     real (kind=dp_t),    intent(in   ) :: dt
 
+    integer :: i
 
     select case (godunov_type)
 
     case (0)
        ! piecewise constant slopes
+       
+       ! loop over interfaces and fill the states 
+       do i = U%grid%lo, U%grid%hi+1
+          U_l%data(i,:) = U%data(i-1,:)
+          U_r%data(i,:) = U%data(i,:)
+       enddo
 
     case (1)
        ! piecewise linear slopes

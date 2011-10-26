@@ -29,6 +29,9 @@ module params_module
   ! eos parameters
   real (kind=dp_t), save :: gamma = 1.4
 
+  ! hydro parameters
+  integer, save :: godunov_type = 0
+
   ! problem-specific parameters
   character (len=32), save :: problem_name = "sod"
 
