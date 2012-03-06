@@ -44,7 +44,7 @@ contains
 
     case ("outflow")
 
-       do i = U%grid%lo-1, -U%grid%ng
+       do i = U%grid%lo-1, U%grid%lo-U%grid%ng, -1
           
           ! give all quantities a zero-gradient
           U%data(i,:) = U%data(i+1,:)
@@ -54,7 +54,7 @@ contains
     case ("periodic")
 
        ip = U%grid%hi
-       do i = U%grid%lo-1, -U%grid%ng
+       do i = U%grid%lo-1, U%grid%lo-U%grid%ng, -1
           
           U%data(i,:) = U%data(ip,:)
 
