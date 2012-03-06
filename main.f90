@@ -9,7 +9,8 @@ program hydro1d
   use output_module
   use bcs_module
   use dt_module
-  use interface_states_module
+  use interface_states_godunov_module
+  use interface_states_plm_module
   use riemann_module
   use update_module
 
@@ -58,7 +59,11 @@ program hydro1d
      if (t + dt > tmax) dt = tmax - t
 
      ! construct the interface states
-     call make_interface_states(U, U_l, U_r, dt)
+     if (godunov_type == 0) then
+        call make_interface_states_godunov(U, U_l, U_r, dt)
+     else if (godunov_type == 1) then
+        call make_interface_states_plm(U, U_l, U_r, dt)
+     endif
 
      ! compute the fluxes
      call solve_riemann(U_l, U_r, fluxes)

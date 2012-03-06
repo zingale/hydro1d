@@ -2,8 +2,8 @@ all: hydro1d
 
 FSOURCE += main.f90 grid.f90 datatypes.f90 params.f90 \
            init.f90 variables.f90 eos.f90 output.f90 \
-           bcs.f90 dt.f90 states.f90 riemann.f90 update.f90 \
-           probparams.f90
+           bcs.f90 dt.f90 godunov.f90 plm.f90 riemann.f90 \
+           update.f90 probparams.f90
 
 
 vpath %.f90 . ..
