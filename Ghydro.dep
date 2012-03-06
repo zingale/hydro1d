@@ -1,0 +1,62 @@
+$(odir)/bcs.o       : $(odir)/params.o \
+                      $(odir)/variables.o \
+                      $(odir)/grid.o \
+                      $(odir)/datatypes.o 
+
+$(odir)/datatypes.o : 
+
+$(odir)/dt.o        : $(odir)/variables.o \
+                      $(odir)/eos.o \
+                      $(odir)/params.o \
+                      $(odir)/grid.o \
+                      $(odir)/datatypes.o 
+
+$(odir)/eos.o       : $(odir)/params.o \
+                      $(odir)/datatypes.o 
+
+$(odir)/grid.o      : $(odir)/datatypes.o 
+
+$(odir)/init.o      : $(odir)/variables.o \
+                      $(odir)/eos.o \
+                      $(odir)/grid.o \
+                      $(odir)/params.o \
+                      $(odir)/datatypes.o 
+
+$(odir)/states.o    : $(odir)/variables.o \
+                      $(odir)/grid.o \
+                      $(odir)/datatypes.o \
+                      $(odir)/params.o
+
+$(odir)/output.o    : $(odir)/eos.o \
+                      $(odir)/variables.o \
+                      $(odir)/params.o \
+                      $(odir)/datatypes.o \
+                      $(odir)/grid.o 
+
+$(odir)/params.o    : $(odir)/datatypes.o 
+
+$(odir)/riemann.o   : $(odir)/variables.o \
+                      $(odir)/grid.o \
+                      $(odir)/datatypes.o \
+                      $(odir)/params.o \
+                      $(odir)/eos.o
+
+$(odir)/update.o    : $(odir)/variables.o \
+                      $(odir)/grid.o \
+                      $(odir)/datatypes.o 
+
+$(odir)/variables.o : 
+
+$(odir)/main.o      : $(odir)/update.o \
+                      $(odir)/riemann.o \
+                      $(odir)/states.o \
+                      $(odir)/dt.o \
+                      $(odir)/bcs.o \
+                      $(odir)/output.o \
+                      $(odir)/variables.o \
+                      $(odir)/init.o \
+                      $(odir)/params.o \
+                      $(odir)/grid.o \
+                      $(odir)/datatypes.o 
+
+

@@ -23,7 +23,7 @@ contains
     !  separated by the three characteristics (u - cs, u, u + cs):
     !
     !
-    !        l_1      t    l_2       l_3
+    !       u - cs    t    u      u + cs
     !         \       ^   .       /
     !          \  *L  |   . *R   /
     !           \     |  .     /
@@ -34,11 +34,7 @@ contains
     !                \|./
     !       ----------+----------------> x
     !
-    !       l_1 = u - cs   eigenvalue
-    !       l_2 = u        eigenvalue (contact)
-    !       l_3 = u + cs   eigenvalue
-    !
-    !       only density jumps across l_2
+    !       only density jumps across the u characteristic
     !
 
     real (kind=dp_t) :: rho_l, u_l, rhoe_l, p_l
