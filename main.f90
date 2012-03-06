@@ -3,6 +3,7 @@ program hydro1d
   use datatypes_module
   use grid_module
   use params_module
+  use probparams_module, only: init_probparams
   use init_module
   use variables_module
   use output_module
@@ -24,7 +25,7 @@ program hydro1d
 
   ! parse the inputs file
   call init_params()
-
+  call init_probparams()
 
   ! build the grid and storage for grid variables, interface states, and fluxes
   call build(grid, nx, ng, xmin, xmax)

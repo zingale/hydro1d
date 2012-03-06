@@ -43,6 +43,8 @@ module params_module
                     gamma, &
                     problem_name
 
+  character (len=32), save :: infile = ""
+
 contains
 
   !===========================================================================
@@ -50,7 +52,7 @@ contains
   !===========================================================================
   subroutine init_params()
 
-    character (len=32) :: infile
+
     integer :: lun
 
     ! read in the inputs file, if any -- we assume that the only command
@@ -63,7 +65,7 @@ contains
 
     else
        call get_command_argument(1, infile)
-       print *, 'reading parameters from', trim(infile)
+       print *, 'reading parameters from ', trim(infile)
        
        open(newunit=lun, file=trim(infile), status="old", action="read")
        read(unit=lun, nml=params)
