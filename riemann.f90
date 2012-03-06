@@ -167,8 +167,8 @@ contains
           ! states
 
           ! define eigenvalues
-          lambda_r = u_r - c_r
-          lambdastar_r = ustar - cstar_r
+          lambda_r = u_r + c_r
+          lambdastar_r = ustar + cstar_r
           
           if (pstar > p_r) then
              ! the wave if a shock -- find the shock speed
