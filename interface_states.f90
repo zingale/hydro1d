@@ -12,7 +12,7 @@ contains
   subroutine make_interface_states(U, U_l, U_r, dt)
 
     type(gridvar_t),     intent(in   ) :: U
-    type(gridedgevar_t), intent(  out) :: U_l, U_r
+    type(gridedgevar_t), intent(inout) :: U_l, U_r
     real (kind=dp_t),    intent(in   ) :: dt
 
     integer :: i

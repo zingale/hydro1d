@@ -1,5 +1,5 @@
 FC = gfortran
-FFLAGS = -c -O2
+FFLAGS = -c -O2 -g -C
 
 all: hydro1d
 
@@ -18,7 +18,7 @@ interface_states.o : interface_states.f90 variables.o grid.o datatypes.o params.
 main.o : main.f90 update.o riemann.o interface_states.o dt.o bcs.o output.o variables.o init.o params.o grid.o datatypes.o 
 output.o : output.f90 eos.o variables.o params.o datatypes.o grid.o 
 params.o : params.f90 datatypes.o 
-riemann.o : riemann.f90 variables.o grid.o datatypes.o 
+riemann.o : riemann.f90 variables.o grid.o datatypes.o params.o eos.o
 update.o : update.f90 variables.o grid.o datatypes.o 
 variables.o : variables.f90
 

@@ -24,10 +24,10 @@ module params_module
   
   ! timestep parameters
   real (kind=dp_t), save :: tmax = 1.0_dp_t
-  real (kind=dp_t), save :: cfl = 0.8
+  real (kind=dp_t), save :: cfl = 0.8_dp_t
 
   ! eos parameters
-  real (kind=dp_t), save :: gamma = 1.4
+  real (kind=dp_t), save :: gamma = 1.4_dp_t
 
   ! hydro parameters
   integer, save :: godunov_type = 0
