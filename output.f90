@@ -43,7 +43,7 @@ contains
     write(unit=lun, fmt=5) "x   ", "rho   ", "rho u   ", "rho E   ", "u   ", "p   "
 
     ! write out the data
-6   format(2x, g15.10, 1x, g15.10, 1x, g15.10, 1x, g15.10, 1x, g15.10, 1x, g15.10)
+6   format(2x, g16.10, 1x, g16.10, 1x, g16.10, 1x, g16.10, 1x, g16.10, 1x, g16.10)
 
     do i = U%grid%lo, U%grid%hi
 
@@ -55,6 +55,7 @@ contains
        write(unit=lun, fmt=6) U%grid%x(i), &
             U%data(i,iudens), U%data(i,iumomx), U%data(i,iuener), &
             U%data(i,iumomx)/U%data(i,iudens), p
+
     enddo
 
     close(unit=lun)
