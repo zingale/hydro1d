@@ -237,8 +237,6 @@ contains
        endif
 
 
-       print *, "Riemann state: ", i, rho_state, u_state, p_state, rhoe_state
-
        ! compute the fluxes
        fluxes%data(i,iudens) = rho_state*u_state
        fluxes%data(i,iumomx) = rho_state*u_state*u_state + p_state
@@ -247,8 +245,6 @@ contains
 
     enddo
     
-    print *, " "
-
   end subroutine solve_riemann
 
 end module riemann_module
