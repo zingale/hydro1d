@@ -317,11 +317,6 @@ contains
 
        enddo
 
-       print *, 'i = ', i
-       print *, 'r: ', r_xm, r_xp
-       print *, 'u: ', u_xm, u_xp
-       print *, 'p: ', p_xm, p_xp
-
        
        ! density
        sum_xm = 0.0_dp_t
@@ -398,8 +393,6 @@ contains
     !-------------------------------------------------------------------------
     ! apply the source terms
     !-------------------------------------------------------------------------
-
-
 
 
   end subroutine make_interface_states_plm
