@@ -16,7 +16,6 @@ module params_module
 
   ! grid parameters
   integer, save :: nx = 16
-  integer, save :: ng = 2
   real (kind=dp_t), save :: xmin = 0.0_dp_t
   real (kind=dp_t), save :: xmax = 1.0_dp_t
   character (len=32), save :: xlboundary = "outflow"
@@ -37,10 +36,11 @@ module params_module
 
 
   ! namelist
-  namelist /params/ nx, ng, xmin, xmax, &
+  namelist /params/ nx, xmin, xmax, &
                     xlboundary, xrboundary, &
                     tmax, &
                     gamma, &
+                    godunov_type, &
                     problem_name
 
   character (len=32), save :: infile = ""

@@ -2,6 +2,8 @@
 
  nx = 128
  tmax = 0.2d0
+  
+ godunov_type = 1
 
 /
 

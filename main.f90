@@ -20,13 +20,21 @@ program hydro1d
   type(gridvar_t) :: U
   type(gridedgevar_t) :: U_l, U_r, fluxes
 
-  integer :: i, n
+  integer :: i, n, ng
   real (kind=dp_t) :: t, dt
 
 
   ! parse the inputs file
   call init_params()
   call init_probparams()
+
+  ! set the number of ghostcells
+  if (godunov_type == 0) then
+     ng = 1
+  else
+     ng = 4
+  endif
+
 
   ! build the grid and storage for grid variables, interface states, and fluxes
   call build(grid, nx, ng, xmin, xmax)

@@ -20,16 +20,30 @@ contains
     type(gridedgevar_t) :: Q_l, Q_r
     type(gridvar_t) :: ldelta, temp
 
+    real (kind=dp_t) :: rvec(nprim,nprim), lvec(nprim,nprim), eval(nprim)
+    real (kind=dp_t) :: dQ(nprim)
+
+    real (kind=dp_t) :: r, ux, p, cs
+    real (kind=dp_t) :: ldr, ldu, ldp
+    real (kind=dp_t) :: r_xm, r_xp, u_xm, u_xp, p_xm, p_xp
+    real (kind=dp_t) :: beta_xm(nprim), beta_xp(nprim)
+    real (kind=dp_t) :: sum_xm, sum_xp
+    real (kind=dp_t) :: sum
+
+    real (kind=dp_t) :: dtdx
+
     real (kind=dp_t) :: e
     real (kind=dp_t) :: test
 
-    integer :: i, n
+    integer :: i, m, n
 
-    ! piecewise linear slopes -- this is a 1-d version of the Colella
-    ! 2nd order unsplit Godunov scheme (Colella 1990).  See also
-    ! Colella & Glaz.
+    ! piecewise linear slopes 
     !
-    ! we wish to solve
+    ! This is a 1-d version of the piecewise linear Godunov method
+    ! detailed in Colella (1990).  See also Colella & Glaz and
+    ! Saltzman (1994).
+    !
+    ! We wish to solve
     !
     !   U_t + [F(U)]_x = H
     !
@@ -160,6 +174,8 @@ contains
     call build(Q_l, U%grid, nprim)
     call build(Q_r, U%grid, nprim)
 
+    dtdx = dt/U%grid%dx
+
     ! We need the left and right eigenvectors and the eigenvalues for
     ! the system
     !
@@ -200,7 +216,144 @@ contains
     ! V_l,i+1 are computed using the information in zone i,j.
     !
 
+    do i = U%grid%lo-2, U%grid%hi+2
 
+       r  = Q%data(i,iqdens)
+       ux = Q%data(i,iqxvel)
+       p  = Q%data(i,iqpres)
+
+       ldr = ldelta%data(i,iqdens)
+       ldu = ldelta%data(i,iqxvel)
+       ldp = ldelta%data(i,iqpres)
+
+       dQ(1) = ldr
+       dQ(2) = ldu
+       dQ(3) = ldp
+
+
+       ! compute the sound speed
+       cs = sqrt(gamma*p/r)
+
+       ! compute the eigenvalues
+       eval(1) = ux - cs
+       eval(2) = ux
+       eval(3) = ux + cs
+
+
+       ! compute the left eigenvectors
+       
+       ! u - c eigenvector
+       lvec(1,1) = 0.0_dp_t
+       lvec(1,2) = -0.5_dp_t*r/cs
+       lvec(1,3) = 0.5_dp_t/(cs*cs)
+
+       ! u eigenvector
+       lvec(2,1) = 1.0_dp_t
+       lvec(2,2) = 0.0_dp_t
+       lvec(2,3) = -1.0_dp_t/(cs*cs)
+
+       ! u + c eigenvector
+       lvec(3,1) = 0.0_dp_t
+       lvec(3,2) = 0.5_dp_t*r/cs
+       lvec(3,3) = 0.5_dp_t/(cs*cs)
+
+
+       ! compute the right eigenvectors
+
+       ! u - c eigenvector
+       rvec(1,1) = 1.0_dp_t
+       rvec(1,2) = -cs/r
+       rvec(1,3) = cs*cs
+
+       ! u eigenvector
+       rvec(2,1) = 1.0_dp_t
+       rvec(2,2) = 0.0_dp_t
+       rvec(2,3) = 0.0_dp_t
+
+       ! u + c eigenvector
+       rvec(3,1) = 1.0_dp_t
+       rvec(3,2) = cs/r
+       rvec(3,3) = cs*cs
+
+
+       ! Define the reference states (here xp is the right interface
+       ! for the current zone and xm is the left interface for the
+       ! current zone)
+       !                           ~
+       ! These expressions are the V_{L,R} in Colella (1990) at the 
+       ! bottom of page 191.  They are also in Saltzman (1994) as
+       ! V_ref on page 161.
+       r_xp = r + 0.5_dp_t*(1.0_dp_t - dtdx*max(eval(3), 0.0_dp_t))*ldr
+       r_xm = r - 0.5_dp_t*(1.0_dp_t + dtdx*min(eval(1), 0.0_dp_t))*ldr
+
+       u_xp = ux + 0.5_dp_t*(1.0_dp_t - dtdx*max(eval(3), 0.0_dp_t))*ldu
+       u_xm = ux - 0.5_dp_t*(1.0_dp_t + dtdx*min(eval(1), 0.0_dp_t))*ldu
+
+       p_xp = p + 0.5_dp_t*(1.0_dp_t - dtdx*max(eval(3), 0.0_dp_t))*ldp
+       p_xm = p - 0.5_dp_t*(1.0_dp_t + dtdx*min(eval(1), 0.0_dp_t))*ldp
+
+       !                                                   ^
+       ! Now compute the interface states.   These are the V expressions
+       ! in Colella (1990) page 191, and the interface state expressions
+       ! -V and +V in Saltzman (1994) on pages 161.
+       
+       ! first compute beta_xm and beta_xp
+       do m = 1, nprim
+          sum = 0.0_dp_t
+
+          do n = 1, nprim
+             sum = sum + lvec(m,n)*dQ(n)
+          enddo
+
+          ! here the sign() function makes sure we only add the right-moving
+          ! waves
+          beta_xp(m) = 0.25_dp_t*dtdx*(eval(3) - eval(m))* &
+               (sign(1.0_dp_t, eval(m)) + 1.0_dp_t)*sum
+
+          ! here the sign() function makes sure we only add the left-moving
+          ! waves
+          beta_xm(m) = 0.25_dp_t*dtdx*(eval(1) - eval(m))* &
+               (1.0_dp_t - sign(1.0_dp_t, eval(m)))*sum
+
+       enddo
+
+       
+       ! density
+       sum_xm = 0.0_dp_t
+       sum_xp = 0.0_dp_t
+       do n = 1, nprim
+          sum_xm = sum_xm + beta_xm(n)*rvec(n,1)
+          sum_xp = sum_xp + beta_xp(n)*rvec(n,1)
+       enddo
+
+       Q_l%data(i+1,iqdens) = r_xp + sum_xp
+       Q_l%data(i,iqdens) = r_xm + sum_xm
+
+
+       ! velocity
+       sum_xm = 0.0_dp_t
+       sum_xp = 0.0_dp_t
+       do n = 1, nprim
+          sum_xm = sum_xm + beta_xm(n)*rvec(n,2)
+          sum_xp = sum_xp + beta_xp(n)*rvec(n,2)
+       enddo
+
+       Q_l%data(i+1,iqxvel) = u_xp + sum_xp
+       Q_l%data(i,iqxvel) = u_xm + sum_xm
+
+
+       ! pressure
+       sum_xm = 0.0_dp_t
+       sum_xp = 0.0_dp_t
+       do n = 1, nprim
+          sum_xm = sum_xm + beta_xm(n)*rvec(n,3)
+          sum_xp = sum_xp + beta_xp(n)*rvec(n,3)
+       enddo
+
+       Q_l%data(i+1,iqpres) = p_xp + sum_xp
+       Q_l%data(i,iqpres) = p_xm + sum_xm
+
+    enddo
 
     ! clean-up
     call destroy(ldelta)
