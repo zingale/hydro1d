@@ -317,6 +317,11 @@ contains
 
        enddo
 
+       print *, 'i = ', i
+       print *, 'r: ', r_xm, r_xp
+       print *, 'u: ', u_xm, u_xp
+       print *, 'p: ', p_xm, p_xp
+
        
        ! density
        sum_xm = 0.0_dp_t
@@ -327,7 +332,7 @@ contains
        enddo
 
        Q_l%data(i+1,iqdens) = r_xp + sum_xp
-       Q_l%data(i,iqdens) = r_xm + sum_xm
+       Q_r%data(i,iqdens) = r_xm + sum_xm
 
 
        ! velocity
@@ -339,7 +344,7 @@ contains
        enddo
 
        Q_l%data(i+1,iqxvel) = u_xp + sum_xp
-       Q_l%data(i,iqxvel) = u_xm + sum_xm
+       Q_r%data(i,iqxvel) = u_xm + sum_xm
 
 
        ! pressure
@@ -351,8 +356,9 @@ contains
        enddo
 
        Q_l%data(i+1,iqpres) = p_xp + sum_xp
-       Q_l%data(i,iqpres) = p_xm + sum_xm
+       Q_r%data(i,iqpres) = p_xm + sum_xm
 
+       
     enddo
 
     ! clean-up
