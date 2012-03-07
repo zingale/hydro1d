@@ -23,43 +23,42 @@ contains
     !
     ! we wish to solve
     !
-    !   U_t + [F(U)]_x = H                                                                                    
+    !   U_t + [F(U)]_x = H
     !
     ! we want U_{i+1/2}^{n+1/2} -- the interface values that are input
     ! to the Riemann problem through the faces for each zone.
     !
-    ! Taylor expanding yields                                                                              
+    ! Taylor expanding yields
     !
-    !  n+1/2                     dU           dU                                                         
-    ! U          = U   + 0.5 dx  --  + 0.5 dt --                                                         
-    !  i+1/2,j,L    i,j          dx           dt                                                         
-    !                                                                                                 
-    !                                                                                                 
-    !                            dU             dF                                                     
-    !            = U   + 0.5 dx  --  - 0.5 dt ( -- - H )                                               
-    !               i,j          dx             dx                                                      
-    !                                                                                                 
-    !                                                                                                 
-    !                             dU      dF^x                                                           
-    !            = U   + 0.5 ( dx -- - dt ---- ) + 0.5 dt H                                              
-    !               i,j           dx       dx                                                            
-    !                                                                                                 
-    !                                                                                                 
-    !                                 dt       dU                                                        
-    !            = U   + 0.5 dx ( 1 - -- A^x ) -- + 0.5 dt H                                             
-    !               i,j               dx       dx                                                        
-    !                                                                                                 
-    !                                                                                                 
-    !                               dt       _                                                           
-    !            = U   + 0.5  ( 1 - -- A^x ) DU + 0.5 dt H                                               
-    !               i,j             dx                                                                   
-    !                                                                                                 
-    !                                                                                                 
-    !                    +----------+----------+ +---+---+                                               
-    !                               |                |                                                   
-    !                                                                                                 
-    !                   this is the monotonized   source term                                            
-    !                   central difference term                                                          
+    !  n+1/2                     dU           dU  
+    ! U          = U   + 0.5 dx  --  + 0.5 dt --  
+    !  i+1/2,j,L    i,j          dx           dt   
+    ! 
+    !   
+    !                            dU             dF 
+    !            = U   + 0.5 dx  --  - 0.5 dt ( -- - H ) 
+    !               i,j          dx             dx  
+    !      
+    !       
+    !                             dU      dF
+    !            = U   + 0.5 ( dx -- - dt -- ) + 0.5 dt H 
+    !               i,j           dx      dx   
+    !  
+    !       
+    !                                 dt       dU 
+    !            = U   + 0.5 dx ( 1 - -- A^x ) -- + 0.5 dt H  
+    !               i,j               dx       dx      
+    !   
+    !   
+    !                               dt       _ 
+    !            = U   + 0.5  ( 1 - -- A^x ) DU + 0.5 dt H   
+    !               i,j             dx     
+    !     
+    !                    +----------+----------+ +---+---+    
+    !                               |                |   
+    !               
+    !                   this is the monotonized   source term    
+    !                   central difference term     
   
 
     !-------------------------------------------------------------------------
