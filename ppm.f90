@@ -1,4 +1,4 @@
-module interface_states_plm_module
+module interface_states_ppm_module
 
   use datatypes_module
   use grid_module
@@ -10,7 +10,7 @@ module interface_states_plm_module
 
 contains
   
-  subroutine make_interface_states_plm(U, U_l, U_r, dt)
+  subroutine make_interface_states_ppm(U, U_l, U_r, dt)
 
     type(gridvar_t),     intent(in   ) :: U
     type(gridedgevar_t), intent(inout) :: U_l, U_r
@@ -18,17 +18,19 @@ contains
 
     type(gridvar_t) :: Q
     type(gridedgevar_t) :: Q_l, Q_r
-    type(gridvar_t) :: ldelta, temp
 
     real (kind=dp_t) :: rvec(nprim,nprim), lvec(nprim,nprim), eval(nprim)
-    real (kind=dp_t) :: dQ(nprim)
 
     real (kind=dp_t) :: r, ux, p, cs
-    real (kind=dp_t) :: ldr, ldu, ldp
-    real (kind=dp_t) :: r_xm, r_xp, u_xm, u_xp, p_xm, p_xp
     real (kind=dp_t) :: beta_xm(nprim), beta_xp(nprim)
-    real (kind=dp_t) :: sum_xm, sum_xp
-    real (kind=dp_t) :: sum
+
+    real (kind=dp_t) :: dq0, dqp
+    real (kind=dp_t) :: Iminus(nprim), Iplus(nprim)
+
+    type(gridedgevar_t) :: Qminus, Qplus
+    type(gridvar_t) :: Q6
+
+    real (kind=dp_t) :: sigma
 
     real (kind=dp_t) :: dp, dp2, z
     type(gridvar_t) :: xi_t, xi
@@ -45,52 +47,11 @@ contains
 
     integer :: i, m, n
 
-    ! piecewise linear slopes 
+    ! piecewise parabolic slopes 
     !
-    ! This is a 1-d version of the piecewise linear Godunov method
-    ! detailed in Colella (1990).  See also Colella & Glaz and
-    ! Saltzman (1994).
-    !
-    ! We wish to solve
-    !
-    !   U_t + [F(U)]_x = H
-    !
-    ! we want U_{i+1/2}^{n+1/2} -- the interface values that are input
-    ! to the Riemann problem through the faces for each zone.
-    !
-    ! Taylor expanding yields
-    !
-    !  n+1/2                     dU           dU  
-    ! U          = U   + 0.5 dx  --  + 0.5 dt --  
-    !  i+1/2,j,L    i,j          dx           dt   
-    ! 
-    !   
-    !                            dU             dF 
-    !            = U   + 0.5 dx  --  - 0.5 dt ( -- - H ) 
-    !               i,j          dx             dx  
-    !      
-    !       
-    !                             dU      dF
-    !            = U   + 0.5 ( dx -- - dt -- ) + 0.5 dt H 
-    !               i,j           dx      dx   
-    !  
-    !       
-    !                                 dt       dU 
-    !            = U   + 0.5 dx ( 1 - -- A^x ) -- + 0.5 dt H  
-    !               i,j               dx       dx      
-    !   
-    !   
-    !                               dt       _ 
-    !            = U   + 0.5  ( 1 - -- A^x ) DU + 0.5 dt H   
-    !               i,j             dx     
-    !     
-    !                    +----------+----------+ +---+---+    
-    !                               |                |   
-    !               
-    !                   this is the monotonized   source term    
-    !                   central difference term     
-  
-
+    ! This is a 1-d version of the piecewise parabolic method detailed
+    ! Colella & Woodward (1984).  We follow the description of Almgren
+    ! et al. 2010 (the CASTRO paper).
     
     ! sanity check
     if (U%grid%ng < 4) then
@@ -164,71 +125,104 @@ contains
     
 
     !-------------------------------------------------------------------------
-    ! compute the monotonized central differences
+    ! interpolate the cell-centered data to the edges
+    !-------------------------------------------------------------------------
+    
+    ! For each cell, we will find the Qminus and Qplus states -- these
+    ! are the - and + edges of the cell.
+    call build(Qminus, U%grid, nprim)
+    call build(Qplus,  U%grid, nprim)
+    
+    do n = 1, nprim
+       do i = U%grid%lo-2, U%grid%hi+2
+
+          ! dq (C&W Eq. 1.7)
+          dq0 = 0.5_dp_t*(Q%data(i+1,n) - Q%data(i-1,n))
+          dqp = 0.5_dp_t*(Q%data(i+2,n) - Q%data(i,n))
+
+          ! limiting (C&W Eq. 1.8)
+          if ( (Q%data(i+1,n) - Q%data(i,n))* &
+               (Q%data(i,n) - Q%data(i-1,n)) > 0.0_dp_t) then
+             dq0 = sign(1.0_dp_t,dq0)* &
+                  min( abs(dq0), &
+                       2.0_dp_t*abs(Q%data(i,n) - Q%data(i-1,n)), &
+                       2.0_dp_t*abs(Q%data(i+1,n) - Q%data(i,n)) )
+          else
+             dq0 = 0.0_dp_t
+          endif
+
+          if ( (Q%data(i+2,n) - Q%data(i+1,n))* &
+               (Q%data(i+1,n) - Q%data(i,n)) > 0.0_dp_t) then
+             dqp = sign(1.0_dp_t,dqp)* &
+                  min( abs(dqp), &
+                       2.0_dp_t*abs(Q%data(i+1,n) - Q%data(i,n)), &
+                       2.0_dp_t*abs(Q%data(i+2,n) - Q%data(i+1,n)) )
+          else
+             dqp = 0.0_dp_t
+          endif
+
+          ! cubic (C&W Eq. 1.6)
+          Qplus%data(i,n) = 0.5_dp_t*(Q%data(i,n) + Q%data(i+1,n)) - &
+               (1.0_dp_t/6.0_dp_t)*(dqp - dq0)
+
+          Qminus%data(i+1,n) = Qplus%data(i,n)
+
+       enddo
+    enddo
+
+
+    !-------------------------------------------------------------------------
+    ! construct the parameters for the parabolic reconstruction polynomials
     !-------------------------------------------------------------------------
 
-    ! 4th order MC limiting.  See Colella (1985) Eq. 2.5 and 2.6,
-    ! Colella (1990) page 191 (with the delta a terms all equal) or
-    ! Saltzman 1994, page 156
-    
-    call build(temp, U%grid, 1)
-    call build(ldelta, U%grid, nprim)
-
+    ! Limit (C&W Eq. 1.10).  Here the loop is over cells, and
+    ! considers the values on either side of the center of the cell
+    ! (Qminus and Qplus).
     do n = 1, nprim
+       do i = U%grid%lo-1, U%grid%hi+1
 
-       ! first do the normal MC limiting 
-       do i = Q%grid%lo-3, Q%grid%hi+3
+          if ( (Qplus%data(i,n) - Q%data(i,n)) * &
+               (Q%data(i,n) - Qminus%data(i,n)) <= 0.0_dp_t) then
+             Qminus%data(i,n) = Q%data(i,n)
+             Qplus%data(i,n) = Q%data(i,n)
 
-          test = (Q%data(i+1,n) - Q%data(i,n))*(Q%data(i,n) - Q%data(i-1,n))
+          else if ( (Qplus%data(i,n) - Qminus%data(i,n)) * &
+                    (Q%data(i,n) - &
+                           0.5_dp_t*(Qminus%data(i,n) + Qplus%data(i,n))) > &
+                   (Qplus%data(i,n) - Qminus%data(i,n))**2/6.0_dp_t ) then
 
-          if (test > 0.0_dp_t) then
-             temp%data(i,1) = min(0.5_dp_t*abs(Q%data(i+1,n) - Q%data(i-1,n)), &
-                                  min(2.0_dp_t*abs(Q%data(i+1,n) - Q%data(i,n)), &
-                                      2.0_dp_t*abs(Q%data(i,n) - Q%data(i-1,n)))) * &
-                              sign(1.0_dp_t,Q%data(i+1,n) - Q%data(i-1,n))
+             Qminus%data(i,n) = 3.0_dp_t*Q%data(i,n) - 2.0_dp_t*Qplus%data(i,n)
 
-          else
-             temp%data(i,1) = 0.0_dp_t
+          else if (-(Qplus%data(i,n) - Qminus%data(i,n))**2/6.0_dp_t > &
+                    (Qplus%data(i,n) - Qminus%data(i,n)) * &
+                    (Q%data(i,n) - &
+                           0.5_dp_t*(Qminus%data(i,n) + Qplus%data(i,n))) ) then
+
+             Qplus%data(i,n) = 3.0_dp_t*Q%data(i,n) - 2.0_dp_t*Qminus%data(i,n)
+
           endif
 
        enddo
-    
-
-       ! now do the fourth order part
-       do i = Q%grid%lo-2, Q%grid%hi+2
-          
-          test = (Q%data(i+1,n) - Q%data(i,n))*(Q%data(i,n) - Q%data(i-1,n))
-
-          if (test > 0.0_dp_t) then
-             ldelta%data(i,n) = &
-                  min((2.0_dp_t/3.0_dp_t)*abs(Q%data(i+1,n) - Q%data(i-1,n) - &
-                      0.25_dp_t*(temp%data(i+1,1) + temp%data(i-1,1))), &
-                  min(2.0*abs(Q%data(i+1,n) - Q%data(i,n)), &
-                      2.0*abs(Q%data(i,n) - Q%data(i-1,n)))) * &
-                  sign(1.0_dp_t, Q%data(i+1,n) - Q%data(i-1,n))
-          else
-             ldelta%data(i,n) = 0.0_dp_t
-          endif
-
-       enddo
-
     enddo
 
+    ! define Q6
+    call build(Q6,  U%grid, nprim)
 
-    ! apply flattening to the slopes
     do n = 1, nprim
-       do i = Q%grid%lo-2, Q%grid%hi+2
-          ldelta%data(i,n) = xi%data(i,1)*ldelta%data(i,n)
+       do i = U%grid%lo-1, U%grid%hi+1
+
+          Q6%data(i,n) = 6.0_dp_t*Q%data(i,n) - &
+               3.0_dp_t*(Qminus%data(i,n) + Qplus%data(i,n))
+
        enddo
     enddo
 
-    call destroy(temp)
-    call destroy(xi)
 
 
     !-------------------------------------------------------------------------
     ! compute left and right primitive variable states
     !-------------------------------------------------------------------------
+
     call build(Q_l, U%grid, nprim)
     call build(Q_r, U%grid, nprim)
 
@@ -280,14 +274,6 @@ contains
        ux = Q%data(i,iqxvel)
        p  = Q%data(i,iqpres)
 
-       ldr = ldelta%data(i,iqdens)
-       ldu = ldelta%data(i,iqxvel)
-       ldp = ldelta%data(i,iqpres)
-
-       dQ(1) = ldr
-       dQ(2) = ldu
-       dQ(3) = ldp
-
 
        ! compute the sound speed
        cs = sqrt(gamma*p/r)
@@ -334,88 +320,113 @@ contains
        rvec(3,3) = cs*cs
 
 
-       ! Define the reference states (here xp is the right interface
-       ! for the current zone and xm is the left interface for the
-       ! current zone)
-       !                           ~
-       ! These expressions are the V_{L,R} in Colella (1990) at the 
-       ! bottom of page 191.  They are also in Saltzman (1994) as
-       ! V_ref on page 161.
-       r_xp = r + 0.5_dp_t*(1.0_dp_t - dtdx*max(eval(3), 0.0_dp_t))*ldr
-       r_xm = r - 0.5_dp_t*(1.0_dp_t + dtdx*min(eval(1), 0.0_dp_t))*ldr
+       ! integrate the parabola in the cell from the left interface
+       ! (Iminus) over the portion of the cell that each eigenvalue
+       ! can reach.  Do the same from the right interface in the
+       ! cell, defining Iplus.  See Almgren et al. 2010 (Eq. 30)
+       do n = 1, nprim
+          sigma = abs(eval(n))*dtdx
 
-       u_xp = ux + 0.5_dp_t*(1.0_dp_t - dtdx*max(eval(3), 0.0_dp_t))*ldu
-       u_xm = ux - 0.5_dp_t*(1.0_dp_t + dtdx*min(eval(1), 0.0_dp_t))*ldu
+          Iplus(n) = Qplus%data(i,n) - 0.5_dp_t*sigma* &
+               (Qplus%data(i,n) - Qminus%data(i,n) - &
+                (1.0_dp_t - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
 
-       p_xp = p + 0.5_dp_t*(1.0_dp_t - dtdx*max(eval(3), 0.0_dp_t))*ldp
-       p_xm = p - 0.5_dp_t*(1.0_dp_t + dtdx*min(eval(1), 0.0_dp_t))*ldp
+          Iminus(n) = Qminus%data(i,n) + 0.5_dp_t*sigma* &
+               (Qplus%data(i,n) - Qminus%data(i,n) + &
+                (1.0_dp_t - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
+          
+       enddo
 
-       !                                                   ^
-       ! Now compute the interface states.   These are the V expressions
-       ! in Colella (1990) page 191, and the interface state expressions
-       ! -V and +V in Saltzman (1994) on pages 161.
        
-       ! first compute beta_xm and beta_xp
+       ! compute the dot product of each left eigenvector with (q - I)
        do m = 1, nprim
-          sum = 0.0_dp_t
+          beta_xm(m) = 0.0_dp_t
+          beta_xp(m) = 0.0_dp_t
 
           do n = 1, nprim
-             sum = sum + lvec(m,n)*dQ(n)
+             beta_xm(m) = beta_xm(m) + lvec(m,n)*(Q%data(i,n) - Iminus(n))
+             beta_xp(m) = beta_xp(m) + lvec(m,n)*(Q%data(i,n) - Iplus(n))
           enddo
-
-          ! here the sign() function makes sure we only add the right-moving
-          ! waves
-          beta_xp(m) = 0.25_dp_t*dtdx*(eval(3) - eval(m))* &
-               (sign(1.0_dp_t, eval(m)) + 1.0_dp_t)*sum
-
-          ! here the sign() function makes sure we only add the left-moving
-          ! waves
-          beta_xm(m) = 0.25_dp_t*dtdx*(eval(1) - eval(m))* &
-               (1.0_dp_t - sign(1.0_dp_t, eval(m)))*sum
-
        enddo
 
-       
+
        ! density
-       sum_xm = 0.0_dp_t
-       sum_xp = 0.0_dp_t
+       Q_l%data(i+1,iqdens) = 0.0_dp_t
+       Q_r%data(i,iqdens) = 0.0_dp_t
+
        do n = 1, nprim
-          sum_xm = sum_xm + beta_xm(n)*rvec(n,1)
-          sum_xp = sum_xp + beta_xp(n)*rvec(n,1)
+          if (eval(n) >= 0.0_dp_t) then
+             Q_l%data(i+1,iqdens) = Q_l%data(i+1,iqdens) + &
+                  beta_xp(n)*rvec(n,1)
+          endif
+
+          if (eval(n) <= 0.0_dp_t) then
+             Q_r%data(i,iqdens) = Q_r%data(i,iqdens) + &
+                  beta_xm(n)*rvec(n,1)
+          endif
        enddo
 
-       Q_l%data(i+1,iqdens) = r_xp + sum_xp
-       Q_r%data(i,iqdens) = r_xm + sum_xm
+       Q_l%data(i+1,iqdens) = Q%data(i,iqdens) - &
+            xi%data(i,1)*Q_l%data(i+1,iqdens)
+
+       Q_r%data(i,iqdens) = Q%data(i,iqdens) - &
+            xi%data(i,1)*Q_r%data(i,iqdens)
 
 
        ! velocity
-       sum_xm = 0.0_dp_t
-       sum_xp = 0.0_dp_t
+       Q_l%data(i+1,iqxvel) = 0.0_dp_t
+       Q_r%data(i,iqxvel) = 0.0_dp_t
+
        do n = 1, nprim
-          sum_xm = sum_xm + beta_xm(n)*rvec(n,2)
-          sum_xp = sum_xp + beta_xp(n)*rvec(n,2)
+          if (eval(n) >= 0.0_dp_t) then
+             Q_l%data(i+1,iqxvel) = Q_l%data(i+1,iqxvel) + &
+                  beta_xp(n)*rvec(n,2)
+          endif
+
+          if (eval(n) <= 0.0_dp_t) then
+             Q_r%data(i,iqxvel) = Q_r%data(i,iqxvel) + &
+                  beta_xm(n)*rvec(n,2)
+          endif
        enddo
 
-       Q_l%data(i+1,iqxvel) = u_xp + sum_xp
-       Q_r%data(i,iqxvel) = u_xm + sum_xm
+       Q_l%data(i+1,iqxvel) = Q%data(i,iqxvel) - &
+            xi%data(i,1)*Q_l%data(i+1,iqxvel)
+
+       Q_r%data(i,iqxvel) = Q%data(i,iqxvel) - &
+            xi%data(i,1)*Q_r%data(i,iqxvel)
 
 
        ! pressure
-       sum_xm = 0.0_dp_t
-       sum_xp = 0.0_dp_t
+       Q_l%data(i+1,iqpres) = 0.0_dp_t
+       Q_r%data(i,iqpres) = 0.0_dp_t
+
        do n = 1, nprim
-          sum_xm = sum_xm + beta_xm(n)*rvec(n,3)
-          sum_xp = sum_xp + beta_xp(n)*rvec(n,3)
+          if (eval(n) >= 0.0_dp_t) then
+             Q_l%data(i+1,iqpres) = Q_l%data(i+1,iqpres) + &
+                  beta_xp(n)*rvec(n,3)
+          endif
+
+          if (eval(n) <= 0.0_dp_t) then
+             Q_r%data(i,iqpres) = Q_r%data(i,iqpres) + &
+                  beta_xm(n)*rvec(n,3)
+          endif
        enddo
 
-       Q_l%data(i+1,iqpres) = p_xp + sum_xp
-       Q_r%data(i,iqpres) = p_xm + sum_xm
+       Q_l%data(i+1,iqpres) = Q%data(i,iqpres) - &
+            xi%data(i,1)*Q_l%data(i+1,iqpres)
+
+       Q_r%data(i,iqpres) = Q%data(i,iqpres) - &
+            xi%data(i,1)*Q_r%data(i,iqpres)
 
        
     enddo
 
     ! clean-up
-    call destroy(ldelta)
+    call destroy(Qminus)
+    call destroy(Qplus)
+    call destroy(Q6)
+
+    call destroy(xi)
 
 
     !-------------------------------------------------------------------------
@@ -454,6 +465,6 @@ contains
     !-------------------------------------------------------------------------
 
 
-  end subroutine make_interface_states_plm
+  end subroutine make_interface_states_ppm
 
-end module interface_states_plm_module
+end module interface_states_ppm_module

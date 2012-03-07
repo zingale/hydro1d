@@ -31,6 +31,9 @@ $(odir)/plm.o       : $(odir)/variables.o \
                       $(odir)/grid.o \
                       $(odir)/datatypes.o 
 
+$(odir)/ppm.o       : $(odir)/variables.o \
+                      $(odir)/grid.o \
+                      $(odir)/datatypes.o 
 
 $(odir)/output.o    : $(odir)/eos.o \
                       $(odir)/variables.o \
