@@ -1,0 +1,26 @@
+hydro1d (M. Zingale, 2012-03-06)
+
+hydro1d is a simple 1-d, gamma-law gas hydrodynamics code for teaching
+purposes.  Piecewise constant (Godunov), piecewise linear, and
+piecewise parabolic (PPM) reconstruction is implemented.  
+
+Individual problems are built in subdirectories (e.g. sod/).  Type
+'make' there to build the source.  Object files and modules will be
+output into the _build subdirectory.  'make realclean' will clean up
+the objects.  Things are setup for gfortran by default -- you will
+need to edit the Ghydro.mak with different options for different
+compilers.
+
+A number of runtime options can be specified -- look in params.f90 for
+the available runtime parameters.  These are set in a namelist in the
+inputs file.  Problems can specify their own runtime parameters (with
+a probparams.f90 in the problem directory).  These have a separate
+namelist in the same inputs file.  See the sod problem for examples.
+
+
+
+Acknowledgements:
+
+The build system used here is inspired by the BoxLib build system,
+developed at the Center for Computational Sciences and Engineering at
+Lawrence Berkeley Laboratory.
