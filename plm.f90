@@ -320,40 +320,15 @@ contains
        eval(3) = ux + cs
 
 
-       ! compute the left eigenvectors
-       
-       ! u - c eigenvector
-       lvec(1,1) = 0.0_dp_t
-       lvec(1,2) = -0.5_dp_t*r/cs
-       lvec(1,3) = 0.5_dp_t/(cs*cs)
-
-       ! u eigenvector
-       lvec(2,1) = 1.0_dp_t
-       lvec(2,2) = 0.0_dp_t
-       lvec(2,3) = -1.0_dp_t/(cs*cs)
-
-       ! u + c eigenvector
-       lvec(3,1) = 0.0_dp_t
-       lvec(3,2) = 0.5_dp_t*r/cs
-       lvec(3,3) = 0.5_dp_t/(cs*cs)
-
+       ! compute the left eigenvectors       
+       lvec(1,:) = [ 0.0_dp_t, -0.5_dp_t*r/cs, 0.5_dp_t/(cs*cs)  ]   ! u - c
+       lvec(2,:) = [ 1.0_dp_t, 0.0_dp_t,       -1.0_dp_t/(cs*cs) ]   ! u
+       lvec(3,:) = [ 0.0_dp_t, 0.5_dp_t*r/cs,  0.5_dp_t/(cs*cs)  ]   ! u + c
 
        ! compute the right eigenvectors
-
-       ! u - c eigenvector
-       rvec(1,1) = 1.0_dp_t
-       rvec(1,2) = -cs/r
-       rvec(1,3) = cs*cs
-
-       ! u eigenvector
-       rvec(2,1) = 1.0_dp_t
-       rvec(2,2) = 0.0_dp_t
-       rvec(2,3) = 0.0_dp_t
-
-       ! u + c eigenvector
-       rvec(3,1) = 1.0_dp_t
-       rvec(3,2) = cs/r
-       rvec(3,3) = cs*cs
+       rvec(1,:) = [ 1.0_dp_t, -cs/r,    cs*cs    ]   ! u - c
+       rvec(2,:) = [ 1.0_dp_t, 0.0_dp_t, 0.0_dp_t ]   ! u
+       rvec(3,:) = [ 1.0_dp_t, cs/r,     cs*cs    ]   ! u + c
 
 
        ! Define the reference states (here xp is the right interface
