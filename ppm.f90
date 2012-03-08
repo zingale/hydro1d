@@ -351,6 +351,30 @@ contains
              
           enddo
        enddo
+
+
+       ! the basic idea here is that we do a characteristic
+       ! decomposition.  The jump in primitive variables (Q)
+       ! can be transformed to a jump in characteristic variables
+       ! using the left and right eigenvectors.  Then each wave
+       ! tells us how much of each characteristic quantity reaches
+       ! the interface over dt/2.  We only add the quantity if
+       ! it moves toward the interface.
+       !
+       ! Given a jump dQ, we can express this as:
+       !
+       !       3
+       ! dQ = sum  (l_i dQ) r_i
+       !      i=1
+       !
+       ! Then 
+       !         3
+       ! A dQ = sum  lambda_i (l_i dQ) r_i
+       !        i=1
+       !
+       ! where lambda_i is the eigenvalue.  (See for example LeVeque's
+       ! book).
+       !
        
        ! compute the dot product of each left eigenvector with (q - I)
        do m = 1, nprim
