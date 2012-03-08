@@ -166,7 +166,8 @@ contains
 
           Qminus%data(i+1,n) = Qplus%data(i,n)
 
-          ! make sure that we didn't over or undersoot
+          ! make sure that we didn't over or undersoot -- this may not be needed, but
+          ! is discussed in Colella & Sekora (2008)
           Qplus%data(i,n) = max(Qplus%data(i,n), min(Q%data(i,n),Q%data(i+1,n)))
           Qplus%data(i,n) = min(Qplus%data(i,n), max(Q%data(i,n),Q%data(i+1,n)))
 
@@ -197,6 +198,7 @@ contains
                       0.5_dp_t*(Qminus%data(i,n) + Qplus%data(i,n))) > &
                    (Qplus%data(i,n) - Qminus%data(i,n))**2/6.0_dp_t ) then
 
+          ! alternate test from Colella & Sekora (2008)
           !else if (abs(Qminus%data(i,n) - Q%data(i,n)) >= &
           !     2.0*abs(Qplus%data(i,n) - Q%data(i,n))) then
              Qminus%data(i,n) = 3.0_dp_t*Q%data(i,n) - 2.0_dp_t*Qplus%data(i,n)
@@ -333,7 +335,8 @@ contains
        ! integrate the parabola in the cell from the left interface
        ! (Iminus) over the portion of the cell that each eigenvalue
        ! can reach.  Do the same from the right interface in the
-       ! cell, defining Iplus.  See Almgren et al. 2010 (Eq. 30)
+       ! cell, defining Iplus.  See Almgren et al. 2010 (Eq. 30) or
+       ! Colella & Sekora (2008)
        do m = 1, nprim
           sigma = abs(eval(m))*dtdx
           do n = 1, nprim
