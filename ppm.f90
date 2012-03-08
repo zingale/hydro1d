@@ -25,7 +25,7 @@ contains
     real (kind=dp_t) :: beta_xm(nprim), beta_xp(nprim)
 
     real (kind=dp_t) :: dq0, dqp
-    real (kind=dp_t) :: Iminus(nprim), Iplus(nprim)
+    real (kind=dp_t) :: Iminus(nprim,nprim), Iplus(nprim,nprim)
 
     type(gridedgevar_t) :: Qminus, Qplus
     type(gridvar_t) :: Q6
@@ -122,7 +122,6 @@ contains
     
     call destroy(xi_t)
 
-    
 
     !-------------------------------------------------------------------------
     ! interpolate the cell-centered data to the edges
@@ -167,6 +166,13 @@ contains
 
           Qminus%data(i+1,n) = Qplus%data(i,n)
 
+          ! make sure that we didn't over or undersoot
+          Qplus%data(i,n) = max(Qplus%data(i,n), min(Q%data(i,n),Q%data(i+1,n)))
+          Qplus%data(i,n) = min(Qplus%data(i,n), max(Q%data(i,n),Q%data(i+1,n)))
+
+          Qminus%data(i+1,n) = max(Qminus%data(i+1,n), min(Q%data(i,n),Q%data(i+1,n)))
+          Qminus%data(i+1,n) = min(Qminus%data(i+1,n), max(Q%data(i,n),Q%data(i+1,n)))
+
        enddo
     enddo
 
@@ -188,9 +194,11 @@ contains
 
           else if ( (Qplus%data(i,n) - Qminus%data(i,n)) * &
                     (Q%data(i,n) - &
-                           0.5_dp_t*(Qminus%data(i,n) + Qplus%data(i,n))) > &
+                      0.5_dp_t*(Qminus%data(i,n) + Qplus%data(i,n))) > &
                    (Qplus%data(i,n) - Qminus%data(i,n))**2/6.0_dp_t ) then
 
+          !else if (abs(Qminus%data(i,n) - Q%data(i,n)) >= &
+          !     2.0*abs(Qplus%data(i,n) - Q%data(i,n))) then
              Qminus%data(i,n) = 3.0_dp_t*Q%data(i,n) - 2.0_dp_t*Qplus%data(i,n)
 
           else if (-(Qplus%data(i,n) - Qminus%data(i,n))**2/6.0_dp_t > &
@@ -198,6 +206,8 @@ contains
                     (Q%data(i,n) - &
                            0.5_dp_t*(Qminus%data(i,n) + Qplus%data(i,n))) ) then
 
+          !else if (abs(Qplus%data(i,n) - Q%data(i,n)) >= &
+          !     2.0*abs(Qminus%data(i,n) - Q%data(i,n))) then
              Qplus%data(i,n) = 3.0_dp_t*Q%data(i,n) - 2.0_dp_t*Qminus%data(i,n)
 
           endif
@@ -324,19 +334,20 @@ contains
        ! (Iminus) over the portion of the cell that each eigenvalue
        ! can reach.  Do the same from the right interface in the
        ! cell, defining Iplus.  See Almgren et al. 2010 (Eq. 30)
-       do n = 1, nprim
-          sigma = abs(eval(n))*dtdx
+       do m = 1, nprim
+          sigma = abs(eval(m))*dtdx
+          do n = 1, nprim
 
-          Iplus(n) = Qplus%data(i,n) - 0.5_dp_t*sigma* &
-               (Qplus%data(i,n) - Qminus%data(i,n) - &
-                (1.0_dp_t - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
+             Iplus(m,n) = Qplus%data(i,n) - 0.5_dp_t*sigma* &
+                  (Qplus%data(i,n) - Qminus%data(i,n) - &
+                  (1.0_dp_t - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
 
-          Iminus(n) = Qminus%data(i,n) + 0.5_dp_t*sigma* &
-               (Qplus%data(i,n) - Qminus%data(i,n) + &
-                (1.0_dp_t - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
-          
+             Iminus(m,n) = Qminus%data(i,n) + 0.5_dp_t*sigma* &
+                  (Qplus%data(i,n) - Qminus%data(i,n) + &
+                  (1.0_dp_t - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
+             
+          enddo
        enddo
-
        
        ! compute the dot product of each left eigenvector with (q - I)
        do m = 1, nprim
@@ -344,8 +355,8 @@ contains
           beta_xp(m) = 0.0_dp_t
 
           do n = 1, nprim
-             beta_xm(m) = beta_xm(m) + lvec(m,n)*(Q%data(i,n) - Iminus(n))
-             beta_xp(m) = beta_xp(m) + lvec(m,n)*(Q%data(i,n) - Iplus(n))
+             beta_xm(m) = beta_xm(m) + lvec(m,n)*(Q%data(i,n) - Iminus(m,n))
+             beta_xp(m) = beta_xp(m) + lvec(m,n)*(Q%data(i,n) - Iplus(m,n))
           enddo
        enddo
 
