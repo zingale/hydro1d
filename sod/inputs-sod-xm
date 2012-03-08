@@ -5,6 +5,8 @@
 
  godunov_type = 1
 
+ problem_name = "sod"
+
 /
 
 &problem
