@@ -1,0 +1,19 @@
+&params
+
+ nx = 128
+ tmax = 1.0d0
+  
+ godunov_type = 2
+
+ problem_name = "tophat"
+
+ xlboundary = "periodic"
+ xrboundary = "periodic"
+
+/
+
+&problem
+
+ perttype = "tophat"
+
+/

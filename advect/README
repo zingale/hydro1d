@@ -1,0 +1,4 @@
+setup a Gaussian density profile in pressure equilibrium and advect it
+by having a spatially constant velocity field.
+
+See the FLASH paper for details of this setup.
