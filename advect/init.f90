@@ -23,6 +23,11 @@ contains
 
     real (kind=dp_t) :: xcenter, s
 
+    ! here we setup a constant pressure, constant (non-zero) velocity,
+    ! and a varying density field that will simply be advected.  The
+    ! particular choices here come from the FLASH Code paper (Fryxell
+    ! et al. 2000).
+
     xcenter = 0.5_dp_t*(U%grid%xmin + U%grid%xmax)
 
 
