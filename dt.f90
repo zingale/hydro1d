@@ -14,9 +14,10 @@ module dt_module
 
 contains
 
-  subroutine compute_dt(U, dt)
+  subroutine compute_dt(U, n, dt)
 
     type(gridvar_t),  intent(in   ) :: U
+    integer,          intent(inout) :: n
     real (kind=dp_t), intent(inout) :: dt
 
     integer :: i
@@ -40,6 +41,8 @@ contains
     enddo    
 
     dt = cfl*dt
+
+    if (n == 0) dt = init_shrink*dt
 
   end subroutine compute_dt
 

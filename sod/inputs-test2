@@ -5,9 +5,11 @@
  nx = 128
  tmax = 0.15d0
 
- godunov_type = 1
+ godunov_type = 2
 
  problem_name = "test2"
+
+ init_shrink = 0.1d0
 /
 
 &problem

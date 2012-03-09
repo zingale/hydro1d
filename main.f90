@@ -22,7 +22,7 @@ program hydro1d
   type(gridedgevar_t) :: U_l, U_r, fluxes
 
   integer :: i, n, ng
-  real (kind=dp_t) :: t, dt
+  real (kind=dp_t) :: t, dt, dt_new
 
 
   ! parse the inputs file
@@ -64,9 +64,17 @@ program hydro1d
      ! set the boundary conditions
      call fillBCs(U)
 
+
      ! compute the timestep
-     call compute_dt(U, dt)
+     call compute_dt(U, n, dt_new)
+     if (n > 0) then
+        dt = min(dt_change*dt, dt_new)
+     else
+        dt = dt_new
+     endif
+
      if (t + dt > tmax) dt = tmax - t
+
 
      ! construct the interface states
      if (godunov_type == 0) then
@@ -79,14 +87,17 @@ program hydro1d
         call make_interface_states_ppm(U, U_l, U_r, dt)
      endif
 
+
      ! compute the fluxes
      call solve_riemann(U_l, U_r, fluxes)
+
 
      ! do the conservative update
      call update(U, fluxes, dt)
 
      t = t + dt
      n = n + 1
+
 
      ! output (if necessary)
      print *, n, t, dt

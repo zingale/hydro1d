@@ -22,6 +22,8 @@ module params_module
   character (len=32), save :: xrboundary = "outflow"
   
   ! timestep parameters
+  real (kind=dp_t), save :: init_shrink = 1.0_dp_t
+  real (kind=dp_t), save :: dt_change = 1.2_dp_t
   real (kind=dp_t), save :: tmax = 1.0_dp_t
   real (kind=dp_t), save :: cfl = 0.8_dp_t
 
@@ -38,7 +40,8 @@ module params_module
   ! namelist
   namelist /params/ nx, xmin, xmax, &
                     xlboundary, xrboundary, &
-                    tmax, &
+                    init_shrink, dt_change, tmax, &
+                    cfl, &
                     gamma, &
                     godunov_type, &
                     problem_name

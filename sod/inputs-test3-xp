@@ -1,7 +1,13 @@
+! test3 from Toro -- a very strong shock
+
 &params
 
  nx = 128
  tmax = 0.012d0
+
+ godunov_type = 2
+
+ problem_name = "test3"
 
 /
 
