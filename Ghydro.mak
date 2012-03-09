@@ -1,22 +1,25 @@
-all: hydro1d
+# basic rules for building the source.  Problems are built in
+# sub-directories.  Some bits taken from BoxLib (CCSE/LBNL).
 
-FSOURCE += main.f90 grid.f90 datatypes.f90 params.f90 \
-           init.f90 variables.f90 eos.f90 output.f90 \
-           bcs.f90 dt.f90 godunov.f90 plm.f90 ppm.f90 \
-	   riemann.f90 update.f90 probparams.f90
-
+ALL: hydro1d
 
 vpath %.f90 . ..
 
 
 odir := _build
 
+# source files
+include ../Ghydro.src
+
 # dependencies
 include ../Ghydro.dep
 
-
-FFLAGS := -c -O2 -g -C
-FFLAGS += -J $(odir) -I $(odir)
+ifeq ($(FC),gfortran)
+  FFLAGS := -c -O2 -g -C
+  FFLAGS += -J $(odir) -I $(odir)
+else
+  $(error ERROR: compiler $(FC) invalid)
+endif
 
 
 $(odir)/%.o: %.f90
@@ -35,5 +38,5 @@ clean:
 	rm -f $(odir)/*.o $(odir)/*.mod
 
 realclean: clean
-	rmdir $(odir)
+	@if [ -d $(odir) ]; then rmdir $(odir); echo "removing $(odir)"; fi
 	rm -f hydro1d

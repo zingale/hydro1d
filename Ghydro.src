@@ -1,0 +1,17 @@
+FSOURCE += main.f90 \
+           bcs.f90 \
+           datatypes.f90 \
+           dt.f90 \
+           eos.f90 \
+           grid.f90 \
+           init.f90 \
+           godunov.f90 \
+           output.f90 \
+           params.f90 \
+           plm.f90 \
+           ppm.f90 \
+           probparams.f90 \
+	   riemann.f90 \
+           update.f90 \
+           variables.f90 
+
