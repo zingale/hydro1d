@@ -17,7 +17,8 @@ contains
     integer :: i
 
     do i = U%grid%lo, U%grid%hi
-       U%data(i,:) = U%data(i,:) + (dt/U%grid%dx)*(fluxes%data(i,:) - fluxes%data(i+1,:))
+       U%data(i,:) = U%data(i,:) + &
+            (dt/U%grid%dx)*(fluxes%data(i,:) - fluxes%data(i+1,:))
     enddo
 
   end subroutine update
