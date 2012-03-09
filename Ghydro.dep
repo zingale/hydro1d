@@ -55,7 +55,8 @@ $(odir)/riemann.o   : $(odir)/variables.o \
 
 $(odir)/update.o    : $(odir)/variables.o \
                       $(odir)/grid.o \
-                      $(odir)/datatypes.o 
+                      $(odir)/datatypes.o \
+                      $(odir)/params.o 
 
 $(odir)/variables.o : 
 

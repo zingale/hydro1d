@@ -476,6 +476,13 @@ contains
     !-------------------------------------------------------------------------
     ! apply the source terms
     !-------------------------------------------------------------------------
+    do i = U%grid%lo, U%grid%hi+1
+       U_l%data(i,iumomx) = U_l%data(i,iumomx) + 0.5_dp_t*U%data(i-1,iudens)*grav
+       U_l%data(i,iuener) = U_l%data(i,iuener) + 0.5_dp_t*U%data(i-1,iumomx)*grav
+
+       U_r%data(i,iumomx) = U_r%data(i,iumomx) + 0.5_dp_t*U%data(i,iudens)*grav
+       U_r%data(i,iuener) = U_r%data(i,iuener) + 0.5_dp_t*U%data(i,iumomx)*grav
+    enddo
 
 
   end subroutine make_interface_states_ppm
