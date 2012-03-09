@@ -16,15 +16,17 @@ contains
 
 
     ! sanity check
-    if ( (xlboundary == "periodic" .and. xrboundary /= "periodic") .or. &
-         (xrboundary == "periodic" .and. xlboundary /= "periodic") ) then
+    if ( (U%grid%xlboundary == "periodic" .and. &
+          U%grid%xrboundary /= "periodic") .or. &
+         (U%grid%xrboundary == "periodic" .and. &
+          U%grid%xlboundary /= "periodic") ) then
        print *, "ERROR: both boundaries must be periodic"
        stop
     endif
 
 
     ! lower boundary (-x)
-    select case (xlboundary)
+    select case (U%grid%xlboundary)
 
     case ("reflect")
 
@@ -71,7 +73,7 @@ contains
 
 
     ! upper boundary (+x)
-    select case (xrboundary)
+    select case (U%grid%xrboundary)
 
     case ("reflect")
 

@@ -37,8 +37,9 @@ program hydro1d
   endif
 
 
-  ! build the grid and storage for grid variables, interface states, and fluxes
-  call build(grid, nx, ng, xmin, xmax)
+  ! build the grid and storage for grid variables, interface states,
+  ! and fluxes
+  call build(grid, nx, ng, xmin, xmax, xlboundary, xrboundary)
 
   call build(U, grid, ncons)
   call build(U_l, grid, ncons)
@@ -70,8 +71,10 @@ program hydro1d
      ! construct the interface states
      if (godunov_type == 0) then
         call make_interface_states_godunov(U, U_l, U_r, dt)
+
      else if (godunov_type == 1) then
         call make_interface_states_plm(U, U_l, U_r, dt)
+
      else if (godunov_type == 2) then
         call make_interface_states_ppm(U, U_l, U_r, dt)
      endif

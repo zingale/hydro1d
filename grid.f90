@@ -52,7 +52,9 @@ module grid_module
      real (kind=dp_t) :: xmin, xmax, dx
      real (kind=dp_t), pointer :: x(:) => Null()
      real (kind=dp_t), pointer :: xl(:) => Null()
-     real (kind=dp_t), pointer :: xr(:) => Null()     
+     real (kind=dp_t), pointer :: xr(:) => Null()  
+     character (len=32) :: xlboundary
+     character (len=32) :: xrboundary
   end type grid_t
 
   ! the datatype for a variable that lives in a zone on the grid 
@@ -85,13 +87,13 @@ module grid_module
 
 contains  
 
-  subroutine build_grid(grid,nx,ng,xmin,xmax)
+  subroutine build_grid(grid,nx,ng,xmin,xmax,xlbc,xrbc)
     
-    type(grid_t),     intent(inout) :: grid
-    integer,          intent(in   ) :: nx
-    integer,          intent(in   ) :: ng
-    real (kind=dp_t), intent(in   ) :: xmin, xmax
-
+    type(grid_t),       intent(inout) :: grid
+    integer,            intent(in   ) :: nx
+    integer,            intent(in   ) :: ng
+    real (kind=dp_t),   intent(in   ) :: xmin, xmax
+    character (len=32), intent(in   ) :: xlbc, xrbc
     integer :: i
 
     grid%lo = 0
@@ -103,6 +105,9 @@ contains
     grid%xmin = xmin
     grid%xmax = xmax
     grid%dx = (xmax - xmin)/nx
+
+    grid%xlboundary = xlbc
+    grid%xrboundary = xrbc
 
     allocate(grid%x(-ng:nx+ng-1))
     allocate(grid%xl(-ng:nx+ng-1))
