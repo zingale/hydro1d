@@ -1,9 +1,9 @@
 &params
 
  nx = 128
- tmax = 1.0d0
+ tmax = 10.0d0
   
- godunov_type = 1
+ godunov_type = 2
 
  problem_name = "gaussian"
 
@@ -13,5 +13,14 @@
 /
 
 &problem
+
+ p0 = 1.d-6
+
+ rho0 = 1.d-3
+ rho1 = 1.0d0
+
+ u0 = 1.0d0
+
+ width = 0.1d0
 
 /
