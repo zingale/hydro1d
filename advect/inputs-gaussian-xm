@@ -1,0 +1,26 @@
+&params
+
+ nx = 128
+ tmax = 10.0d0
+  
+ godunov_type = 1
+
+ problem_name = "gaussian"
+
+ xlboundary = "periodic"
+ xrboundary = "periodic"
+
+/
+
+&problem
+
+ p0 = 1.d-6
+
+ rho0 = 1.d-3
+ rho1 = 1.0d0
+
+ u0 = -1.0
+
+ width = 0.1d0
+
+/
