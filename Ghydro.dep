@@ -1,3 +1,5 @@
+# list of all the dependencies for each source file
+
 $(odir)/bcs.o       : $(odir)/params.o \
                       $(odir)/variables.o \
                       $(odir)/grid.o \

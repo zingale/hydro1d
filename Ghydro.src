@@ -1,3 +1,5 @@
+# list of all the sources files that go into building our application
+
 FSOURCE += main.f90 \
            bcs.f90 \
            datatypes.f90 \
