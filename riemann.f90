@@ -17,7 +17,8 @@ contains
     type(gridedgevar_t), intent(inout) :: fluxes
 
     !  Solve riemann shock tube problem for a general equation of
-    !  state using the method of Colella, Glaz, and Ferguson.  
+    !  state using the method of Colella, Glaz, and Ferguson.  See
+    !  Almgren et al. 2010 (the CASTRO paper) for details.
     !
     !  The Riemann problem for the Euler's equation produces 4 states,
     !  separated by the three characteristics (u - cs, u, u + cs):
