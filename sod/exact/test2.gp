@@ -6,7 +6,7 @@ set output 'test2.png'
 
 set multiplot;
 
-set size 1, 0.33;
+set size 1, 0.32;
 
 set xlabel "x";
 
