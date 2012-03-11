@@ -1,5 +1,5 @@
 # basic rules for building the source.  Problems are built in
-# sub-directories.  Some bits taken from BoxLib (CCSE/LBNL).
+# sub-directories.  Some make tricks taken from BoxLib (CCSE/LBNL).
 
 ALL: hydro1d
 
@@ -21,7 +21,7 @@ include ../Ghydro.dep
 
 # set the compiler flags for those compilers we know about
 ifeq ($(FC),gfortran)
-  FFLAGS := -c -O2 -g -C
+  FFLAGS := -c -O2 -g -fbounds-check -fbacktrace -Wuninitialized -Wunused -ffpe-trap=invalid -finit-real=nan
   FFLAGS += -J $(odir) -I $(odir)
 
 else ifeq ($(FC),mycomp)
