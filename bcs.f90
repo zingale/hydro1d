@@ -32,7 +32,7 @@ contains
 
        ! ir is the index that corresponds to the reflected ghostcell
        ir = U%grid%lo
-       do i = U%grid%lo-1, -U%grid%ng
+       do i = U%grid%lo-1, U%grid%lo-U%grid%ng, -1
           
           ! give all quantities a zero-gradient
           U%data(i,:) = U%data(i+1,:)
