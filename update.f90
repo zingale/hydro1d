@@ -21,8 +21,9 @@ contains
 
     ! store the old state
     call build(Uold, U%grid, U%nvar)
-    Uold%data(:,:) = U%data(:,:)
-
+    do i = U%grid%lo, U%grid%hi
+       Uold%data(i,:) = U%data(i,:)
+    enddo
     
     ! update
     do i = U%grid%lo, U%grid%hi
