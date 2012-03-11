@@ -151,6 +151,8 @@ contains
     allocate(gridvar%data(-grid%ng:grid%nx+grid%ng-1,nvar))
     gridvar%data(:,:) = 0.0_dp_t
 
+    gridvar%nvar = nvar
+
   end subroutine build_gridvar
 
 
@@ -179,6 +181,8 @@ contains
     ! now initialize the storage for the grid data
     allocate(gridedgevar%data(-grid%ng:grid%nx+grid%ng,nvar))
     gridedgevar%data(:,:) = 0.0_dp_t
+
+    gridedgevar%nedgevar = nvar
 
   end subroutine build_gridedgevar
 
