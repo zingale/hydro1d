@@ -16,14 +16,14 @@ contains
     real (kind=dp_t), intent(in) :: t
     integer,          intent(in) :: n
 
-    character (len=4) :: filenum
+    character (len=6) :: filenum
     character (len=40) :: outfile
     integer :: i
     integer :: lun
     real (kind=dp_t) :: p, e
 
     ! construct the filename and open for output
-    write(unit=filenum,fmt="(i4.4)") n
+    write(unit=filenum,fmt="(i6.6)") n
     outfile = trim(problem_name) // "_" // filenum
 
     open(newunit=lun, file=trim(outfile), status="unknown", action="write")
