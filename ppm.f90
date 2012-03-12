@@ -43,7 +43,6 @@ contains
     real (kind=dp_t) :: dtdx
 
     real (kind=dp_t) :: e
-    real (kind=dp_t) :: test
 
     integer :: i, m, n
 
