@@ -48,7 +48,6 @@ contains
 
     case ("hse")
 
-       ! ir is the index that corresponds to the reflected ghostcell
        do i = U%grid%lo-1, U%grid%lo-U%grid%ng, -1
           
           ! zero gradient to rho, u
