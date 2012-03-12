@@ -88,7 +88,6 @@ contains
        ! define the star states
        pstar = (W_l*p_r + W_r*p_l + W_l*W_r*(u_l - u_r))/(W_l + W_r)
        pstar = max(pstar, smallp)
-
        ustar = (W_l*u_l + W_r*u_r + (p_l - p_r))/(W_l + W_r)
        
        ! now compute the remaining state to the left and right of the
@@ -98,7 +97,7 @@ contains
        
        rhoestar_l = rhoe_l + (pstar - p_l)*(rhoe_l/rho_l + p_l/rho_l)/c_l**2
        rhoestar_r = rhoe_r + (pstar - p_r)*(rhoe_r/rho_r + p_r/rho_r)/c_r**2
-       
+
        cstar_l = max(smallc,sqrt(gamma*pstar/rhostar_l))
        cstar_r = max(smallc,sqrt(gamma*pstar/rhostar_r))
        
@@ -237,6 +236,11 @@ contains
        endif
 
 
+       ! reflect BC hack
+       !if (i == Uin_l%grid%lo .and. Uin_l%grid%xlboundary == "reflect") then
+       !   u_state = 0.0_dp_t
+       !endif
+
        ! compute the fluxes
        fluxes%data(i,iudens) = rho_state*u_state
        fluxes%data(i,iumomx) = rho_state*u_state*u_state + p_state
@@ -244,6 +248,8 @@ contains
             0.5_dp_t*rho_state*u_state**3 + p_state*u_state
 
     enddo
+
+
     
   end subroutine solve_riemann
 
