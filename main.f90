@@ -24,6 +24,8 @@ program hydro1d
   integer :: i, n, ng
   real (kind=dp_t) :: t, dt, dt_new
 
+  ! hack
+  real (kind=dp_t) :: p, p_below, e
 
   ! parse the inputs file
   call init_params()
@@ -53,6 +55,23 @@ program hydro1d
   t = 0.0_dp_t
   call init_data(U)
 
+  ! set the boundary conditions
+  call fillBCs(U)
+
+
+
+  ! hack -- check HSE
+  do i = U%grid%lo+1, U%grid%hi
+     e = (U%data(i,iuener) - 0.5_dp_t*U%data(i,iumomx)**2/U%data(i,iudens))/U%data(i,iudens)
+     call eos(eos_input_e, p, e, U%data(i,iudens))
+
+     e = (U%data(i-1,iuener) - 0.5_dp_t*U%data(i-1,iumomx)**2/U%data(i-1,iudens))/U%data(i-1,iudens)
+     call eos(eos_input_e, p_below, e, U%data(i-1,iudens))
+
+     print *, i, ((p - p_below)/U%grid%dx - 0.5_dp_t*(U%data(i-1,iudens) + U%data(i,iudens))*grav)/ &
+          (0.5_dp_t*(U%data(i-1,iudens) +U%data(i,iudens))*grav)
+  enddo
+!  stop
 
   ! output the initial model
   call output(U, t, n)
@@ -63,7 +82,6 @@ program hydro1d
 
      ! set the boundary conditions
      call fillBCs(U)
-
 
      ! compute the timestep
      call compute_dt(U, n, dt_new)

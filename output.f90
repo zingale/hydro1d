@@ -34,7 +34,7 @@ contains
 2   format("# time = ", f8.5)
 3   format("# n = ", i4)
 4   format("# nx = ", i4)
-5   format("#", 1x, a15, 1x, a15, 1x, a15, 1x, a15, 1x, a15, 1x, a15)
+5   format("# ", 7(a16,1x))
 
     write(unit=lun, fmt=1) trim(problem_name)
     write(unit=lun, fmt=2) t
@@ -45,18 +45,37 @@ contains
     ! write out the data
 6   format(2x, 7(g16.10, 1x))
 
-    do i = U%grid%lo, U%grid%hi
+    if (write_ghost) then
 
-       e = (U%data(i,iuener) - &
-            0.5_dp_t*U%data(i,iumomx)**2/U%data(i,iudens)) / &
-            U%data(i,iudens)
-       call eos(eos_input_e, p, e, U%data(i,iudens))
+       do i = U%grid%lo-U%grid%ng, U%grid%hi+U%grid%ng
 
-       write(unit=lun, fmt=6) U%grid%x(i), &
-            U%data(i,iudens), U%data(i,iumomx), U%data(i,iuener), &
-            U%data(i,iumomx)/U%data(i,iudens), p, e
+          e = (U%data(i,iuener) - &
+               0.5_dp_t*U%data(i,iumomx)**2/U%data(i,iudens)) / &
+               U%data(i,iudens)
+          call eos(eos_input_e, p, e, U%data(i,iudens))
+          
+          write(unit=lun, fmt=6) U%grid%x(i), &
+               U%data(i,iudens), U%data(i,iumomx), U%data(i,iuener), &
+               U%data(i,iumomx)/U%data(i,iudens), p, e
+          
+       enddo
 
-    enddo
+    else
+
+       do i = U%grid%lo, U%grid%hi
+
+          e = (U%data(i,iuener) - &
+               0.5_dp_t*U%data(i,iumomx)**2/U%data(i,iudens)) / &
+               U%data(i,iudens)
+          call eos(eos_input_e, p, e, U%data(i,iudens))
+          
+          write(unit=lun, fmt=6) U%grid%x(i), &
+               U%data(i,iudens), U%data(i,iumomx), U%data(i,iuener), &
+               U%data(i,iumomx)/U%data(i,iudens), p, e
+          
+       enddo
+
+    endif
 
     close(unit=lun)
 

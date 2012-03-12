@@ -38,6 +38,8 @@ module params_module
   ! problem-specific parameters
   character (len=32), save :: problem_name = "sod"
 
+  ! output parameters
+  logical, save :: write_ghost = .false.
 
   ! namelist
   namelist /params/ nx, xmin, xmax, &
@@ -47,7 +49,8 @@ module params_module
                     gamma, &
                     godunov_type, &
                     grav, &
-                    problem_name
+                    problem_name, &
+                    write_ghost
 
   character (len=32), save :: infile = ""
 
