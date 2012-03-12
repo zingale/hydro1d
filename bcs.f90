@@ -4,6 +4,7 @@ module bcs_module
   use grid_module
   use variables_module
   use params_module
+  use probparams_module
   use eos_module
   implicit none
 
@@ -14,7 +15,8 @@ contains
     type(gridvar_t), intent(inout) :: U
 
     integer :: i, ir, ip, ic
-    real (kind=dp_t) :: p, e, p_above, e_above
+    real (kind=dp_t) :: p, e, p_above, e_above, H
+    real (kind=dp_t) :: econst, dens
 
     ! sanity check
     if ( (U%grid%xlboundary == "periodic" .and. &
@@ -49,26 +51,76 @@ contains
     case ("hse")
 
        do i = U%grid%lo-1, U%grid%lo-U%grid%ng, -1
-          
-          ! zero gradient to rho, u
-          ic = U%grid%lo
-          U%data(i,iudens) = U%data(ic,iudens)
-          U%data(i,iumomx) = min(0.0_dp_t, U%data(ic,iumomx))
 
-          ! p via HSE
-          e_above = (U%data(i+1,iuener) - &
-               0.5_dp_t*U%data(i+1,iumomx)**2/U%data(i+1,iudens))/U%data(i+1,iudens)
-          call eos(eos_input_e, p_above, e_above, U%data(i+1,iudens))
+          if (hse_bc_const == "density") then
 
-          p = p_above - 0.5_dp_t*(U%data(i,iudens) + U%data(i+1,iudens))*grav*U%grid%dx
+             ! constant density
+             
+             ! zero gradient to rho, u
+             ic = U%grid%lo
+             U%data(i,iudens) = U%data(ic,iudens)
+             U%data(i,iumomx) = min(0.0_dp_t, U%data(ic,iumomx))
 
-          call eos(eos_input_p, p, e, U%data(i,iudens))
+             ! p via HSE
+             e_above = (U%data(i+1,iuener) - &
+                  0.5_dp_t*U%data(i+1,iumomx)**2/U%data(i+1,iudens))/U%data(i+1,iudens)
+             call eos(eos_input_e, p_above, e_above, U%data(i+1,iudens))
+             
+             p = p_above - 0.5_dp_t*(U%data(i,iudens) + U%data(i+1,iudens))*grav*U%grid%dx
+             
+             call eos(eos_input_p, p, e, U%data(i,iudens))
 
-          ! compute E
-          U%data(i,iuener) = U%data(i,iudens)*e + &
-               0.5_dp_t*U%data(i,iumomx)**2/U%data(i,iudens)
+             ! compute E
+             U%data(i,iuener) = U%data(i,iudens)*e + &
+                  0.5_dp_t*U%data(i,iumomx)**2/U%data(i,iudens)
 
-       enddo
+          else if (hse_bc_const == "temperature") then
+
+             ! constant temperature (or internal energy)
+             ic = U%grid%lo
+
+             econst = (U%data(ic,iuener) - &
+                  0.5_dp_t*U%data(ic,iumomx)**2/U%data(ic,iudens))/U%data(ic,iudens)
+
+             ! zero gradient for u
+             U%data(i,iumomx) = min(0.0_dp_t, U%data(ic,iumomx))
+
+             
+             ! p via HSE
+             e_above = (U%data(i+1,iuener) - &
+                  0.5_dp_t*U%data(i+1,iumomx)**2/U%data(i+1,iudens))/U%data(i+1,iudens)
+             call eos(eos_input_e, p_above, e_above, U%data(i+1,iudens))
+             
+             p = p_above - 0.5_dp_t*(U%data(i,iudens) + U%data(i+1,iudens))*grav*U%grid%dx
+
+             ! now find the density that corresponds to this p, e
+             call eos(eos_input_pe, p, econst, dens)
+
+             U%data(i,iudens) = dens
+
+             ! compute E
+             U%data(i,iuener) = dens*econst + &
+                  0.5_dp_t*U%data(i,iumomx)**2/dens
+
+          else
+
+             ! analytic
+             H = pres_base / dens_base / abs(grav)
+             U%data(i,iudens) = dens_base * exp(-U%grid%x(i)/H)
+             U%data(i,iumomx) = 0.0_dp_t
+             
+             e_above = (U%data(i+1,iuener) - &
+                  0.5_dp_t*U%data(i+1,iumomx)**2/U%data(i+1,iudens))/U%data(i+1,iudens)
+             call eos(eos_input_e, p_above, e_above, U%data(i+1,iudens))
+             
+             p = p_above - &
+                  0.5_dp_t*U%grid%dx*(U%data(i,iudens) + U%data(i+1,iudens)) * grav
+
+             call eos(eos_input_p, p, e, U%data(i,iudens))
+             U%data(i,iuener) = U%data(i,iudens)*e    ! no kinetic energy
+
+          endif
+   enddo
 
     case ("outflow")
 
