@@ -21,7 +21,7 @@ contains
     real (kind=dp_t), intent(inout) :: dt
 
     integer :: i
-    real (kind=dp_t) :: cs, p, e
+    real (kind=dp_t) :: cs, p, e, rho
 
     
     dt = huge(0.0_dp_t)
@@ -32,7 +32,8 @@ contains
        e = (U%data(i,iuener) - 0.5_dp_t*U%data(i,iumomx)**2/U%data(i,iudens)) / &
             U%data(i,iudens)
        
-       call eos(eos_input_e, p, e, U%data(i,iudens))
+       rho = U%data(i,iudens)
+       call eos(eos_input_e, p, e, rho)
 
        cs = sqrt(gamma*p/U%data(i,iudens))
 

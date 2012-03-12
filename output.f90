@@ -20,7 +20,7 @@ contains
     character (len=40) :: outfile
     integer :: i
     integer :: lun
-    real (kind=dp_t) :: p, e
+    real (kind=dp_t) :: p, e, rho
 
     ! construct the filename and open for output
     write(unit=filenum,fmt="(i6.6)") n
@@ -52,7 +52,8 @@ contains
           e = (U%data(i,iuener) - &
                0.5_dp_t*U%data(i,iumomx)**2/U%data(i,iudens)) / &
                U%data(i,iudens)
-          call eos(eos_input_e, p, e, U%data(i,iudens))
+          rho = U%data(i,iudens)
+          call eos(eos_input_e, p, e, rho)
           
           write(unit=lun, fmt=6) U%grid%x(i), &
                U%data(i,iudens), U%data(i,iumomx), U%data(i,iuener), &
@@ -67,7 +68,8 @@ contains
           e = (U%data(i,iuener) - &
                0.5_dp_t*U%data(i,iumomx)**2/U%data(i,iudens)) / &
                U%data(i,iudens)
-          call eos(eos_input_e, p, e, U%data(i,iudens))
+          rho = U%data(i,iudens)
+          call eos(eos_input_e, p, e, rho)
           
           write(unit=lun, fmt=6) U%grid%x(i), &
                U%data(i,iudens), U%data(i,iumomx), U%data(i,iuener), &
