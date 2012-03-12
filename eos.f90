@@ -20,9 +20,19 @@ contains
 
     if (input == eos_input_p) then
 
+       if (p < 0.0_dp_t) then
+          print *, 'ERROR: input pressure < 0 in EOS'
+          stop
+       endif
+
        e = p / (rho * (gamma - 1.0_dp_t))
 
     else if (input == eos_input_e) then
+
+       if (e < 0.0_dp_t) then
+          print *, 'ERROR: input internal energy < 0 in EOS'
+          stop
+       endif
 
        p = rho*e*(gamma - 1.0_dp_t)
 
