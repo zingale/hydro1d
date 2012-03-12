@@ -1,5 +1,7 @@
 module variables_module
 
+  implicit none
+
   ! conserved quantities
   integer, parameter :: ncons = 3
 
