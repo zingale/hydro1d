@@ -423,6 +423,16 @@ contains
        Q_r%data(i,iqxvel) = Q_r%data(i,iqxvel) + 0.5_dp_t*dt*Q%data(i,iqdens)*grav
     enddo
 
+    ! special fixes at the boundary -- gravity must be reflected (correct the above too)
+    if (U%grid%xlboundary == "reflect") then
+       Q_l%data(U%grid%lo,iqxvel) = &
+            Q_l%data(U%grid%lo,iqxvel) - dt*Q%data(i-1,iqdens)*grav
+    endif
+
+    if (U%grid%xrboundary == "reflect") then
+       Q_r%data(U%grid%hi+1,iqxvel) = &
+            Q_r%data(U%grid%hi+1,iqxvel) + dt*Q%data(i-1,iqdens)*grav
+    endif
 
 
     !-------------------------------------------------------------------------
