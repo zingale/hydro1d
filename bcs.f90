@@ -4,6 +4,7 @@ module bcs_module
   use grid_module
   use variables_module
   use params_module
+  use eos_module
   implicit none
 
 contains
@@ -12,8 +13,8 @@ contains
 
     type(gridvar_t), intent(inout) :: U
 
-    integer :: i, ir, ip
-
+    integer :: i, ir, ip, ic
+    real (kind=dp_t) :: p, e, p_above, e_above
 
     ! sanity check
     if ( (U%grid%xlboundary == "periodic" .and. &
@@ -48,17 +49,25 @@ contains
     case ("hse")
 
        ! ir is the index that corresponds to the reflected ghostcell
-       ir = U%grid%lo
        do i = U%grid%lo-1, U%grid%lo-U%grid%ng, -1
           
-          ! even-reflect density and energy
-          U%data(i,iudens) = U%data(ir,iudens)
-          U%data(i,iuener) = U%data(ir,iuener)
+          ! zero gradient to rho, u
+          ic = U%grid%lo
+          U%data(i,iudens) = U%data(ic,iudens)
+          U%data(i,iumomx) = min(0.0_dp_t, U%data(ic,iumomx))
 
-          ! odd-reflect the velocities.  
-          U%data(i,iumomx) = -U%data(ir,iumomx)
+          ! p via HSE
+          e_above = (U%data(i+1,iuener) - &
+               0.5_dp_t*U%data(i+1,iumomx)**2/U%data(i+1,iudens))/U%data(i+1,iudens)
+          call eos(eos_input_e, p_above, e_above, U%data(i+1,iudens))
 
-          ir = ir + 1
+          p = p_above - 0.5_dp_t*(U%data(i,iudens) + U%data(i+1,iudens))*grav*U%grid%dx
+
+          call eos(eos_input_p, p, e, U%data(i,iudens))
+
+          ! compute E
+          U%data(i,iuener) = U%data(i,iudens)*e + &
+               0.5_dp_t*U%data(i,iumomx)**2/U%data(i,iudens)
 
        enddo
 
