@@ -8,6 +8,7 @@ module eos_module
 
   integer, parameter :: eos_input_p = 1
   integer, parameter :: eos_input_e = 2
+  integer, parameter :: eos_input_pe = 3
 
 contains
 
@@ -16,7 +17,7 @@ contains
     integer,          intent(in   ) :: input
     real (kind=dp_t), intent(inout) :: p
     real (kind=dp_t), intent(inout) :: e
-    real (kind=dp_t), intent(in   ) :: rho
+    real (kind=dp_t), intent(inout) :: rho
 
     if (input == eos_input_p) then
 
@@ -36,6 +37,19 @@ contains
 
        p = rho*e*(gamma - 1.0_dp_t)
 
+    else if (input == eos_input_pe) then
+
+       ! pressure and energy are inputs -- return density
+       if (e < 0.0_dp_t .or. p < 0.0_dp_t) then
+          print *, 'ERROR: input internal energy or pressure < 0 in EOS'
+          stop
+       endif
+
+       rho = p/e/(gamma - 1.0_dp_t)
+
+    else
+       print *, 'ERROR: invalid input in EOS'
+       stop
     endif
 
   end subroutine eos
