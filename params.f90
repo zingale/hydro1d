@@ -20,7 +20,8 @@ module params_module
   real (kind=dp_t), save :: xmax = 1.0_dp_t
   character (len=32), save :: xlboundary = "outflow"
   character (len=32), save :: xrboundary = "outflow"
-  
+  character (len=32), save :: hse_bc_const = "temperature"
+
   ! timestep parameters
   real (kind=dp_t), save :: init_shrink = 1.0_dp_t
   real (kind=dp_t), save :: dt_change = 1.2_dp_t
