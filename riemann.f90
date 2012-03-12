@@ -56,6 +56,7 @@ contains
 
     real (kind=dp_t), parameter :: smallc   = 1.e-10_dp_t
     real (kind=dp_t), parameter :: smallrho = 1.e-10_dp_t
+    real (kind=dp_t), parameter :: smallp   = 1.e-10_dp_t
 
     integer :: i
 
@@ -86,6 +87,8 @@ contains
        
        ! define the star states
        pstar = (W_l*p_r + W_r*p_l + W_l*W_r*(u_l - u_r))/(W_l + W_r)
+       pstar = max(pstar, smallp)
+
        ustar = (W_l*u_l + W_r*u_r + (p_l - p_r))/(W_l + W_r)
        
        ! now compute the remaining state to the left and right of the
