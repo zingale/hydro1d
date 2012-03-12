@@ -34,16 +34,16 @@ contains
 2   format("# time = ", f8.5)
 3   format("# n = ", i4)
 4   format("# nx = ", i4)
-5   format("# ", 7(a16,1x))
+5   format("# ", 8(a16,1x))
 
     write(unit=lun, fmt=1) trim(problem_name)
     write(unit=lun, fmt=2) t
     write(unit=lun, fmt=3) n
     write(unit=lun, fmt=4) U%grid%nx
-    write(unit=lun, fmt=5) "x   ", "rho   ", "rho u   ", "rho E   ", "u   ", "p   ", "e   "
+    write(unit=lun, fmt=5) "x   ", "rho   ", "rho u   ", "rho E   ", "u   ", "p   ", "e   ", "cs  "
 
     ! write out the data
-6   format(2x, 7(g16.10, 1x))
+6   format(2x, 8(g16.10, 1x))
 
     if (write_ghost) then
 
@@ -57,7 +57,7 @@ contains
           
           write(unit=lun, fmt=6) U%grid%x(i), &
                U%data(i,iudens), U%data(i,iumomx), U%data(i,iuener), &
-               U%data(i,iumomx)/U%data(i,iudens), p, e
+               U%data(i,iumomx)/U%data(i,iudens), p, e, sqrt(gamma*p/rho)
           
        enddo
 
@@ -73,7 +73,7 @@ contains
           
           write(unit=lun, fmt=6) U%grid%x(i), &
                U%data(i,iudens), U%data(i,iumomx), U%data(i,iuener), &
-               U%data(i,iumomx)/U%data(i,iudens), p, e
+               U%data(i,iumomx)/U%data(i,iudens), p, e, sqrt(gamma*p/rho)
           
        enddo
 
