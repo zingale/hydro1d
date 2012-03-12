@@ -443,6 +443,26 @@ contains
 
 
     !-------------------------------------------------------------------------
+    ! apply the source terms
+    !-------------------------------------------------------------------------
+    do i = U%grid%lo, U%grid%hi+1
+       Q_l%data(i,iqxvel) = Q_l%data(i,iqxvel) + 0.5_dp_t*dt*Q%data(i-1,iqdens)*grav
+       Q_r%data(i,iqxvel) = Q_r%data(i,iqxvel) + 0.5_dp_t*dt*Q%data(i,iqdens)*grav
+    enddo
+
+    ! special fixes at the boundary -- gravity must be reflected (correct the above too)
+    if (U%grid%xlboundary == "reflect") then
+       Q_l%data(U%grid%lo,iqxvel) = &
+            Q_l%data(U%grid%lo,iqxvel) - dt*Q%data(i-1,iqdens)*grav
+    endif
+
+    if (U%grid%xrboundary == "reflect") then
+       Q_r%data(U%grid%hi+1,iqxvel) = &
+            Q_r%data(U%grid%hi+1,iqxvel) + dt*Q%data(i-1,iqdens)*grav
+    endif
+
+
+    !-------------------------------------------------------------------------
     ! transform the states into conserved variables
     !-------------------------------------------------------------------------
     do i = U%grid%lo, U%grid%hi+1
@@ -471,19 +491,6 @@ contains
     call destroy(Q)
     call destroy(Q_l)
     call destroy(Q_r)
-
-
-    !-------------------------------------------------------------------------
-    ! apply the source terms
-    !-------------------------------------------------------------------------
-    do i = U%grid%lo, U%grid%hi+1
-       U_l%data(i,iumomx) = U_l%data(i,iumomx) + 0.5_dp_t*U%data(i-1,iudens)*grav
-       U_l%data(i,iuener) = U_l%data(i,iuener) + 0.5_dp_t*U%data(i-1,iumomx)*grav
-
-       U_r%data(i,iumomx) = U_r%data(i,iumomx) + 0.5_dp_t*U%data(i,iudens)*grav
-       U_r%data(i,iuener) = U_r%data(i,iuener) + 0.5_dp_t*U%data(i,iumomx)*grav
-    enddo
-
 
   end subroutine make_interface_states_ppm
 
