@@ -100,6 +100,16 @@ contains
 
        enddo
 
+    case ("diode")
+
+       do i = U%grid%hi+1, U%grid%hi+U%grid%ng
+          
+          ! give all quantities a zero-gradient
+          U%data(i,:) = U%data(i-1,:)
+
+          U%data(i,iumomx) = max(0.0_dp_t, U%data(i,iumomx))
+       enddo
+
     case ("periodic")
 
        ip = U%grid%lo
