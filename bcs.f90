@@ -34,10 +34,28 @@ contains
        ir = U%grid%lo
        do i = U%grid%lo-1, U%grid%lo-U%grid%ng, -1
           
-          ! give all quantities a zero-gradient
-          U%data(i,:) = U%data(i+1,:)
+          ! even-reflect density and energy
+          U%data(i,iudens) = U%data(ir,iudens)
+          U%data(i,iuener) = U%data(ir,iuener)
 
-          ! reflect the velocities.  
+          ! odd-reflect the velocities.  
+          U%data(i,iumomx) = -U%data(ir,iumomx)
+
+          ir = ir + 1
+
+       enddo
+
+    case ("hse")
+
+       ! ir is the index that corresponds to the reflected ghostcell
+       ir = U%grid%lo
+       do i = U%grid%lo-1, U%grid%lo-U%grid%ng, -1
+          
+          ! even-reflect density and energy
+          U%data(i,iudens) = U%data(ir,iudens)
+          U%data(i,iuener) = U%data(ir,iuener)
+
+          ! odd-reflect the velocities.  
           U%data(i,iumomx) = -U%data(ir,iumomx)
 
           ir = ir + 1
@@ -81,8 +99,9 @@ contains
        ir = U%grid%hi
        do i = U%grid%hi+1, U%grid%hi+U%grid%ng
           
-          ! give all quantities a zero-gradient
-          U%data(i,:) = U%data(i-1,:)
+          ! even reflect density and energy
+          U%data(i,iudens) = U%data(i-1,iudens)
+          U%data(i,iuener) = U%data(i-1,iuener)
 
           ! reflect the velocities.  
           U%data(i,iumomx) = -U%data(ir,iumomx)
