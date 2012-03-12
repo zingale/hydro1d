@@ -1,0 +1,23 @@
+&params
+
+ nx = 256
+ tmax = 1.d-2
+  
+ godunov_type = 2
+
+ problem_name = "hse"
+ 
+ grav = -1.d9
+
+ xlboundary = "reflect"
+ xrboundary = "diode"
+
+ xmax = 10.0
+
+/
+
+&problem
+
+
+
+/
