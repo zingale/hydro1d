@@ -4,7 +4,6 @@ module bcs_module
   use grid_module
   use variables_module
   use params_module
-  use probparams_module
   use eos_module
   implicit none
 
@@ -104,20 +103,23 @@ contains
 
           else
 
-             ! analytic
-             H = pres_base / dens_base / abs(grav)
-             U%data(i,iudens) = dens_base * exp(-U%grid%x(i)/H)
-             U%data(i,iumomx) = 0.0_dp_t
+             ! ! analytic
+             ! H = pres_base / dens_base / abs(grav)
+             ! U%data(i,iudens) = dens_base * exp(-U%grid%x(i)/H)
+             ! U%data(i,iumomx) = 0.0_dp_t
              
-             e_above = (U%data(i+1,iuener) - &
-                  0.5_dp_t*U%data(i+1,iumomx)**2/U%data(i+1,iudens))/U%data(i+1,iudens)
-             call eos(eos_input_e, p_above, e_above, U%data(i+1,iudens))
+             ! e_above = (U%data(i+1,iuener) - &
+             !      0.5_dp_t*U%data(i+1,iumomx)**2/U%data(i+1,iudens))/U%data(i+1,iudens)
+             ! call eos(eos_input_e, p_above, e_above, U%data(i+1,iudens))
              
-             p = p_above - &
-                  0.5_dp_t*U%grid%dx*(U%data(i,iudens) + U%data(i+1,iudens)) * grav
+             ! p = p_above - &
+             !      0.5_dp_t*U%grid%dx*(U%data(i,iudens) + U%data(i+1,iudens)) * grav
 
-             call eos(eos_input_p, p, e, U%data(i,iudens))
-             U%data(i,iuener) = U%data(i,iudens)*e    ! no kinetic energy
+             ! call eos(eos_input_p, p, e, U%data(i,iudens))
+             ! U%data(i,iuener) = U%data(i,iudens)*e    ! no kinetic energy
+
+             print *, "invalid hse_bc_const type"
+             stop
 
           endif
    enddo
