@@ -1,5 +1,7 @@
 module datatypes_module
 
+  implicit none
+
   integer, parameter :: dp_t = selected_real_kind(15,307)
   
 end module datatypes_module
