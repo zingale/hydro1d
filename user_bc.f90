@@ -6,6 +6,10 @@ module user_bc_module
 
   implicit none
 
+  private
+
+  public :: user_bc_xp
+
 contains
 
   subroutine user_bc_xp(U)

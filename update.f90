@@ -7,6 +7,10 @@ module update_module
 
   implicit none
 
+  private
+
+  public :: update
+
 contains
   
   subroutine update(U, fluxes, dt)

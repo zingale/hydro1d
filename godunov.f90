@@ -6,6 +6,10 @@ module interface_states_godunov_module
 
   implicit none
 
+  private
+
+  public :: make_interface_states_godunov
+
 contains
   
   subroutine make_interface_states_godunov(U, U_l, U_r, dt)

@@ -8,6 +8,10 @@ module interface_states_ppm_module
 
   implicit none
 
+  private
+
+  public :: make_interface_states_ppm
+
 contains
   
   subroutine make_interface_states_ppm(U, U_l, U_r, dt)

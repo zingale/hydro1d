@@ -10,6 +10,11 @@ module eos_module
   integer, parameter :: eos_input_e = 2
   integer, parameter :: eos_input_pe = 3
 
+  private
+
+  public :: eos_input_p, eos_input_e, eos_input_pe
+  public :: eos
+
 contains
 
   subroutine eos(input, p, e, rho)

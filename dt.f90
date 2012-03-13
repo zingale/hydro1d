@@ -12,6 +12,10 @@ module dt_module
 
   implicit none
 
+  private
+
+  public :: compute_dt
+
 contains
 
   subroutine compute_dt(U, n, dt)

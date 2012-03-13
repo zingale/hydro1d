@@ -84,6 +84,11 @@ module grid_module
      module procedure destroy_gridedgevar
   end interface destroy
   
+  private
+
+  public :: grid_t, gridvar_t, gridedgevar_t
+  public :: build, destroy
+
 
 contains  
 

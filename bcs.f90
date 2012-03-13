@@ -8,6 +8,10 @@ module bcs_module
   use user_bc_module
 
   implicit none
+
+  private
+
+  public :: fillBCs
    
 contains
 

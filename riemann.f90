@@ -6,6 +6,10 @@ module riemann_module
 
   implicit none
 
+  private
+
+  public :: solve_riemann
+
 contains
   
   subroutine solve_riemann(Uin_l, Uin_r, fluxes)

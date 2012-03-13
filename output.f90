@@ -8,6 +8,10 @@ module output_module
 
   implicit none
 
+  private
+
+  public :: output
+
 contains
 
   subroutine output(U, t, n)
