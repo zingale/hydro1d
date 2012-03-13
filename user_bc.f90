@@ -2,7 +2,6 @@ module user_bc_module
 
   use grid_module
   use variables_module
-  use probparams_module
   use datatypes_module
 
   implicit none
