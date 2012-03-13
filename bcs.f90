@@ -16,7 +16,7 @@ contains
     type(gridvar_t), intent(inout) :: U
     
     integer :: i, ir, ip, ic
-    real (kind=dp_t) :: p, e, p_above, e_above, H
+    real (kind=dp_t) :: p, e, p_above, e_above
     real (kind=dp_t) :: econst, dens
     
     ! sanity check
