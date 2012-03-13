@@ -24,7 +24,7 @@ module probparams_module
   logical, save :: do_isentropic = .false.
 
   ! namelist
-  namelist /problem/ pres_base, dens_base, do_isentropic
+  namelist /problem/ pres_base, dens_base, small_dens, do_isentropic
 
 contains
 
