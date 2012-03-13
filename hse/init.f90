@@ -33,9 +33,13 @@ contains
 
        if (do_isentropic) then
           ! we can integrate HSE with p = K rho^gamma analytically
+          print *, dens_base*(grav*dens_base* &
+               (gamma - 1.0_dp_t)*U%grid%x(i)/ &
+               (gamma*pres_base) + 1.0_dp_t)**(1.0_dp_t/(gamma - 1.0_dp_t))
+
           U%data(i,iudens) = dens_base*(grav*dens_base* &
                (gamma - 1.0_dp_t)*U%grid%x(i)/ &
-               (gamma*pres_base) + 1.0_dp_t)**(1.0_dp_t/(gamma - 1.d0))
+               (gamma*pres_base) + 1.0_dp_t)**(1.0_dp_t/(gamma - 1.0_dp_t))
           
        else
           ! the density of an isothermal gamma-law atm is exponential
@@ -43,7 +47,10 @@ contains
           print *, i, U%data(i,iudens)
        endif
 
-       U%data(i,iudens) = max(U%data(i,iudens),small_dens)
+       if (U%data(i,iudens) < small_dens) then
+          U%data(i:,iudens) = small_dens
+          exit
+       endif
     enddo
 
     ! now determine the pressure via HSE and set the state by using the EOS
