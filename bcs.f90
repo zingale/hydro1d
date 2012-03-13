@@ -28,8 +28,10 @@ contains
        stop
     endif
     
-    
+
+    !-------------------------------------------------------------------------    
     ! lower boundary (-x)
+    !-------------------------------------------------------------------------
     select case (U%grid%xlboundary)
        
     case ("reflect")
@@ -139,7 +141,9 @@ contains
     end select
      
 
+    !-------------------------------------------------------------------------
     ! upper boundary (+x)
+    !-------------------------------------------------------------------------
     select case (U%grid%xrboundary)
        
     case ("reflect")
@@ -206,7 +210,7 @@ contains
        
     case default
        
-       print *, "ERROR: xlboundary not valid"
+       print *, "ERROR: xrboundary not valid"
        stop
        
     end select
