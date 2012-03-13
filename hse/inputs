@@ -1,7 +1,7 @@
 &params
 
  nx = 256
- tmax = 1.d-2
+ tmax = 0.1
   
  godunov_type = 2
 
@@ -9,7 +9,7 @@
  
  grav = -1.d9
 
- xlboundary = "reflect"
+ xlboundary = "hse"
  xrboundary = "diode"
 
  xmax = 10.0
@@ -18,6 +18,8 @@
 
 &problem
 
+ small_dens = 1.d-8
 
+ do_isentropic = .true.
 
 /
