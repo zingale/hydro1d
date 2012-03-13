@@ -5,33 +5,35 @@ module bcs_module
   use variables_module
   use params_module
   use eos_module
-  implicit none
+  use user_bc_module
 
+  implicit none
+   
 contains
 
   subroutine fillBCs(U)
 
     type(gridvar_t), intent(inout) :: U
-
+    
     integer :: i, ir, ip, ic
     real (kind=dp_t) :: p, e, p_above, e_above, H
     real (kind=dp_t) :: econst, dens
-
+    
     ! sanity check
     if ( (U%grid%xlboundary == "periodic" .and. &
-          U%grid%xrboundary /= "periodic") .or. &
+         U%grid%xrboundary /= "periodic") .or. &
          (U%grid%xrboundary == "periodic" .and. &
-          U%grid%xlboundary /= "periodic") ) then
+         U%grid%xlboundary /= "periodic") ) then
        print *, "ERROR: both boundaries must be periodic"
        stop
     endif
-
-
+    
+    
     ! lower boundary (-x)
     select case (U%grid%xlboundary)
-
+       
     case ("reflect")
-
+       
        ! ir is the index that corresponds to the reflected ghostcell
        ir = U%grid%lo
        do i = U%grid%lo-1, U%grid%lo-U%grid%ng, -1
@@ -39,27 +41,27 @@ contains
           ! even-reflect density and energy
           U%data(i,iudens) = U%data(ir,iudens)
           U%data(i,iuener) = U%data(ir,iuener)
-
+          
           ! odd-reflect the velocities.  
           U%data(i,iumomx) = -U%data(ir,iumomx)
-
+          
           ir = ir + 1
-
+          
        enddo
-
+        
     case ("hse")
-
+        
        do i = U%grid%lo-1, U%grid%lo-U%grid%ng, -1
-
+          
           if (hse_bc_const == "density") then
-
+              
              ! constant density
-             
+              
              ! zero gradient to rho, u
              ic = U%grid%lo
              U%data(i,iudens) = U%data(ic,iudens)
              U%data(i,iumomx) = min(0.0_dp_t, U%data(ic,iumomx))
-
+             
              ! p via HSE
              e_above = (U%data(i+1,iuener) - &
                   0.5_dp_t*U%data(i+1,iumomx)**2/U%data(i+1,iudens))/U%data(i+1,iudens)
@@ -68,22 +70,22 @@ contains
              p = p_above - 0.5_dp_t*(U%data(i,iudens) + U%data(i+1,iudens))*grav*U%grid%dx
              
              call eos(eos_input_p, p, e, U%data(i,iudens))
-
+             
              ! compute E
              U%data(i,iuener) = U%data(i,iudens)*e + &
                   0.5_dp_t*U%data(i,iumomx)**2/U%data(i,iudens)
-
+             
           else if (hse_bc_const == "temperature") then
-
+             
              ! constant temperature (or internal energy)
              ic = U%grid%lo
-
+             
              econst = (U%data(ic,iuener) - &
                   0.5_dp_t*U%data(ic,iumomx)**2/U%data(ic,iudens))/U%data(ic,iudens)
-
+             
              ! zero gradient for u
              U%data(i,iumomx) = min(0.0_dp_t, U%data(ic,iumomx))
-
+             
              
              ! p via HSE
              e_above = (U%data(i+1,iuener) - &
@@ -91,72 +93,57 @@ contains
              call eos(eos_input_e, p_above, e_above, U%data(i+1,iudens))
              
              p = p_above - 0.5_dp_t*(U%data(i,iudens) + U%data(i+1,iudens))*grav*U%grid%dx
-
+             
              ! now find the density that corresponds to this p, e
              call eos(eos_input_pe, p, econst, dens)
-
+             
              U%data(i,iudens) = dens
-
+             
              ! compute E
              U%data(i,iuener) = dens*econst + &
                   0.5_dp_t*U%data(i,iumomx)**2/dens
-
+             
           else
-
-             ! ! analytic
-             ! H = pres_base / dens_base / abs(grav)
-             ! U%data(i,iudens) = dens_base * exp(-U%grid%x(i)/H)
-             ! U%data(i,iumomx) = 0.0_dp_t
-             
-             ! e_above = (U%data(i+1,iuener) - &
-             !      0.5_dp_t*U%data(i+1,iumomx)**2/U%data(i+1,iudens))/U%data(i+1,iudens)
-             ! call eos(eos_input_e, p_above, e_above, U%data(i+1,iudens))
-             
-             ! p = p_above - &
-             !      0.5_dp_t*U%grid%dx*(U%data(i,iudens) + U%data(i+1,iudens)) * grav
-
-             ! call eos(eos_input_p, p, e, U%data(i,iudens))
-             ! U%data(i,iuener) = U%data(i,iudens)*e    ! no kinetic energy
 
              print *, "invalid hse_bc_const type"
              stop
-
+             
           endif
-   enddo
-
+       enddo
+    
     case ("outflow")
 
        do i = U%grid%lo-1, U%grid%lo-U%grid%ng, -1
-          
+
           ! give all quantities a zero-gradient
           U%data(i,:) = U%data(i+1,:)
-
+           
        enddo
-
+       
     case ("periodic")
-
+       
        ip = U%grid%hi
        do i = U%grid%lo-1, U%grid%lo-U%grid%ng, -1
           
           U%data(i,:) = U%data(ip,:)
-
+          
           ip = ip - 1
-
+          
        enddo
 
     case default
-
+       
        print *, "ERROR: xlboundary not valid"
        stop
-
+       
     end select
-
+     
 
     ! upper boundary (+x)
     select case (U%grid%xrboundary)
-
+       
     case ("reflect")
-
+       
        ! ir is the index that corresponds to the reflected ghostcell
        ir = U%grid%hi
        do i = U%grid%hi+1, U%grid%hi+U%grid%ng
@@ -164,52 +151,66 @@ contains
           ! even reflect density and energy
           U%data(i,iudens) = U%data(i-1,iudens)
           U%data(i,iuener) = U%data(i-1,iuener)
-
+          
           ! reflect the velocities.  
           U%data(i,iumomx) = -U%data(ir,iumomx)
-
+          
           ir = ir - 1
-
+           
        enddo
-
+        
     case ("outflow")
 
        do i = U%grid%hi+1, U%grid%hi+U%grid%ng
           
           ! give all quantities a zero-gradient
           U%data(i,:) = U%data(i-1,:)
-
+          
        enddo
-
+       
     case ("diode")
-
+       
        do i = U%grid%hi+1, U%grid%hi+U%grid%ng
           
           ! give all quantities a zero-gradient
           U%data(i,:) = U%data(i-1,:)
-
+          
+          ! store internal energy
+          e = (U%data(i,iuener) - &
+               0.5_dp_t*U%data(i,iumomx)**2/U%data(i,iudens))/U%data(i,iudens)
+          
           U%data(i,iumomx) = max(0.0_dp_t, U%data(i,iumomx))
+          
+          ! recompute energy
+          U%data(i,iuener) = U%data(i,iudens)*e + &
+               0.5_dp_t*U%data(i,iumomx)**2/U%data(i,iudens)
+          
        enddo
 
-    case ("periodic")
+    case ("user")
 
+       call user_bc_xp(U)
+       
+       
+    case ("periodic")
+       
        ip = U%grid%lo
        do i = U%grid%hi+1, U%grid%hi+U%grid%ng
           
           U%data(i,:) = U%data(ip,:)
-
+          
           ip = ip + 1
-
+          
        enddo
-
-
+        
+       
     case default
-
+       
        print *, "ERROR: xlboundary not valid"
        stop
-
+       
     end select
-
+     
   end subroutine fillBCs
 
-end module bcs_module
+ end module bcs_module

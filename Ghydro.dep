@@ -3,7 +3,8 @@
 $(odir)/bcs.o       : $(odir)/params.o \
                       $(odir)/variables.o \
                       $(odir)/grid.o \
-                      $(odir)/datatypes.o 
+                      $(odir)/datatypes.o \
+                      $(odir)/user_bc.o 
 
 $(odir)/datatypes.o : 
 
@@ -75,4 +76,8 @@ $(odir)/main.o      : $(odir)/update.o \
                       $(odir)/grid.o \
                       $(odir)/datatypes.o 
 
+
+$(odir)/user_bc.o  : $(odir)/grid.o \
+                     $(odir)/probparams.o \
+                     $(odir)/variables.o 
 
