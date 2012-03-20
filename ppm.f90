@@ -54,7 +54,9 @@ contains
     !
     ! This is a 1-d version of the piecewise parabolic method detailed
     ! Colella & Woodward (1984).  We follow the description of Almgren
-    ! et al. 2010 (the CASTRO paper).
+    ! et al. 2010 (the CASTRO paper) and Miller and Colella (2002).  
+    !
+    ! Also note that we do not implement the contact steepening here.
     
     ! sanity check
     if (U%grid%ng < 4) then
@@ -86,8 +88,11 @@ contains
     ! compute the flattening coefficients
     !-------------------------------------------------------------------------
 
-    ! flattening kicks in behind strong shocks.  See Saltzman (1994) page 159
-    ! for this implementation.
+    ! flattening kicks in behind strong shocks and reduces the
+    ! reconstruction to using piecewise constant slopes, making things
+    ! first-order.  See Saltzman (1994) page 159 for this
+    ! implementation.
+
     call build(xi_t, U%grid, 1)
 
     do i = U%grid%lo-2, U%grid%hi+2
@@ -184,6 +189,15 @@ contains
     !-------------------------------------------------------------------------
     ! construct the parameters for the parabolic reconstruction polynomials
     !-------------------------------------------------------------------------
+
+    ! Our parabolic profile has the form:
+    !
+    !  q(xi) = qminus + xi*(qplus - qminux + q6 * (1-xi) )
+    !
+    ! with xi = (x - xl)/dx, where xl is the interface of the left
+    ! edge of the cell.  (Note that the Castro paper and Colella &
+    ! Sekora (2008), seem to have a typo in the definition of xi --
+    ! they write it with respect to the zone center, not left edge.
 
     ! Limit (C&W Eq. 1.10).  Here the loop is over cells, and
     ! considers the values on either side of the center of the cell
@@ -312,21 +326,31 @@ contains
 
        ! integrate the parabola in the cell from the left interface
        ! (Iminus) over the portion of the cell that each eigenvalue
-       ! can reach.  Do the same from the right interface in the
-       ! cell, defining Iplus.  See Almgren et al. 2010 (Eq. 30) or
-       ! Colella & Sekora (2008)
+       ! can reach.  Do the same from the right interface in the cell,
+       ! defining Iplus.  See Almgren et al. 2010 (Eq. 30) or Colella
+       ! & Sekora (2008), or Miller & Colella (2002), Eq. 90.
        do m = 1, nprim
           sigma = abs(eval(m))*dtdx
           do n = 1, nprim
 
-             Iplus(m,n) = Qplus%data(i,n) - 0.5_dp_t*sigma* &
-                  (Qplus%data(i,n) - Qminus%data(i,n) - &
-                  (1.0_dp_t - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
+             ! only integrate if the wave is moving toward the interface
+             ! (see Miller & Colella, Eg. 90).  This may not be necessary.
+             if (eval(m) >= 0.0_dp_t) then
+                Iplus(m,n) = Qplus%data(i,n) - 0.5_dp_t*sigma* &
+                     (Qplus%data(i,n) - Qminus%data(i,n) - &
+                     (1.0_dp_t - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
+             else
+                Iplus(m,n) = Q%data(i,n)
+             endif
 
-             Iminus(m,n) = Qminus%data(i,n) + 0.5_dp_t*sigma* &
-                  (Qplus%data(i,n) - Qminus%data(i,n) + &
-                  (1.0_dp_t - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
-             
+             if (eval(m) <= 0.0_dp_t) then
+                Iminus(m,n) = Qminus%data(i,n) + 0.5_dp_t*sigma* &
+                     (Qplus%data(i,n) - Qminus%data(i,n) + &
+                     (1.0_dp_t - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
+             else
+                Iminus(m,n) = Q%data(i,n)
+             endif
+
           enddo
        enddo
 

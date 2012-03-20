@@ -44,6 +44,8 @@ OBJECTS = $(addprefix $(odir)/, $(FSOURCE:.f90=.o))
 
 # default target -- this is the executable
 hydro1d: $(OBJECTS)
+	@echo " "
+	@echo "Linking..."
 	gfortran -o hydro1d $(OBJECTS)
 
 

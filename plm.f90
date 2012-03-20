@@ -129,9 +129,11 @@ contains
     ! compute the flattening coefficients
     !-------------------------------------------------------------------------
 
-    ! flattening kicks in behind strong shocks---the basic idea is to 
-    ! switch to a piecewise constant reconstruction there.  
-    ! See Saltzman (1994) page 159 for this implementation.
+    ! flattening kicks in behind strong shocks and reduces the
+    ! reconstruction to using piecewise constant slopes, making things
+    ! first-order.  See Saltzman (1994) page 159 for this
+    ! implementation.
+
     call build(xi_t, U%grid, 1)
 
     do i = U%grid%lo-2, U%grid%hi+2
@@ -379,10 +381,14 @@ contains
        ! in Colella (1990) page 191, and the interface state expressions
        ! -V and +V in Saltzman (1994) on pages 161.
        
-       ! first compute beta_xm and beta_xp
+       ! first compute beta_xm and beta_xp -- these are the
+       ! coefficients to the right eigenvectors in the eigenvector
+       ! expansion (see Colella 1990, page 191)
        do m = 1, nprim
           sum = 0.0_dp_t
 
+          ! dot product of the current left eigenvector with the
+          ! primitive variable jump
           do n = 1, nprim
              sum = sum + lvec(m,n)*dQ(n)
           enddo
@@ -399,6 +405,7 @@ contains
 
        enddo
 
+       ! finally, sum up all the jumps 
        
        ! density
        sum_xm = 0.0_dp_t
