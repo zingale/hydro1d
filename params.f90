@@ -41,6 +41,8 @@ module params_module
 
   ! output parameters
   logical, save :: write_ghost = .false.
+  real (kind=dp_t), save :: plot_dt = -1.0_dp_t
+
 
   ! namelist
   namelist /params/ nx, xmin, xmax, &
@@ -51,7 +53,8 @@ module params_module
                     godunov_type, &
                     grav, &
                     problem_name, &
-                    write_ghost
+                    write_ghost, &
+                    plot_dt
 
   character (len=32), save :: infile = ""
 

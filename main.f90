@@ -104,6 +104,11 @@ program hydro1d
      ! output (if necessary)
      print *, n, t, dt
 
+     if (plot_dt > 0.0_dp_t .and. &
+          mod(t - dt, plot_dt) > mod(t, plot_dt)) then
+        call output(U, t, n)
+     endif
+
   enddo
 
 
