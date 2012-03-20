@@ -129,8 +129,9 @@ contains
     ! compute the flattening coefficients
     !-------------------------------------------------------------------------
 
-    ! flattening kicks in behind strong shocks.  See Saltzman (1994) page 159
-    ! for this implementation.
+    ! flattening kicks in behind strong shocks---the basic idea is to 
+    ! switch to a piecewise constant reconstruction there.  
+    ! See Saltzman (1994) page 159 for this implementation.
     call build(xi_t, U%grid, 1)
 
     do i = U%grid%lo-2, U%grid%hi+2
