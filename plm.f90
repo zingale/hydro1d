@@ -88,7 +88,7 @@ contains
     !   
     !   
     !               n              dt     _ 
-    !            = q  + 0.5  ( 1 - -- A ) Dq + 0.5 dt H   
+    !            = q  + 0.5  ( 1 - -- A ) Dq + 0.5 dt H'   
     !               i              dx     
     !     
     !                   +---------+---------+ +---+---+    
@@ -246,8 +246,7 @@ contains
     !
     ! The eigenvalues are u - c, u, u + c
     !
-    ! The Jacobian matrix for the primitive variable formulation of the
-    ! Euler equations is 
+    ! The matrix A in the primitive variable system is
     !
     !       / u   r   0   \  
     !   A = | 0   u   1/r |  
@@ -311,14 +310,14 @@ contains
     ! consider those waves moving toward the interface.  This gives:
     !
     !  n+1/2      ~        dt                        +           -
-    ! q         = q  + 0.5 --  sum { l  . [max(lambda , 0) - A ] Dq r 
+    ! q         = q  + 0.5 --  sum { l  . [max(lambda , 0) - A ] Dq r  }
     !  i+1/2,L     L       dx   i     i                              i
     !
     ! since l A = lambda l, we have:
     !
-    !  n+1/2      ~        dt                    +                     -
-    ! q         = q  + 0.5 --  sum {  [max(lambda , 0) - lambda ] (l . Dq) r 
-    !  i+1/2,L     L       dx   i                              i    i       i
+    !  n+1/2      ~        dt                   +                     -
+    ! q         = q  + 0.5 --  sum { [max(lambda , 0) - lambda ] (l . Dq) r  }
+    !  i+1/2,L     L       dx   i                             i    i       i
     !
     ! See Miller & Colella (2002) for more details.  This expression is 
     ! found in Colella (1990) at the bottom of p. 191.
