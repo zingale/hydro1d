@@ -10,7 +10,7 @@
  grav = -1.d9
 
  xlboundary = "hse"
- xrboundary = "diode"
+ xrboundary = "user"
 
  xmax = 10.0
 

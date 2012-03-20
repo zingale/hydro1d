@@ -62,37 +62,40 @@ contains
     ! we want U_{i+1/2}^{n+1/2} -- the interface values that are input
     ! to the Riemann problem through the faces for each zone.
     !
-    ! Taylor expanding yields
+    ! First we convert from the conserved variables, U = (rho, rho u, rho E)
+    ! to the primitive variables, Q = (rho, u, p).  
     !
-    !  n+1/2                     dU           dU  
-    ! U          = U   + 0.5 dx  --  + 0.5 dt --  
-    !  i+1/2,j,L    i,j          dx           dt   
+    ! The system of equations in primitive form appear as:
+    !
+    !   Q_t + A(Q) Q_x = H'
+    !
+    ! Then we taylor expand the primitive variable from the
+    ! cell-center to the interface at the half-time:
+    !
+    !  n+1/2        n           dq           dq  
+    ! q          = q  + 0.5 dx  --  + 0.5 dt --  
+    !  i+1/2,L      i           dx           dt   
     ! 
     !   
-    !                            dU             dF 
-    !            = U   + 0.5 dx  --  - 0.5 dt ( -- - H ) 
-    !               i,j          dx             dx  
+    !               n           dq               dq 
+    !            = q  + 0.5 dx  --  - 0.5 dt ( A -- - H' ) 
+    !               i           dx               dx  
     !      
     !       
-    !                             dU      dF
-    !            = U   + 0.5 ( dx -- - dt -- ) + 0.5 dt H 
-    !               i,j           dx      dx   
-    !  
-    !       
-    !                                 dt       dU 
-    !            = U   + 0.5 dx ( 1 - -- A^x ) -- + 0.5 dt H  
-    !               i,j               dx       dx      
+    !               n                dt     dq 
+    !            = q  + 0.5 dx ( 1 - -- A ) -- + 0.5 dt H'
+    !               i                dx     dx      
     !   
     !   
-    !                               dt       _ 
-    !            = U   + 0.5  ( 1 - -- A^x ) DU + 0.5 dt H   
-    !               i,j             dx     
+    !               n              dt     _ 
+    !            = q  + 0.5  ( 1 - -- A ) Dq + 0.5 dt H   
+    !               i              dx     
     !     
-    !                    +----------+----------+ +---+---+    
-    !                               |                |   
+    !                   +---------+---------+ +---+---+    
+    !                             |               |   
     !               
-    !                   this is the monotonized   source term    
-    !                   central difference term     
+    !                 this is the monotonized   source term    
+    !                 central difference term     
   
 
     
@@ -248,7 +251,7 @@ contains
     !
     !       / u   r   0   \  
     !   A = | 0   u   1/r |  
-    !       \ 0  rc^2 u  /
+    !       \ 0  rc^2 u   /
     !
     ! With the rows corresponding to rho, u, and p
     !
@@ -273,32 +276,52 @@ contains
     !         -+------+------+------+------+------+------+--   
     !          |     i-1     |      i      |     i+1     |   
     !                       * *           * 
-    !                   V_l,i  V_r,i   V_l,i+1 
+    !                   q_l,i  q_r,i   q_l,i+1 
     !           
-    ! V_l,i+1 are computed using the information in zone i,j.
+    ! q_l,i+1 are computed using the information in zone i
     !
-
-    ! the basic idea here is that we do a characteristic
-    ! decomposition.  The jump in primitive variables (Q)
-    ! can be transformed to a jump in characteristic variables
-    ! using the left and right eigenvectors.  Then each wave
-    ! tells us how much of each characteristic quantity reaches
-    ! the interface over dt/2.  We only add the quantity if
-    ! it moves toward the interface.
     !
-    ! Given a jump dQ, we can express this as:
+    ! The basic idea here is that we do a characteristic
+    ! decomposition.  The jump in primitive variables (Q) can be
+    ! transformed to a jump in characteristic variables using the left
+    ! and right eigenvectors.  Then each wave tells us how much of
+    ! each characteristic quantity reaches the interface over dt/2.
+    ! We only add the quantity if it moves toward the interface.
     !
-    !       3
-    ! dQ = sum  (l_i dQ) r_i
-    !      i=1
+    ! Following Colella & Glaz, and Colella (1990), we pick a
+    ! reference state to minimize the size of the jump that the
+    ! projection operates on---this is because our equations are not
+    ! linear.
     !
-    ! Then 
-    !         3
-    ! A dQ = sum  lambda_i (l_i dQ) r_i
-    !        i=1
+    ! So 
     !
-    ! where lambda_i is the eigenvalue.
+    !  n+1/2                n                     dt     -
+    ! q         - q     =  q   - q    + 0.5 ( 1 - -- A ) Dq
+    !  i+1/2,L     ref      i     ref             dx
     !
+    !
+    ! The reference state is chosen as (Colella Eq. 2.11; Colella &
+    ! Glaz, p. 278):
+    !
+    !         ~                   dt           +       -
+    ! q     = q  = q   + 0.5 [1 - -- max(lambda , 0) ] Dq
+    !  ref     L    i             dx
+    !
+    ! We project the RHS using the left and right eigenvectors, and only
+    ! consider those waves moving toward the interface.  This gives:
+    !
+    !  n+1/2      ~        dt                        +           -
+    ! q         = q  + 0.5 --  sum { l  . [max(lambda , 0) - A ] Dq r 
+    !  i+1/2,L     L       dx   i     i                              i
+    !
+    ! since l A = lambda l, we have:
+    !
+    !  n+1/2      ~        dt                    +                     -
+    ! q         = q  + 0.5 --  sum {  [max(lambda , 0) - lambda ] (l . Dq) r 
+    !  i+1/2,L     L       dx   i                              i    i       i
+    !
+    ! See Miller & Colella (2002) for more details.  This expression is 
+    ! found in Colella (1990) at the bottom of p. 191.
 
     do i = U%grid%lo-1, U%grid%hi+1
 

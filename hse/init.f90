@@ -26,17 +26,12 @@ contains
     ! compute the pressure scale height (isothermal gas)
     H = pres_base / dens_base / abs(grav)
 
-    print *, 'H = ', H
     
     ! first set the density profile
     do i = U%grid%lo, U%grid%hi
 
        if (do_isentropic) then
           ! we can integrate HSE with p = K rho^gamma analytically
-          print *, dens_base*(grav*dens_base* &
-               (gamma - 1.0_dp_t)*U%grid%x(i)/ &
-               (gamma*pres_base) + 1.0_dp_t)**(1.0_dp_t/(gamma - 1.0_dp_t))
-
           U%data(i,iudens) = dens_base*(grav*dens_base* &
                (gamma - 1.0_dp_t)*U%grid%x(i)/ &
                (gamma*pres_base) + 1.0_dp_t)**(1.0_dp_t/(gamma - 1.0_dp_t))
@@ -44,7 +39,7 @@ contains
        else
           ! the density of an isothermal gamma-law atm is exponential
           U%data(i,iudens) = dens_base * exp(-U%grid%x(i)/H)
-          print *, i, U%data(i,iudens)
+
        endif
 
        if (U%data(i,iudens) < small_dens) then
