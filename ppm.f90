@@ -30,6 +30,7 @@ contains
 
     real (kind=dp_t) :: dq0, dqp
     real (kind=dp_t) :: Iminus(nprim,nprim), Iplus(nprim,nprim)
+    real (kind=dp_t) :: Qref_xm(nprim), Qref_xp(nprim)
 
     type(gridedgevar_t) :: Qminus, Qplus
     type(gridvar_t) :: Q6
@@ -174,8 +175,8 @@ contains
 
           Qminus%data(i+1,n) = Qplus%data(i,n)
 
-          ! make sure that we didn't over or undersoot -- this may not be needed, but
-          ! is discussed in Colella & Sekora (2008)
+          ! make sure that we didn't over or undersoot -- this may not
+          ! be needed, but is discussed in Colella & Sekora (2008)
           Qplus%data(i,n) = max(Qplus%data(i,n), min(Q%data(i,n),Q%data(i+1,n)))
           Qplus%data(i,n) = min(Qplus%data(i,n), max(Q%data(i,n),Q%data(i+1,n)))
 
@@ -378,14 +379,35 @@ contains
        ! book).
        !
        
-       ! compute the dot product of each left eigenvector with (q - I)
+       ! define the reference states
+       if (.false.) then
+          ! CASTRO method
+          Qref_xm(:) = Q%data(i,:)
+          Qref_xp(:) = Q%data(i,:)
+       else
+          ! Miller and Colella method
+          if (eval(3) >= 0.0_dp_t) then
+             Qref_xp(:) = Iplus(3,:)
+          else
+             Qref_xp(:) = Q%data(i,:)
+          endif
+
+          if (eval(1) <= 0.0_dp_t) then
+             Qref_xm(:) = Iminus(1,:)
+          else
+             Qref_xm(:) = Q%data(i,:)
+          endif             
+       endif
+
+
+       ! compute the dot product of each left eigenvector with (qref - I)
        do m = 1, nprim
           beta_xm(m) = 0.0_dp_t
           beta_xp(m) = 0.0_dp_t
 
           do n = 1, nprim
-             beta_xm(m) = beta_xm(m) + lvec(m,n)*(Q%data(i,n) - Iminus(m,n))
-             beta_xp(m) = beta_xp(m) + lvec(m,n)*(Q%data(i,n) - Iplus(m,n))
+             beta_xm(m) = beta_xm(m) + lvec(m,n)*(Qref_xm(n) - Iminus(m,n))
+             beta_xp(m) = beta_xp(m) + lvec(m,n)*(Qref_xp(n) - Iplus(m,n))
           enddo
        enddo
 
@@ -406,10 +428,10 @@ contains
           endif
        enddo
 
-       Q_l%data(i+1,iqdens) = Q%data(i,iqdens) - &
+       Q_l%data(i+1,iqdens) = Qref_xp(iqdens) - &
             xi%data(i,1)*Q_l%data(i+1,iqdens)
 
-       Q_r%data(i,iqdens) = Q%data(i,iqdens) - &
+       Q_r%data(i,iqdens) = Qref_xm(iqdens) - &
             xi%data(i,1)*Q_r%data(i,iqdens)
 
 
@@ -429,10 +451,10 @@ contains
           endif
        enddo
 
-       Q_l%data(i+1,iqxvel) = Q%data(i,iqxvel) - &
+       Q_l%data(i+1,iqxvel) = Qref_xp(iqxvel) - &
             xi%data(i,1)*Q_l%data(i+1,iqxvel)
 
-       Q_r%data(i,iqxvel) = Q%data(i,iqxvel) - &
+       Q_r%data(i,iqxvel) = Qref_xm(iqxvel) - &
             xi%data(i,1)*Q_r%data(i,iqxvel)
 
 
@@ -452,12 +474,11 @@ contains
           endif
        enddo
 
-       Q_l%data(i+1,iqpres) = Q%data(i,iqpres) - &
+       Q_l%data(i+1,iqpres) = Qref_xp(iqpres) - &
             xi%data(i,1)*Q_l%data(i+1,iqpres)
 
-       Q_r%data(i,iqpres) = Q%data(i,iqpres) - &
+       Q_r%data(i,iqpres) = Qref_xm(iqpres) - &
             xi%data(i,1)*Q_r%data(i,iqpres)
-
        
     enddo
 
