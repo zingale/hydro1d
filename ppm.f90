@@ -196,13 +196,13 @@ contains
     !  q(xi) = qminus + xi*(qplus - qminux + q6 * (1-xi) )
     !
     ! with xi = (x - xl)/dx, where xl is the interface of the left
-    ! edge of the cell.  (Note that the Castro paper and Colella &
-    ! Sekora (2008), seem to have a typo in the definition of xi --
-    ! they write it with respect to the zone center, not left edge.
+    ! edge of the cell.  qminus and qplus are the values of the 
+    ! parabola on the left and right edges of the current cell.
 
-    ! Limit (C&W Eq. 1.10).  Here the loop is over cells, and
-    ! considers the values on either side of the center of the cell
-    ! (Qminus and Qplus).
+    ! Limit the left and right values of the parabolic interpolant
+    ! (C&W Eq. 1.10).  Here the loop is over cells, and considers the
+    ! values on either side of the center of the cell (Qminus and
+    ! Qplus).
     do n = 1, nprim
        do i = U%grid%lo-1, U%grid%hi+1
 
@@ -248,7 +248,6 @@ contains
     enddo
 
 
-
     !-------------------------------------------------------------------------
     ! compute left and right primitive variable states
     !-------------------------------------------------------------------------
@@ -268,7 +267,7 @@ contains
     !
     !       / u   r   0   \  
     !   A = | 0   u   1/r |  
-    !       \ 0  rc^2 u  /
+    !       \ 0  rc^2 u   /
     !
     ! With the rows corresponding to rho, u, and p
     !
@@ -293,9 +292,9 @@ contains
     !         -+------+------+------+------+------+------+--   
     !          |     i-1     |      i      |     i+1     |   
     !                       * *           * 
-    !                   V_l,i  V_r,i   V_l,i+1 
+    !                   q_l,i  q_r,i   q_l,i+1 
     !           
-    ! V_l,i+1 are computed using the information in zone i,j.
+    ! q_l,i+1 are computed using the information in zone i.
     !
 
     do i = U%grid%lo-1, U%grid%hi+1
@@ -357,29 +356,29 @@ contains
 
 
        ! the basic idea here is that we do a characteristic
-       ! decomposition.  The jump in primitive variables (Q)
-       ! can be transformed to a jump in characteristic variables
-       ! using the left and right eigenvectors.  Then each wave
-       ! tells us how much of each characteristic quantity reaches
-       ! the interface over dt/2.  We only add the quantity if
-       ! it moves toward the interface.
+       ! decomposition.  The jump in primitive variables (Q) can be
+       ! transformed to a jump in characteristic variables using the
+       ! left and right eigenvectors.  Then each wave tells us how
+       ! much of each characteristic quantity reaches the interface
+       ! over dt/2.  We only add the quantity if it moves toward the
+       ! interface.
        !
-       ! Given a jump dQ, we can express this as:
+       ! See Miller & Colella for a good discussion of the
+       ! characteristic form.  The basic form is:
        !
-       !       3
-       ! dQ = sum  (l_i dQ) r_i
-       !      i=1
        !
-       ! Then 
-       !         3
-       ! A dQ = sum  lambda_i (l_i dQ) r_i
-       !        i=1
-       !
-       ! where lambda_i is the eigenvalue.  (See for example LeVeque's
-       ! book).
-       !
+       !  n+1/2      ~               ~
+       ! q         = q  -  sum l . ( q   - I  ) r
+       !  i+1/2,L     L     i   i     L     +    i
+       ! 
+       !       ~
+       ! Where q is the reference state.
+
        
-       ! define the reference states
+       ! define the reference states -- Miller & Colella (2002) argue
+       ! picking the fastest wave speed.  We follow the convention from
+       ! Colella & Glaz, and Colella (1990) -- this is intended to 
+       ! minimize the size of the jump that the projection operates on.
        if (.false.) then
           ! CASTRO method
           Qref_xm(:) = Q%data(i,:)
@@ -401,7 +400,7 @@ contains
 
 
        ! compute the dot product of each left eigenvector with (qref - I)
-       do m = 1, nprim
+       do m = 1, nprim    ! loop over waves
           beta_xm(m) = 0.0_dp_t
           beta_xp(m) = 0.0_dp_t
 
@@ -411,6 +410,7 @@ contains
           enddo
        enddo
 
+       ! finally, sum up all the jumps
 
        ! density
        Q_l%data(i+1,iqdens) = 0.0_dp_t
