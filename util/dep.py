@@ -4,9 +4,9 @@ import sys
 import re
 import string
 import os
+import getopt
 
-def doit(files):
-
+def doit(prefix,files):
 
     # regular expression for ' use modulename, only: stuff, other stuff'
     # see (txt2re.com)
@@ -49,8 +49,6 @@ def doit(files):
     # go back through the files now and look for the use statements.
     # Assume only one use statement per line.  Ignore any only clauses.
     # Build a list of dependencies for the current file and output it.
-    print " "
-    print "# modules dependencies:"
     for file in files:
 
         f = open(file, "r")
@@ -64,8 +62,8 @@ def doit(files):
 
             rebreak = use_re.search(line)
             if (rebreak):
-                print os.path.basename(file).replace(".f90", ".o"), ':', \
-                    modulefiles[rebreak.group(4)].replace(".f90", ".o")
+                print prefix+os.path.basename(file).replace(".f90", ".o"), ':', \
+                    prefix+os.path.basename(modulefiles[rebreak.group(4)]).replace(".f90", ".o")
 
             line = f.readline()
 
@@ -75,9 +73,22 @@ def doit(files):
 
 if __name__ == "__main__":
 
-    files = sys.argv[1:]
+    try: opts, next = getopt.getopt(sys.argv[1:], "", ["prefix="])
+    except getopt.GetoptError:
+        print("invalid options")
+        sys.exit(2)
 
-    doit(files)
+    prefix = ""
+
+    for o, a in opts:
+
+        if o == "--prefix":
+            prefix = a
+
+            
+    files = next[:]
+
+    doit(prefix, files)
 
 
 
