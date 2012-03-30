@@ -18,7 +18,7 @@
 !    |<- ng ghostcells->|<---- nx interior zones ----->|<- ng ghostcells->|
 !    |                  |                              |                  |
 !
-! Here we adopt the convention that the first valid zone is 0.1
+! Here we adopt the convention that the first valid zone is 0
 !
 ! For the edge-centered variables, the overall grid looks like:
 !
