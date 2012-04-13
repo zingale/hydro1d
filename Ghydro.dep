@@ -1,83 +1,83 @@
-# list of all the dependencies for each source file
-
-$(odir)/bcs.o       : $(odir)/params.o \
-                      $(odir)/variables.o \
-                      $(odir)/grid.o \
-                      $(odir)/datatypes.o \
-                      $(odir)/user_bc.o 
-
-$(odir)/datatypes.o : 
-
-$(odir)/dt.o        : $(odir)/variables.o \
-                      $(odir)/eos.o \
-                      $(odir)/params.o \
-                      $(odir)/grid.o \
-                      $(odir)/datatypes.o 
-
-$(odir)/eos.o       : $(odir)/params.o \
-                      $(odir)/datatypes.o 
-
-$(odir)/grid.o      : $(odir)/datatypes.o 
-
-$(odir)/init.o      : $(odir)/variables.o \
-                      $(odir)/eos.o \
-                      $(odir)/grid.o \
-                      $(odir)/probparams.o \
-                      $(odir)/datatypes.o 
-
-$(odir)/godunov.o   : $(odir)/variables.o \
-                      $(odir)/grid.o \
-                      $(odir)/datatypes.o 
-
-
-$(odir)/plm.o       : $(odir)/variables.o \
-                      $(odir)/grid.o \
-                      $(odir)/datatypes.o 
-
-$(odir)/ppm.o       : $(odir)/variables.o \
-                      $(odir)/grid.o \
-                      $(odir)/datatypes.o 
-
-$(odir)/output.o    : $(odir)/eos.o \
-                      $(odir)/variables.o \
-                      $(odir)/params.o \
-                      $(odir)/datatypes.o \
-                      $(odir)/grid.o 
-
-$(odir)/params.o    : $(odir)/datatypes.o 
-
-$(odir)/probparams.o : $(odir)/datatypes.o 
-
-$(odir)/riemann.o   : $(odir)/variables.o \
-                      $(odir)/grid.o \
-                      $(odir)/datatypes.o \
-                      $(odir)/params.o \
-                      $(odir)/eos.o
-
-$(odir)/update.o    : $(odir)/variables.o \
-                      $(odir)/grid.o \
-                      $(odir)/datatypes.o \
-                      $(odir)/params.o 
-
-$(odir)/variables.o : 
-
-$(odir)/main.o      : $(odir)/update.o \
-                      $(odir)/riemann.o \
-                      $(odir)/godunov.o \
-                      $(odir)/plm.o \
-                      $(odir)/ppm.o \
-                      $(odir)/dt.o \
-                      $(odir)/bcs.o \
-                      $(odir)/output.o \
-                      $(odir)/variables.o \
-                      $(odir)/init.o \
-                      $(odir)/params.o \
-                      $(odir)/probparams.o \
-                      $(odir)/grid.o \
-                      $(odir)/datatypes.o 
-
-
-$(odir)/user_bc.o  : $(odir)/grid.o \
-                     $(odir)/probparams.o \
-                     $(odir)/variables.o 
-
+$(odir)/bcs.o : $(odir)/datatypes.o
+$(odir)/bcs.o : $(odir)/grid.o
+$(odir)/bcs.o : $(odir)/variables.o
+$(odir)/bcs.o : $(odir)/params.o
+$(odir)/bcs.o : $(odir)/eos.o
+$(odir)/bcs.o : $(odir)/user_bc.o
+ 
+ 
+$(odir)/dt.o : $(odir)/datatypes.o
+$(odir)/dt.o : $(odir)/grid.o
+$(odir)/dt.o : $(odir)/params.o
+$(odir)/dt.o : $(odir)/eos.o
+$(odir)/dt.o : $(odir)/variables.o
+ 
+$(odir)/eos.o : $(odir)/datatypes.o
+$(odir)/eos.o : $(odir)/params.o
+ 
+$(odir)/godunov.o : $(odir)/datatypes.o
+$(odir)/godunov.o : $(odir)/grid.o
+$(odir)/godunov.o : $(odir)/variables.o
+ 
+$(odir)/grid.o : $(odir)/datatypes.o
+ 
+$(odir)/main.o : $(odir)/datatypes.o
+$(odir)/main.o : $(odir)/grid.o
+$(odir)/main.o : $(odir)/params.o
+$(odir)/main.o : $(odir)/probparams.o
+$(odir)/main.o : $(odir)/init.o
+$(odir)/main.o : $(odir)/variables.o
+$(odir)/main.o : $(odir)/output.o
+$(odir)/main.o : $(odir)/bcs.o
+$(odir)/main.o : $(odir)/dt.o
+$(odir)/main.o : $(odir)/godunov.o
+$(odir)/main.o : $(odir)/plm.o
+$(odir)/main.o : $(odir)/ppm.o
+$(odir)/main.o : $(odir)/riemann.o
+$(odir)/main.o : $(odir)/update.o
+ 
+$(odir)/output.o : $(odir)/grid.o
+$(odir)/output.o : $(odir)/datatypes.o
+$(odir)/output.o : $(odir)/params.o
+$(odir)/output.o : $(odir)/variables.o
+$(odir)/output.o : $(odir)/eos.o
+ 
+$(odir)/params.o : $(odir)/datatypes.o
+ 
+$(odir)/plm.o : $(odir)/datatypes.o
+$(odir)/plm.o : $(odir)/grid.o
+$(odir)/plm.o : $(odir)/variables.o
+$(odir)/plm.o : $(odir)/params.o
+$(odir)/plm.o : $(odir)/eos.o
+ 
+$(odir)/ppm.o : $(odir)/datatypes.o
+$(odir)/ppm.o : $(odir)/grid.o
+$(odir)/ppm.o : $(odir)/variables.o
+$(odir)/ppm.o : $(odir)/params.o
+$(odir)/ppm.o : $(odir)/eos.o
+ 
+$(odir)/riemann.o : $(odir)/datatypes.o
+$(odir)/riemann.o : $(odir)/grid.o
+$(odir)/riemann.o : $(odir)/variables.o
+$(odir)/riemann.o : $(odir)/params.o
+$(odir)/riemann.o : $(odir)/eos.o
+ 
+$(odir)/update.o : $(odir)/datatypes.o
+$(odir)/update.o : $(odir)/grid.o
+$(odir)/update.o : $(odir)/variables.o
+$(odir)/update.o : $(odir)/params.o
+ 
+$(odir)/user_bc.o : $(odir)/grid.o
+$(odir)/user_bc.o : $(odir)/variables.o
+$(odir)/user_bc.o : $(odir)/datatypes.o
+ 
+ 
+$(odir)/init.o : $(odir)/datatypes.o
+$(odir)/init.o : $(odir)/probparams.o
+$(odir)/init.o : $(odir)/grid.o
+$(odir)/init.o : $(odir)/eos.o
+$(odir)/init.o : $(odir)/variables.o
+ 
+$(odir)/probparams.o : $(odir)/datatypes.o
+$(odir)/probparams.o : $(odir)/params.o
+ 
