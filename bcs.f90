@@ -21,7 +21,7 @@ contains
     
     integer :: i, ir, ip, ic
     real (kind=dp_t) :: p, e, p_above, e_above
-    real (kind=dp_t) :: econst, dens
+    real (kind=dp_t) :: econst, dens, vel
     
     ! sanity check
     if ( (U%grid%xlboundary == "periodic" .and. &
@@ -33,7 +33,7 @@ contains
     endif
     
 
-    !-------------------------------------------------------------------------    
+    !-------------------------------------------------------------------------
     ! lower boundary (-x)
     !-------------------------------------------------------------------------
     select case (U%grid%xlboundary)
@@ -61,7 +61,7 @@ contains
           
           if (hse_bc_const == "density") then
               
-             ! constant density
+             ! constant density in the ghost cells
               
              ! zero gradient to rho, u
              ic = U%grid%lo
@@ -83,28 +83,33 @@ contains
              
           else if (hse_bc_const == "temperature") then
              
-             ! constant temperature (or internal energy)
+             ! constant temperature (or internal energy) in the ghost
+             ! cells
+
              ic = U%grid%lo
              
              econst = (U%data(ic,iuener) - &
                   0.5_dp_t*U%data(ic,iumomx)**2/U%data(ic,iudens))/U%data(ic,iudens)
              
              ! zero gradient for u
-             U%data(i,iumomx) = min(0.0_dp_t, U%data(ic,iumomx))
+             vel = min(0.0_dp_t, U%data(ic,iumomx)/U%data(ic,iudens))
              
-             
-             ! p via HSE
-             e_above = (U%data(i+1,iuener) - &
-                  0.5_dp_t*U%data(i+1,iumomx)**2/U%data(i+1,iudens))/U%data(i+1,iudens)
-             call eos(eos_input_e, p_above, e_above, U%data(i+1,iudens))
-             
-             p = p_above - 0.5_dp_t*(U%data(i,iudens) + U%data(i+1,iudens))*grav*U%grid%dx
-             
+             ! get the pressure above (we already know that it has the
+             ! internal energy econst)
+             call eos(eos_input_e, p_above, econst, U%data(i+1, iudens))
+
+             ! p via HSE.  Here we explicitly make use of the
+             ! gamma-law nature of the EOS.  Otherwise, we would need
+             ! to iterate to simultaneously satisfy HSE + the EOS.
+             p = (p_above - 0.5_dp_t*U%data(i+1,iudens)*grav*U%grid%dx) / &
+                  (1.0_dp_t + 0.5_dp_t*grav*U%grid%dx/(econst*(gamma - 1.0_dp_t)))
+
              ! now find the density that corresponds to this p, e
              call eos(eos_input_pe, p, econst, dens)
              
              U%data(i,iudens) = dens
-             
+             U%data(i,iumomx) = dens*vel
+
              ! compute E
              U%data(i,iuener) = dens*econst + &
                   0.5_dp_t*U%data(i,iumomx)**2/dens
