@@ -1,5 +1,18 @@
 #!/usr/bin/env python
 
+# automatically generate Makefile dependencies for Fortran 90 source.
+#
+# usage:
+#
+#  dep.py [--prefix X] *.f90
+#
+# the option "--prefix X" will prepend both the object and source with
+# the prefix X.
+#
+# this will output all the dependency pairs amongst the source files.
+#
+# M. Zingale (2012-03-21)
+
 import sys
 import re
 import string
@@ -10,13 +23,13 @@ def doit(prefix,files):
 
     # regular expression for ' use modulename, only: stuff, other stuff'
     # see (txt2re.com)
-    use_re = re.compile("( )(use)( )((?:[a-z_][a-z_0-9]+))", 
+    use_re = re.compile("( )(use)(\s+)((?:[a-z_][a-z_0-9]+))", 
                         re.IGNORECASE|re.DOTALL)
 
-    module_re = re.compile("( )(module)( )((?:[a-z][a-z_0-9]+))",
+    module_re = re.compile("( )(module)(\s+)((?:[a-z][a-z_0-9]+))",
                            re.IGNORECASE|re.DOTALL)
 
-    module_proc_re = re.compile("( )(module)( )(procedure)( )((?:[a-z][a-z_0-9]+))",
+    module_proc_re = re.compile("( )(module)(\s+)(procedure)(\s+)((?:[a-z][a-z_0-9]+))",
                                 re.IGNORECASE|re.DOTALL)
 
     # first parse the files and find all the module statements.  Keep a
