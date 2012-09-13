@@ -507,7 +507,7 @@ contains
 
     if (U%grid%xrboundary == "reflect") then
        Q_r%data(U%grid%hi+1,iqxvel) = &
-            Q_r%data(U%grid%hi+1,iqxvel) + dt*grav
+            Q_r%data(U%grid%hi+1,iqxvel) - dt*grav
     endif
 
 
