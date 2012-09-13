@@ -162,8 +162,8 @@ contains
        do i = U%grid%hi+1, U%grid%hi+U%grid%ng
           
           ! even reflect density and energy
-          U%data(i,iudens) = U%data(i-1,iudens)
-          U%data(i,iuener) = U%data(i-1,iuener)
+          U%data(i,iudens) = U%data(ir,iudens)
+          U%data(i,iuener) = U%data(ir,iuener)
           
           ! reflect the velocities.  
           U%data(i,iumomx) = -U%data(ir,iumomx)
