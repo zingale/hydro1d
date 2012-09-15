@@ -1,0 +1,33 @@
+&params
+
+ nx = 512
+ tmax = 0.1
+  
+ godunov_type = 2
+
+ problem_name = "hse"
+ 
+ grav = -1.d9
+
+ xlboundary = "hse"
+
+ xrboundary = "user"
+
+ xmax = 10.0
+
+ plot_dt = 1.e-4
+
+/
+
+&problem
+
+ dens_base = 1.0d0
+ pres_base = 1.d9
+
+ small_dens = 1.d-4
+
+ x_jump = 0.0
+ delta = 0.0
+ e_factor = 1.0
+
+/
