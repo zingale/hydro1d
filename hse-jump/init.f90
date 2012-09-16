@@ -29,7 +29,9 @@ contains
 
     integer :: iter
 
-    logical :: first_transition, first_isentropic
+    integer :: icutoff
+
+    logical :: first_transition, first_isentropic, cutoff
 
     real (kind=dp_t), parameter :: tol = 1.e-8_dp_t
 
@@ -46,8 +48,14 @@ contains
     ! get the internal energy (temperature) for the isothermal region
     call eos(eos_input_p, pres_base, e_const, dens_base)
 
+    ! store the first zone's state
+    U%data(U%grid%lo,iumomx) = 0.0_dp_t    
+    U%data(U%grid%lo,iuener) = dens_base*e_const
+
     first_isentropic = .true.
     first_transition = .true.
+
+    cutoff = .false.
 
     do i = U%grid%lo+1, U%grid%hi
 
@@ -77,7 +85,7 @@ contains
              ! transition region -- compute the e we want to constraint to
 
              if (first_transition) then
-                e0 = U%data(i,iuener)/U%data(i,iudens)
+                e0 = U%data(i-1,iuener)/U%data(i-1,iudens)
 
                 slope = (e_factor*e0 - e0)/delta
                 x0 = U%grid%x(i-1)
@@ -131,11 +139,23 @@ contains
 
 
        ! check if density dropped below threshold
-
-       print *, i, dens_zone, pres_zone
+       if (dens_zone <= small_dens) then
+          icutoff = i
+          cutoff = .true.
+          exit
+       endif
 
     enddo
 
+    if (cutoff) then
+       U%data(icutoff+1:,iudens) = U%data(icutoff,iudens)
+       U%data(icutoff+1:,iumomx) = U%data(icutoff,iumomx)
+       U%data(icutoff+1:,iuener) = U%data(icutoff,iuener)
+    endif
+
+    do i = U%grid%lo, U%grid%hi
+       print *, i, U%data(i,iudens), U%data(i,iuener)/U%data(i,iudens)
+    enddo
 
     ! HSE check
     ! do i = U%grid%lo+1, U%grid%hi
