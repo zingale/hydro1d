@@ -1,0 +1,9 @@
+-- hse BCs with temperature or density constant look about the same,
+   but it is important that the velocity be reflected.
+
+   For some reason, outflow with HSE causes the density to change
+   dramatically
+
+   Also, pure reflecting BCs (i.e. no HSE support) cause sharp jumps
+   right at the boundaries.
+
