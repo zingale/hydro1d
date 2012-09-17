@@ -111,8 +111,6 @@ contains
                   0.5_dp_t*U%data(ic,iumomx)**2/U%data(ic,iudens))/ &
                   U%data(ic,iudens)
              
-             vel = U%data(ic,iumomx)/U%data(ic,iudens)
-
              ! velocity depends on hse_vel_type
              select case (hse_vel_type)
              case ("outflow")
@@ -217,6 +215,9 @@ contains
 
 
     case ("hse")
+
+       ir = U%grid%hi
+       ic = U%grid%hi
         
        do i = U%grid%hi+1, U%grid%hi+U%grid%ng
           
@@ -224,11 +225,26 @@ contains
               
              ! constant density in the ghost cells
               
-             ! zero gradient to rho, u
-             ic = U%grid%hi
+             ! zero gradient to rho
              U%data(i,iudens) = U%data(ic,iudens)
-             U%data(i,iumomx) = U%data(ic,iumomx)
-             
+
+             ! velocity depends on hse_vel_type
+             select case (hse_vel_type)
+             case ("outflow")
+                vel = U%data(ic,iumomx)/U%data(ic,iudens)
+
+             case ("reflect")
+                vel = -U%data(ir,iumomx)/U%data(ir,iudens)
+                ir = ir - 1
+
+             case default
+                print *, "ERROR: invalid hse_vel_type"
+                stop
+                
+             end select
+
+             U%data(i,iumomx) = U%data(i,iudens)*vel
+
              ! p via HSE
              e_below = (U%data(i-1,iuener) - &
                   0.5_dp_t*U%data(i-1,iumomx)**2/U%data(i-1,iudens))/ &
@@ -249,15 +265,25 @@ contains
              ! constant temperature (or internal energy) in the ghost
              ! cells
 
-             ic = U%grid%hi
-             
              econst = (U%data(ic,iuener) - &
                   0.5_dp_t*U%data(ic,iumomx)**2/U%data(ic,iudens))/ &
                   U%data(ic,iudens)
              
-             ! zero gradient for u
-             !vel = min(0.0_dp_t, U%data(ic,iumomx)/U%data(ic,iudens))
-             vel = U%data(ic,iumomx)/U%data(ic,iudens)
+             ! velocity depends on hse_vel_type
+             select case(hse_vel_type)
+             case ("outflow")
+                vel = U%data(ic,iumomx)/U%data(ic,iudens)
+
+             case ("reflect")
+                vel = -U%data(ir,iumomx)/U%data(ir,iudens)
+                ir = ir - 1
+
+             case default
+                print *, "ERROR: invalid hse_vel_type"
+                stop
+                
+             end select
+
              
              ! get the pressure below (we already know that it has the
              ! internal energy econst)
