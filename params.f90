@@ -21,6 +21,7 @@ module params_module
   character (len=32), save :: xlboundary = "outflow"
   character (len=32), save :: xrboundary = "outflow"
   character (len=32), save :: hse_bc_const = "temperature"
+  character (len=32), save :: hse_vel_type = "reflect"
 
   ! timestep parameters
   real (kind=dp_t), save :: init_shrink = 1.0_dp_t
