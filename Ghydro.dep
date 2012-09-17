@@ -77,6 +77,7 @@ $(odir)/init.o : $(odir)/probparams.o
 $(odir)/init.o : $(odir)/grid.o
 $(odir)/init.o : $(odir)/eos.o
 $(odir)/init.o : $(odir)/variables.o
+$(odir)/init.o : $(odir)/bcs.o
  
 $(odir)/probparams.o : $(odir)/datatypes.o
 $(odir)/probparams.o : $(odir)/params.o

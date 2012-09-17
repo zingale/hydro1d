@@ -92,7 +92,8 @@ contains
                   0.5_dp_t*U%data(ic,iumomx)**2/U%data(ic,iudens))/U%data(ic,iudens)
              
              ! zero gradient for u
-             vel = min(0.0_dp_t, U%data(ic,iumomx)/U%data(ic,iudens))
+             !vel = min(0.0_dp_t, U%data(ic,iumomx)/U%data(ic,iudens))
+             vel = U%data(ic,iumomx)/U%data(ic,iudens)
              
              ! get the pressure above (we already know that it has the
              ! internal energy econst)
