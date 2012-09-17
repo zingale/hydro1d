@@ -10,8 +10,10 @@
  grav = -1.d9
 
  xlboundary = "hse"
- hse_bc_const = "density"	
- xrboundary = "reflect"
+ xrboundary = "hse"
+
+ hse_bc_const = "temperature"	
+ hse_vel_type = "reflect"
 
  xmax = 8.0
 
