@@ -37,4 +37,10 @@ contains
     enddo
 
   end subroutine user_bc_xp
+
+  subroutine user_bc_xm(U)
+
+    type(gridvar_t), intent(inout) :: U
+  end subroutine user_bc_xm
+
 end module user_bc_module

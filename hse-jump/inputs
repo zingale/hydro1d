@@ -11,12 +11,12 @@
 
  xlboundary = "hse"
 
- xrboundary = "user"
+ xrboundary = "hse"
 
- xmax = 10.0
+ xmax = 8.0
 
  plot_dt = 1.e-4
-
+ write_ghost = .true.
 /
 
 &problem
