@@ -17,6 +17,8 @@ contains
   
   subroutine init_data(U)
 
+    use user_bc_module, only: e_fluff, rho_fluff
+
     type(gridvar_t), intent(inout) :: U
 
     integer :: i
@@ -156,6 +158,11 @@ contains
     do i = U%grid%lo, U%grid%hi
        print *, i, U%data(i,iudens), U%data(i,iuener)/U%data(i,iudens)
     enddo
+
+    ! top state -- for the user boundary conditions
+    rho_fluff = U%data(U%grid%hi,iudens)
+    e_fluff = U%data(U%grid%hi,iuener)/rho_fluff
+
 
     ! HSE check
     ! do i = U%grid%lo+1, U%grid%hi
