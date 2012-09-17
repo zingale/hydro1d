@@ -9,9 +9,9 @@
  
  grav = -1.d9
 
- xlboundary = "hse"
+ xlboundary = "reflect"
 
- xrboundary = "hse"
+ xrboundary = "reflect"
 
  xmax = 8.0
 
