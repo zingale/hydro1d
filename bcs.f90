@@ -73,10 +73,10 @@ contains
              ! velocity depends on hse_vel_type
              select case (hse_vel_type)
              case ("outflow")
-                U%data(i,iumomx) = U%data(ic,iumomx)
+                vel = U%data(ic,iumomx)/U%data(ic,iudens)
 
              case ("reflect")
-                U%data(i,iumomx) = U%data(ir,iumomx)
+                vel = -U%data(ir,iumomx)/U%data(ir,iudens)
                 ir = ir + 1
 
              case default
@@ -84,6 +84,8 @@ contains
                 stop
                 
              end select
+
+             U%data(i,iumomx) = U%data(i,iudens)*vel
 
              ! p via HSE
              e_above = (U%data(i+1,iuener) - &
@@ -117,7 +119,7 @@ contains
                 vel = U%data(ic,iumomx)/U%data(ic,iudens)
 
              case ("reflect")
-                vel = U%data(ir,iumomx)/U%data(ir,iudens)
+                vel = -U%data(ir,iumomx)/U%data(ir,iudens)
                 ir = ir + 1
 
              case default

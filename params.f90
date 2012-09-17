@@ -48,6 +48,7 @@ module params_module
   ! namelist
   namelist /params/ nx, xmin, xmax, &
                     xlboundary, xrboundary, &
+                    hse_bc_const, hse_vel_type, &
                     init_shrink, dt_change, tmax, &
                     cfl, &
                     gamma, &

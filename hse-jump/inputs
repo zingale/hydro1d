@@ -9,8 +9,8 @@
  
  grav = -1.d9
 
- xlboundary = "reflect"
-
+ xlboundary = "hse"
+ hse_bc_const = "density"	
  xrboundary = "reflect"
 
  xmax = 8.0
