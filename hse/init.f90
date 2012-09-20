@@ -67,6 +67,8 @@ contains
 
        pres_below = pres
 
+       print *, i, U%data(i,iudens), pres
+
     enddo
 
   end subroutine init_data

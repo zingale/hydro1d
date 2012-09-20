@@ -117,7 +117,7 @@ contains
           lambdastar_l = ustar - cstar_l
           
           if (pstar > p_l) then
-             ! the wave if a shock -- find the shock speed
+             ! the wave is a shock -- find the shock speed
              sigma = (lambda_l + lambdastar_l)/2.0_dp_t
              
              if (sigma > 0.0_dp_t) then
