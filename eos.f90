@@ -38,7 +38,11 @@ contains
     real (kind=dp_t), parameter :: m_amu = 1.66053886e-24_dp_t   ! g
     real (kind=dp_t), parameter :: k = 1.3806503e-16_dp_t        ! erg / K
 
-    real (kind=dp_t), parameter :: c_v = 1.5_dp_t*k/(mu*m_amu)
+    real (kind=dp_t) :: c_v 
+
+    ! c_v = de/dT |_rho, so since e = p / (rho (gamma - 1)), and
+    ! using p = rho k T / (mu m_amu), we have e = k/(mu m (gamma - 1))
+    c_v = k/((gamma - 1.0_dp_t)*mu*m_amu)
 
     if (input == eos_input_p) then
 
@@ -49,7 +53,7 @@ contains
 
        e = p / (rho * (gamma - 1.0_dp_t))
 
-       if (present(T)) T = mu*m_amu*e/(1.5_dp_t*k)
+       if (present(T)) T = mu*m_amu*e*(gamma - 1.0_dp_t)/k
        if (present(s)) s = c_v*log(p/rho**gamma) 
 
     else if (input == eos_input_e) then
@@ -61,7 +65,7 @@ contains
 
        p = rho*e*(gamma - 1.0_dp_t)
 
-       if (present(T)) T = mu*m_amu*e/(1.5_dp_t*k)
+       if (present(T)) T = mu*m_amu*e*(gamma - 1.0_dp_t)/k
        if (present(s)) s = c_v*log(p/rho**gamma) 
 
     else if (input == eos_input_pe) then
@@ -74,7 +78,7 @@ contains
 
        rho = p/e/(gamma - 1.0_dp_t)
 
-       if (present(T)) T = mu*m_amu*e/(1.5_dp_t*k)
+       if (present(T)) T = mu*m_amu*e*(gamma - 1.0_dp_t)/k
        if (present(s)) s = c_v*log(p/rho**gamma) 
 
     else if (input == eos_input_ps) then
@@ -91,7 +95,7 @@ contains
 
        e = p / (rho * (gamma - 1.0_dp_t))
 
-       if (present(T)) T = mu*m_amu*e/(1.5_dp_t*k)
+       if (present(T)) T = mu*m_amu*e*(gamma - 1.0_dp_t)/k
 
     else
        print *, 'ERROR: invalid input in EOS'
