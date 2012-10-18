@@ -76,6 +76,10 @@ contains
           pres_zone = p%data(i-1,1) + &
                0.5_dp_t*U%grid%dx*(dens_zone + U%data(i-1,iudens))*grav
 
+          if (pres_zone < 0.0_dp_t) then
+             exit
+          endif
+             
           ! use the EOS to get the density for this pressure
           if (U%grid%x(i) < x_jump) then
 
@@ -127,6 +131,14 @@ contains
           endif
           
        enddo
+
+       ! check if the presure drops below zero
+       if (pres_zone <= 0.0_dp_t) then
+          icutoff = i-1 
+          cutoff = .true.
+          exit
+       endif
+
 
        ! store the state
        U%data(i,iudens) = dens_zone
