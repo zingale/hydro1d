@@ -1,4 +1,4 @@
-hydro1d (M. Zingale, 2012-03-06)
+hydro1d (M. Zingale, 2012-11-15)
 
 hydro1d is a simple 1-d, gamma-law gas hydrodynamics code for teaching
 purposes.  Piecewise constant (Godunov), piecewise linear, and
