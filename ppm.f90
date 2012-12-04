@@ -193,7 +193,7 @@ contains
 
     ! Our parabolic profile has the form:
     !
-    !  q(xi) = qminus + xi*(qplus - qminux + q6 * (1-xi) )
+    !  q(xi) = qminus + xi*(qplus - qminus + q6 * (1-xi) )
     !
     ! with xi = (x - xl)/dx, where xl is the interface of the left
     ! edge of the cell.  qminus and qplus are the values of the 
