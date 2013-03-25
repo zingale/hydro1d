@@ -16,7 +16,7 @@ contains
 
     type(gridvar_t), intent(inout) :: U
 
-  end subroutine user_bc_xp
+  end subroutine user_bc_xm
 
   subroutine user_bc_xp(U)
 
