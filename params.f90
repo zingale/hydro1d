@@ -35,8 +35,8 @@ module params_module
   ! hydro parameters
   integer, save :: godunov_type = 0
   real (kind=dp_t), save :: grav = 0.0_dp_t
-
-
+  integer, save :: use_hse_fix = 0
+  
   ! problem-specific parameters
   character (len=32), save :: problem_name = "sod"
 
@@ -53,6 +53,7 @@ module params_module
                     cfl, &
                     gamma, &
                     godunov_type, &
+                    use_hse_fix, &
                     grav, &
                     problem_name, &
                     write_ghost, &
