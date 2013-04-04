@@ -407,7 +407,12 @@ contains
           Qref_xp(iqpres) = Qminus%data(i,iqpres) + &
                (1.0d0 - 0.5*sigma)*(Qplus%data(i,iqpres) - Qminus%data(i,iqpres) + &
                 Q6%data(i,iqpres)*0.5*sigma) + grav*0.5d0*sigma*U%grid%dx*Iplus(3,iqdens)
-
+          
+          ! right pressure state
+          sigma=abs(eval(1))*dtdx
+          Qref_xm(iqpres) = Qminus%data(i,iqpres) + &
+               0.5*sigma*(Qplus%data(i,iqpres)-Qminus%data(i,iqpres) + &
+                Q6%data(i,iqpres)*(1.0-0.5*sigma))-grav*0.5*sigma*U%grid%dx*Iminus(1,iqdens)
        endif
        
 
