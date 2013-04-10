@@ -399,6 +399,23 @@ contains
        endif
 
 
+       ! HSE reference states
+       if (use_hse_fix == 1) then
+
+          ! left pressure state
+          sigma = abs(eval(3))*dtdx
+          Qref_xp(iqpres) = Qminus%data(i,iqpres) + &
+               (1.0d0 - 0.5*sigma)*(Qplus%data(i,iqpres) - Qminus%data(i,iqpres) + &
+                Q6%data(i,iqpres)*0.5*sigma) + grav*0.5d0*sigma*U%grid%dx*Iplus(3,iqdens)
+          
+          ! right pressure state
+          sigma=abs(eval(1))*dtdx
+          Qref_xm(iqpres) = Qminus%data(i,iqpres) + &
+               0.5*sigma*(Qplus%data(i,iqpres)-Qminus%data(i,iqpres) + &
+                Q6%data(i,iqpres)*(1.0-0.5*sigma))-grav*0.5*sigma*U%grid%dx*Iminus(1,iqdens)
+       endif
+       
+
        ! compute the dot product of each left eigenvector with (qref - I)
        do m = 1, nwaves    ! loop over waves
           beta_xm(m) = 0.0_dp_t
