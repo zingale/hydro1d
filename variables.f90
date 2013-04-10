@@ -12,10 +12,13 @@ module variables_module
 
   ! primitive quantities
   integer, parameter :: nprim = 3
-
+  
   integer, parameter :: iqdens = 1
   integer, parameter :: iqxvel = 2
   integer, parameter :: iqpres = 3
+
+  ! characteristic waves
+  integer, parameter :: nwaves = 3
 
 end module variables_module
 
