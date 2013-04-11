@@ -22,7 +22,7 @@ contains
     real (kind=dp_t), intent(in) :: t
     integer, intent(in) :: n
 
-    real (kind=dp_t) :: mach_max
+    real (kind=dp_t) :: mach_max, mach_L2, M
 
     real (kind=dp_t) :: e, rho, p
 
@@ -31,6 +31,7 @@ contains
     character (len=256) :: outfile
 
     mach_max = -1.d33
+    mach_L2 = 0.0d0
 
     do i = U%grid%lo, U%grid%hi
 
@@ -40,10 +41,14 @@ contains
        rho = U%data(i,iudens)
        call eos(eos_input_e, p, e, rho)
 
-       mach_max = max(mach_max, &
-                      abs(U%data(i,iumomx)/U%data(i,iudens))/sqrt(gamma*p/rho))
+       M = abs(U%data(i,iumomx)/U%data(i,iudens))/sqrt(gamma*p/rho)
+
+       mach_max = max(mach_max, M)
+       mach_L2 = mach_L2 + M**2
     enddo
-    
+
+    mach_L2 = sqrt(U%grid%dx*mach_L2)
+
     outfile = trim(problem_name) // "_diag.out"
 
     if (n == 1) then
@@ -52,8 +57,8 @@ contains
        open(newunit=lun, file=trim(outfile), status="old", position="append")
     endif
 
-100 format(1x, g20.10, 1x, g20.10)
-    write(unit=lun,fmt=100) t, mach_max
+100 format(1x, g20.10, 1x, g20.10, 1x, g20.10)
+    write(unit=lun,fmt=100) t, mach_max, mach_L2
 
     close (unit=lun)
 
