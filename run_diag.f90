@@ -16,11 +16,11 @@ module runtime_diag_module
 
 contains
 
-  subroutine run_diag(U, t)
+  subroutine run_diag(U, t, n)
 
     type(gridvar_t),  intent(in) :: U
     real (kind=dp_t), intent(in) :: t
-
+    integer :: n
 
 
   end subroutine run_diag

@@ -112,7 +112,7 @@ program hydro1d
 
 
      ! do any runtime diagnostics
-     call run_diag(U, t)
+     call run_diag(U, t, n)
 
   enddo
 
