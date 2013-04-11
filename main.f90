@@ -7,6 +7,7 @@ program hydro1d
   use init_module
   use variables_module
   use output_module
+  use runtime_diag_module
   use bcs_module
   use dt_module
   use interface_states_godunov_module
@@ -108,6 +109,10 @@ program hydro1d
           mod(t - dt, plot_dt) > mod(t, plot_dt)) then
         call output(U, t, n)
      endif
+
+
+     ! do any runtime diagnostics
+     call run_diag(U, t)
 
   enddo
 
