@@ -23,13 +23,13 @@ contains
     type(gridvar_t) :: Q
     type(gridedgevar_t) :: Q_l, Q_r
 
-    real (kind=dp_t) :: rvec(nprim,nprim), lvec(nprim,nprim), eval(nprim)
+    real (kind=dp_t) :: rvec(nwaves,nprim), lvec(nwaves,nprim), eval(nwaves)
 
     real (kind=dp_t) :: r, ux, p, cs
-    real (kind=dp_t) :: beta_xm(nprim), beta_xp(nprim)
+    real (kind=dp_t) :: beta_xm(nwaves), beta_xp(nwaves)
 
     real (kind=dp_t) :: dq0, dqp
-    real (kind=dp_t) :: Iminus(nprim,nprim), Iplus(nprim,nprim)
+    real (kind=dp_t) :: Iminus(nwaves,nprim), Iplus(nwaves,nprim)
     real (kind=dp_t) :: Qref_xm(nprim), Qref_xp(nprim)
 
     type(gridedgevar_t) :: Qminus, Qplus
@@ -329,7 +329,7 @@ contains
        ! can reach.  Do the same from the right interface in the cell,
        ! defining Iplus.  See Almgren et al. 2010 (Eq. 30) or Colella
        ! & Sekora (2008), or Miller & Colella (2002), Eq. 90.
-       do m = 1, nprim
+       do m = 1, nwaves
           sigma = abs(eval(m))*dtdx
           do n = 1, nprim
 
@@ -417,7 +417,7 @@ contains
        
 
        ! compute the dot product of each left eigenvector with (qref - I)
-       do m = 1, nprim    ! loop over waves
+       do m = 1, nwaves    ! loop over waves
           beta_xm(m) = 0.0_dp_t
           beta_xp(m) = 0.0_dp_t
 
@@ -433,15 +433,15 @@ contains
        Q_l%data(i+1,iqdens) = 0.0_dp_t
        Q_r%data(i,iqdens) = 0.0_dp_t
 
-       do n = 1, nprim
+       do n = 1, nwaves
           if (eval(n) >= 0.0_dp_t) then
              Q_l%data(i+1,iqdens) = Q_l%data(i+1,iqdens) + &
-                  beta_xp(n)*rvec(n,1)
+                  beta_xp(n)*rvec(n,iqdens)
           endif
 
           if (eval(n) <= 0.0_dp_t) then
              Q_r%data(i,iqdens) = Q_r%data(i,iqdens) + &
-                  beta_xm(n)*rvec(n,1)
+                  beta_xm(n)*rvec(n,iqdens)
           endif
        enddo
 
@@ -456,15 +456,15 @@ contains
        Q_l%data(i+1,iqxvel) = 0.0_dp_t
        Q_r%data(i,iqxvel) = 0.0_dp_t
 
-       do n = 1, nprim
+       do n = 1, nwaves
           if (eval(n) >= 0.0_dp_t) then
              Q_l%data(i+1,iqxvel) = Q_l%data(i+1,iqxvel) + &
-                  beta_xp(n)*rvec(n,2)
+                  beta_xp(n)*rvec(n,iqxvel)
           endif
 
           if (eval(n) <= 0.0_dp_t) then
              Q_r%data(i,iqxvel) = Q_r%data(i,iqxvel) + &
-                  beta_xm(n)*rvec(n,2)
+                  beta_xm(n)*rvec(n,iqxvel)
           endif
        enddo
 
@@ -479,15 +479,15 @@ contains
        Q_l%data(i+1,iqpres) = 0.0_dp_t
        Q_r%data(i,iqpres) = 0.0_dp_t
 
-       do n = 1, nprim
+       do n = 1, nwaves
           if (eval(n) >= 0.0_dp_t) then
              Q_l%data(i+1,iqpres) = Q_l%data(i+1,iqpres) + &
-                  beta_xp(n)*rvec(n,3)
+                  beta_xp(n)*rvec(n,iqpres)
           endif
 
           if (eval(n) <= 0.0_dp_t) then
              Q_r%data(i,iqpres) = Q_r%data(i,iqpres) + &
-                  beta_xm(n)*rvec(n,3)
+                  beta_xm(n)*rvec(n,iqpres)
           endif
        enddo
 
