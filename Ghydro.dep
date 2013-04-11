@@ -28,6 +28,7 @@ $(odir)/main.o : $(odir)/probparams.o
 $(odir)/main.o : $(odir)/init.o
 $(odir)/main.o : $(odir)/variables.o
 $(odir)/main.o : $(odir)/output.o
+$(odir)/main.o : $(odir)/run_diag.o
 $(odir)/main.o : $(odir)/bcs.o
 $(odir)/main.o : $(odir)/dt.o
 $(odir)/main.o : $(odir)/godunov.o
@@ -61,6 +62,12 @@ $(odir)/riemann.o : $(odir)/grid.o
 $(odir)/riemann.o : $(odir)/variables.o
 $(odir)/riemann.o : $(odir)/params.o
 $(odir)/riemann.o : $(odir)/eos.o
+ 
+$(odir)/run_diag.o : $(odir)/grid.o
+$(odir)/run_diag.o : $(odir)/datatypes.o
+$(odir)/run_diag.o : $(odir)/params.o
+$(odir)/run_diag.o : $(odir)/variables.o
+$(odir)/run_diag.o : $(odir)/eos.o
  
 $(odir)/update.o : $(odir)/datatypes.o
 $(odir)/update.o : $(odir)/grid.o
