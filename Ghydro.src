@@ -4,6 +4,7 @@ FSOURCE += main.f90 \
            bcs.f90 \
            datatypes.f90 \
            dt.f90 \
+	   eigen.f90 \
            eos.f90 \
            grid.f90 \
            init.f90 \

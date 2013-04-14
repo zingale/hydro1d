@@ -12,6 +12,9 @@ $(odir)/dt.o : $(odir)/params.o
 $(odir)/dt.o : $(odir)/eos.o
 $(odir)/dt.o : $(odir)/variables.o
  
+$(odir)/eigen.o : $(odir)/datatypes.o
+$(odir)/eigen.o : $(odir)/variables.o
+ 
 $(odir)/eos.o : $(odir)/datatypes.o
 $(odir)/eos.o : $(odir)/params.o
  
@@ -56,6 +59,7 @@ $(odir)/ppm.o : $(odir)/grid.o
 $(odir)/ppm.o : $(odir)/variables.o
 $(odir)/ppm.o : $(odir)/params.o
 $(odir)/ppm.o : $(odir)/eos.o
+$(odir)/ppm.o : $(odir)/eigen.o
  
 $(odir)/riemann.o : $(odir)/datatypes.o
 $(odir)/riemann.o : $(odir)/grid.o
@@ -84,7 +88,6 @@ $(odir)/init.o : $(odir)/probparams.o
 $(odir)/init.o : $(odir)/grid.o
 $(odir)/init.o : $(odir)/eos.o
 $(odir)/init.o : $(odir)/variables.o
-$(odir)/init.o : $(odir)/bcs.o
  
 $(odir)/probparams.o : $(odir)/datatypes.o
 $(odir)/probparams.o : $(odir)/params.o

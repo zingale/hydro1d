@@ -1,8 +1,11 @@
 # plot the Sod results.  Here we assume that we have a file
 # called sodx.out
 
-set term pngcairo size 600,800
-set output 'sod.png'
+#set term pngcairo size 600,800
+#set output 'sod.png'
+
+set term epscairo size 6in, 8.5in fontscale 0.75
+set output 'sod.eps'
 
 set multiplot;
 
@@ -10,7 +13,7 @@ set size 1, 0.32;
 
 set xlabel "x";
 
-set style line 1  lw 1 lc 3
+set style line 1  lw 2 lc 1
 
 set origin 0.0, 0.666;
 set ylabel "density";

@@ -5,6 +5,7 @@ module interface_states_ppm_module
   use variables_module
   use params_module
   use eos_module
+  use eigen_module
 
   implicit none
 
@@ -80,7 +81,7 @@ contains
 
        ! pressure
        e = (U%data(i,iuener) - &
-            0.5_dp_t*U%data(i,iumomx)**2/U%data(i,iudens))/U%data(i,iudens)
+            HALF*U%data(i,iumomx)**2/U%data(i,iudens))/U%data(i,iudens)
        call eos(eos_input_e, Q%data(i,iqpres), e, Q%data(i,iqdens))
     enddo
 
@@ -102,12 +103,12 @@ contains
        dp2 = abs(Q%data(i+2,iqpres) - Q%data(i-2,iqpres))
        z = dp/max(dp2,smallp)
 
-       if ( (Q%data(i-1,iqxvel) - Q%data(i+1,iqxvel) > 0.0_dp_t) .and. &
+       if ( (Q%data(i-1,iqxvel) - Q%data(i+1,iqxvel) > ZERO) .and. &
             (dp/min(Q%data(i+1,iqpres),Q%data(i-1,iqpres)) > delta) ) then
-          xi_t%data(i,1) = min(1.0_dp_t, &
-                             max(0.0_dp_t, 1.0_dp_t - (z - z0)/(z1 - z0)))
+          xi_t%data(i,1) = min(ONE, &
+                             max(ZERO, ONE - (z - z0)/(z1 - z0)))
        else
-          xi_t%data(i,1) = 1.0_dp_t
+          xi_t%data(i,1) = ONE
        endif
 
     enddo
@@ -116,10 +117,10 @@ contains
 
     do i = U%grid%lo-1, U%grid%hi+1
 
-       if (Q%data(i+1,iqpres) - Q%data(i-1,iqpres) > 0.0_dp_t) then
+       if (Q%data(i+1,iqpres) - Q%data(i-1,iqpres) > ZERO) then
           xi%data(i,1) = min(xi_t%data(i,1), xi_t%data(i-1,1))
 
-       else if (Q%data(i+1,iqpres) - Q%data(i-1,iqpres) < 0.0_dp_t) then
+       else if (Q%data(i+1,iqpres) - Q%data(i-1,iqpres) < ZERO) then
           xi%data(i,1) = min(xi_t%data(i,1), xi_t%data(i+1,1))
 
        else
@@ -145,33 +146,33 @@ contains
        do i = U%grid%lo-2, U%grid%hi+2
 
           ! dq (C&W Eq. 1.7)
-          dq0 = 0.5_dp_t*(Q%data(i+1,n) - Q%data(i-1,n))
-          dqp = 0.5_dp_t*(Q%data(i+2,n) - Q%data(i,n))
+          dq0 = HALF*(Q%data(i+1,n) - Q%data(i-1,n))
+          dqp = HALF*(Q%data(i+2,n) - Q%data(i,n))
 
           ! limiting (C&W Eq. 1.8)
           if ( (Q%data(i+1,n) - Q%data(i,n))* &
-               (Q%data(i,n) - Q%data(i-1,n)) > 0.0_dp_t) then
-             dq0 = sign(1.0_dp_t,dq0)* &
+               (Q%data(i,n) - Q%data(i-1,n)) > ZERO) then
+             dq0 = sign(ONE,dq0)* &
                   min( abs(dq0), &
                        2.0_dp_t*abs(Q%data(i,n) - Q%data(i-1,n)), &
                        2.0_dp_t*abs(Q%data(i+1,n) - Q%data(i,n)) )
           else
-             dq0 = 0.0_dp_t
+             dq0 = ZERO
           endif
 
           if ( (Q%data(i+2,n) - Q%data(i+1,n))* &
-               (Q%data(i+1,n) - Q%data(i,n)) > 0.0_dp_t) then
-             dqp = sign(1.0_dp_t,dqp)* &
+               (Q%data(i+1,n) - Q%data(i,n)) > ZERO) then
+             dqp = sign(ONE,dqp)* &
                   min( abs(dqp), &
                        2.0_dp_t*abs(Q%data(i+1,n) - Q%data(i,n)), &
                        2.0_dp_t*abs(Q%data(i+2,n) - Q%data(i+1,n)) )
           else
-             dqp = 0.0_dp_t
+             dqp = ZERO
           endif
 
           ! cubic (C&W Eq. 1.6)
-          Qplus%data(i,n) = 0.5_dp_t*(Q%data(i,n) + Q%data(i+1,n)) - &
-               (1.0_dp_t/6.0_dp_t)*(dqp - dq0)
+          Qplus%data(i,n) = HALF*(Q%data(i,n) + Q%data(i+1,n)) - &
+               (ONE/6.0_dp_t)*(dqp - dq0)
 
           Qminus%data(i+1,n) = Qplus%data(i,n)
 
@@ -207,13 +208,13 @@ contains
        do i = U%grid%lo-1, U%grid%hi+1
 
           if ( (Qplus%data(i,n) - Q%data(i,n)) * &
-               (Q%data(i,n) - Qminus%data(i,n)) <= 0.0_dp_t) then
+               (Q%data(i,n) - Qminus%data(i,n)) <= ZERO) then
              Qminus%data(i,n) = Q%data(i,n)
              Qplus%data(i,n) = Q%data(i,n)
 
           else if ( (Qplus%data(i,n) - Qminus%data(i,n)) * &
                     (Q%data(i,n) - &
-                      0.5_dp_t*(Qminus%data(i,n) + Qplus%data(i,n))) > &
+                      HALF*(Qminus%data(i,n) + Qplus%data(i,n))) > &
                    (Qplus%data(i,n) - Qminus%data(i,n))**2/6.0_dp_t ) then
 
           ! alternate test from Colella & Sekora (2008)
@@ -224,7 +225,7 @@ contains
           else if (-(Qplus%data(i,n) - Qminus%data(i,n))**2/6.0_dp_t > &
                     (Qplus%data(i,n) - Qminus%data(i,n)) * &
                     (Q%data(i,n) - &
-                           0.5_dp_t*(Qminus%data(i,n) + Qplus%data(i,n))) ) then
+                           HALF*(Qminus%data(i,n) + Qplus%data(i,n))) ) then
 
           !else if (abs(Qplus%data(i,n) - Q%data(i,n)) >= &
           !     2.0*abs(Qminus%data(i,n) - Q%data(i,n))) then
@@ -257,33 +258,6 @@ contains
 
     dtdx = dt/U%grid%dx
 
-    ! We need the left and right eigenvectors and the eigenvalues for
-    ! the system
-    !
-    ! The eigenvalues are u - c, u, u + c
-    !
-    ! The Jacobian matrix for the primitive variable formulation of the
-    ! Euler equations is 
-    !
-    !       / u   r   0   \  
-    !   A = | 0   u   1/r |  
-    !       \ 0  rc^2 u   /
-    !
-    ! With the rows corresponding to rho, u, and p
-    !
-    ! The right eigenvectors are
-    !
-    !       /  1  \        / 1 \        /  1  \
-    ! r1 =  |-c/r |   r2 = | 0 |   r3 = | c/r |
-    !       \ c^2 /        \ 0 /        \ c^2 /
-    !
-    !
-    ! The left eigenvectors are    
-    !
-    !   l1 =     ( 0,  -r/(2c),  1/(2c^2) )
-    !   l2 =     ( 1,     0,     -1/c^2,  )
-    !   l3 =     ( 0,   r/(2c),  1/(2c^2) )
-    !
     ! The fluxes are going to be defined on the left edge of the
     ! computational zone.
     !
@@ -307,21 +281,9 @@ contains
        ! compute the sound speed
        cs = sqrt(gamma*p/r)
 
-       ! compute the eigenvalues
-       eval(1) = ux - cs
-       eval(2) = ux
-       eval(3) = ux + cs
 
-
-       ! compute the left eigenvectors
-       lvec(1,:) = [ 0.0_dp_t, -0.5_dp_t*r/cs, 0.5_dp_t/(cs*cs)  ]   ! u - c
-       lvec(2,:) = [ 1.0_dp_t, 0.0_dp_t,       -1.0_dp_t/(cs*cs) ]   ! u
-       lvec(3,:) = [ 0.0_dp_t, 0.5_dp_t*r/cs,  0.5_dp_t/(cs*cs)  ]   ! u + c
-
-       ! compute the right eigenvectors
-       rvec(1,:) = [ 1.0_dp_t, -cs/r,    cs*cs    ]   ! u - c 
-       rvec(2,:) = [ 1.0_dp_t, 0.0_dp_t, 0.0_dp_t ]   ! u  
-       rvec(3,:) = [ 1.0_dp_t, cs/r,     cs*cs    ]   ! u + c   
+       ! get the eigenvalues and eigenvectors
+       call eigen(r, ux, p, cs, lvec, rvec, eval)
 
 
        ! integrate the parabola in the cell from the left interface
@@ -335,18 +297,18 @@ contains
 
              ! only integrate if the wave is moving toward the interface
              ! (see Miller & Colella, Eg. 90).  This may not be necessary.
-             if (eval(m) >= 0.0_dp_t) then
-                Iplus(m,n) = Qplus%data(i,n) - 0.5_dp_t*sigma* &
+             if (eval(m) >= ZERO) then
+                Iplus(m,n) = Qplus%data(i,n) - HALF*sigma* &
                      (Qplus%data(i,n) - Qminus%data(i,n) - &
-                     (1.0_dp_t - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
+                     (ONE - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
              else
                 Iplus(m,n) = Q%data(i,n)
              endif
 
-             if (eval(m) <= 0.0_dp_t) then
-                Iminus(m,n) = Qminus%data(i,n) + 0.5_dp_t*sigma* &
+             if (eval(m) <= ZERO) then
+                Iminus(m,n) = Qminus%data(i,n) + HALF*sigma* &
                      (Qplus%data(i,n) - Qminus%data(i,n) + &
-                     (1.0_dp_t - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
+                     (ONE - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
              else
                 Iminus(m,n) = Q%data(i,n)
              endif
@@ -385,13 +347,13 @@ contains
           Qref_xp(:) = Q%data(i,:)
        else
           ! Miller and Colella method
-          if (eval(3) >= 0.0_dp_t) then
+          if (eval(3) >= ZERO) then
              Qref_xp(:) = Iplus(3,:)
           else
              Qref_xp(:) = Q%data(i,:)
           endif
 
-          if (eval(1) <= 0.0_dp_t) then
+          if (eval(1) <= ZERO) then
              Qref_xm(:) = Iminus(1,:)
           else
              Qref_xm(:) = Q%data(i,:)
@@ -418,85 +380,77 @@ contains
 
        ! compute the dot product of each left eigenvector with (qref - I)
        do m = 1, nwaves    ! loop over waves
-          beta_xm(m) = 0.0_dp_t
-          beta_xp(m) = 0.0_dp_t
+          beta_xm(m) = ZERO
+          beta_xp(m) = ZERO
 
-          do n = 1, nprim
-             beta_xm(m) = beta_xm(m) + lvec(m,n)*(Qref_xm(n) - Iminus(m,n))
-             beta_xp(m) = beta_xp(m) + lvec(m,n)*(Qref_xp(n) - Iplus(m,n))
-          enddo
+          beta_xm(m) = beta_xm(m) + dot_product(lvec(m,:),Qref_xm(:) - Iminus(m,:))
+          beta_xp(m) = beta_xp(m) + dot_product(lvec(m,:),Qref_xp(:) - Iplus(m,:))
        enddo
 
        ! finally, sum up all the jumps
 
        ! density
-       Q_l%data(i+1,iqdens) = 0.0_dp_t
-       Q_r%data(i,iqdens) = 0.0_dp_t
+       Q_l%data(i+1,iqdens) = ZERO
+       Q_r%data(i,iqdens) = ZERO
 
        do n = 1, nwaves
-          if (eval(n) >= 0.0_dp_t) then
+          if (eval(n) >= ZERO) then
              Q_l%data(i+1,iqdens) = Q_l%data(i+1,iqdens) + &
                   beta_xp(n)*rvec(n,iqdens)
           endif
 
-          if (eval(n) <= 0.0_dp_t) then
+          if (eval(n) <= ZERO) then
              Q_r%data(i,iqdens) = Q_r%data(i,iqdens) + &
                   beta_xm(n)*rvec(n,iqdens)
           endif
        enddo
 
-       Q_l%data(i+1,iqdens) = Qref_xp(iqdens) - &
-            xi%data(i,1)*Q_l%data(i+1,iqdens)
-
-       Q_r%data(i,iqdens) = Qref_xm(iqdens) - &
-            xi%data(i,1)*Q_r%data(i,iqdens)
+       Q_l%data(i+1,iqdens) = Qref_xp(iqdens) - Q_l%data(i+1,iqdens)
+       Q_r%data(i,iqdens)   = Qref_xm(iqdens) - Q_r%data(i,iqdens)
 
 
        ! velocity
-       Q_l%data(i+1,iqxvel) = 0.0_dp_t
-       Q_r%data(i,iqxvel) = 0.0_dp_t
+       Q_l%data(i+1,iqxvel) = ZERO
+       Q_r%data(i,iqxvel) = ZERO
 
        do n = 1, nwaves
-          if (eval(n) >= 0.0_dp_t) then
+          if (eval(n) >= ZERO) then
              Q_l%data(i+1,iqxvel) = Q_l%data(i+1,iqxvel) + &
                   beta_xp(n)*rvec(n,iqxvel)
           endif
 
-          if (eval(n) <= 0.0_dp_t) then
+          if (eval(n) <= ZERO) then
              Q_r%data(i,iqxvel) = Q_r%data(i,iqxvel) + &
                   beta_xm(n)*rvec(n,iqxvel)
           endif
        enddo
 
-       Q_l%data(i+1,iqxvel) = Qref_xp(iqxvel) - &
-            xi%data(i,1)*Q_l%data(i+1,iqxvel)
-
-       Q_r%data(i,iqxvel) = Qref_xm(iqxvel) - &
-            xi%data(i,1)*Q_r%data(i,iqxvel)
+       Q_l%data(i+1,iqxvel) = Qref_xp(iqxvel) - Q_l%data(i+1,iqxvel)
+       Q_r%data(i,iqxvel)   = Qref_xm(iqxvel) - Q_r%data(i,iqxvel)
 
 
        ! pressure
-       Q_l%data(i+1,iqpres) = 0.0_dp_t
-       Q_r%data(i,iqpres) = 0.0_dp_t
+       Q_l%data(i+1,iqpres) = ZERO
+       Q_r%data(i,iqpres) = ZERO
 
        do n = 1, nwaves
-          if (eval(n) >= 0.0_dp_t) then
+          if (eval(n) >= ZERO) then
              Q_l%data(i+1,iqpres) = Q_l%data(i+1,iqpres) + &
                   beta_xp(n)*rvec(n,iqpres)
           endif
 
-          if (eval(n) <= 0.0_dp_t) then
+          if (eval(n) <= ZERO) then
              Q_r%data(i,iqpres) = Q_r%data(i,iqpres) + &
                   beta_xm(n)*rvec(n,iqpres)
           endif
        enddo
 
-       Q_l%data(i+1,iqpres) = Qref_xp(iqpres) - &
-            xi%data(i,1)*Q_l%data(i+1,iqpres)
-
-       Q_r%data(i,iqpres) = Qref_xm(iqpres) - &
-            xi%data(i,1)*Q_r%data(i,iqpres)
+       Q_l%data(i+1,iqpres) = Qref_xp(iqpres) - Q_l%data(i+1,iqpres)
+       Q_r%data(i,iqpres)   = Qref_xm(iqpres) - Q_r%data(i,iqpres)
        
+       ! flatten
+       Q_l%data(i+1,:) = (ONE - xi%data(i,1))*Q%data(i,:) + xi%data(i,1)*Q_l%data(i+1,:)
+       Q_r%data(i,:)   = (ONE - xi%data(i,1))*Q%data(i,:) + xi%data(i,1)*Q_r%data(i,:)
     enddo
 
     ! clean-up
@@ -511,8 +465,8 @@ contains
     ! apply the source terms
     !-------------------------------------------------------------------------
     do i = U%grid%lo, U%grid%hi+1
-       Q_l%data(i,iqxvel) = Q_l%data(i,iqxvel) + 0.5_dp_t*dt*grav
-       Q_r%data(i,iqxvel) = Q_r%data(i,iqxvel) + 0.5_dp_t*dt*grav
+       Q_l%data(i,iqxvel) = Q_l%data(i,iqxvel) + HALF*dt*grav
+       Q_r%data(i,iqxvel) = Q_r%data(i,iqxvel) + HALF*dt*grav
     enddo
 
     ! special fixes at the boundary -- gravity must be reflected
@@ -544,11 +498,11 @@ contains
        ! total energy
        call eos(eos_input_p, Q_l%data(i,iqpres), e, Q_l%data(i,iqdens))
        U_l%data(i,iuener) = Q_l%data(i,iqdens)*e + &
-            0.5_dp_t*Q_l%data(i,iqdens)*Q_l%data(i,iqxvel)**2
+            HALF*Q_l%data(i,iqdens)*Q_l%data(i,iqxvel)**2
 
        call eos(eos_input_p, Q_r%data(i,iqpres), e, Q_r%data(i,iqdens))
        U_r%data(i,iuener) = Q_r%data(i,iqdens)*e + &
-            0.5_dp_t*Q_r%data(i,iqdens)*Q_r%data(i,iqxvel)**2
+            HALF*Q_r%data(i,iqdens)*Q_r%data(i,iqxvel)**2
 
     enddo
     
