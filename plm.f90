@@ -1,10 +1,11 @@
 module interface_states_plm_module
 
   use datatypes_module
-  use  grid_module
-  use   variables_module
+  use grid_module
+  use variables_module
   use params_module
   use eos_module
+  use eigen_module
 
   implicit none
 
@@ -24,13 +25,13 @@ contains
     type(gridedgevar_t) :: Q_l, Q_r
     type(gridvar_t) :: ldelta, temp
 
-    real (kind=dp_t) :: rvec(nprim,nprim), lvec(nprim,nprim), eval(nprim)
+    real (kind=dp_t) :: rvec(nwaves,nprim), lvec(nwaves,nprim), eval(nwaves)
     real (kind=dp_t) :: dQ(nprim)
 
     real (kind=dp_t) :: r, ux, p, cs
     real (kind=dp_t) :: ldr, ldu, ldp
     real (kind=dp_t) :: r_xm, r_xp, u_xm, u_xp, p_xm, p_xp
-    real (kind=dp_t) :: beta_xm(nprim), beta_xp(nprim)
+    real (kind=dp_t) :: beta_xm(nwaves), beta_xp(nwaves)
     real (kind=dp_t) :: sum_xm, sum_xp
     real (kind=dp_t) :: sum
 
@@ -244,45 +245,6 @@ contains
 
     dtdx = dt/U%grid%dx
 
-    ! We need the left and right eigenvectors and the eigenvalues for
-    ! the system
-    !
-    ! The eigenvalues are u - c, u, u + c
-    !
-    ! The matrix A in the primitive variable system is
-    !
-    !       / u   r   0   \  
-    !   A = | 0   u   1/r |  
-    !       \ 0  rc^2 u   /
-    !
-    ! With the rows corresponding to rho, u, and p
-    !
-    ! The right eigenvectors are
-    !
-    !       /  1  \        / 1 \        /  1  \
-    ! r1 =  |-c/r |   r2 = | 0 |   r3 = | c/r |
-    !       \ c^2 /        \ 0 /        \ c^2 /
-    !
-    !
-    ! The left eigenvectors are    
-    !
-    !   l1 =     ( 0,  -r/(2c),  1/(2c^2) )
-    !   l2 =     ( 1,     0,     -1/c^2,  )
-    !   l3 =     ( 0,   r/(2c),  1/(2c^2) )
-    !
-    ! The fluxes are going to be defined on the left edge of the
-    ! computational zone.
-    !
-    !          |             |             |             | 
-    !          |             |             |             |  
-    !         -+------+------+------+------+------+------+--   
-    !          |     i-1     |      i      |     i+1     |   
-    !                       * *           * 
-    !                   q_l,i  q_r,i   q_l,i+1 
-    !           
-    ! q_l,i+1 are computed using the information in zone i
-    !
-    !
     ! The basic idea here is that we do a characteristic
     ! decomposition.  The jump in primitive variables (Q) can be
     ! transformed to a jump in characteristic variables using the left
@@ -343,21 +305,9 @@ contains
        ! compute the sound speed
        cs = sqrt(gamma*p/r)
 
-       ! compute the eigenvalues
-       eval(1) = ux - cs
-       eval(2) = ux
-       eval(3) = ux + cs
 
-
-       ! compute the left eigenvectors       
-       lvec(1,:) = [ 0.0_dp_t, -0.5_dp_t*r/cs, 0.5_dp_t/(cs*cs)  ]   ! u - c
-       lvec(2,:) = [ 1.0_dp_t, 0.0_dp_t,       -1.0_dp_t/(cs*cs) ]   ! u
-       lvec(3,:) = [ 0.0_dp_t, 0.5_dp_t*r/cs,  0.5_dp_t/(cs*cs)  ]   ! u + c
-
-       ! compute the right eigenvectors
-       rvec(1,:) = [ 1.0_dp_t, -cs/r,    cs*cs    ]   ! u - c
-       rvec(2,:) = [ 1.0_dp_t, 0.0_dp_t, 0.0_dp_t ]   ! u
-       rvec(3,:) = [ 1.0_dp_t, cs/r,     cs*cs    ]   ! u + c
+       ! get the eigenvalues and eigenvectors
+       call eigen(r, ux, p, cs, lvec, rvec, eval)
 
 
        ! Define the reference states (here xp is the right interface
@@ -384,14 +334,11 @@ contains
        ! first compute beta_xm and beta_xp -- these are the
        ! coefficients to the right eigenvectors in the eigenvector
        ! expansion (see Colella 1990, page 191)
-       do m = 1, nprim
-          sum = 0.0_dp_t
+       do m = 1, nwaves
 
           ! dot product of the current left eigenvector with the
           ! primitive variable jump
-          do n = 1, nprim
-             sum = sum + lvec(m,n)*dQ(n)
-          enddo
+          sum = dot_product(lvec(m,:),dQ(:))
 
           ! here the sign() function makes sure we only add the right-moving
           ! waves
@@ -410,7 +357,7 @@ contains
        ! density
        sum_xm = 0.0_dp_t
        sum_xp = 0.0_dp_t
-       do n = 1, nprim
+       do n = 1, nwaves
           sum_xm = sum_xm + beta_xm(n)*rvec(n,1)
           sum_xp = sum_xp + beta_xp(n)*rvec(n,1)
        enddo
@@ -422,7 +369,7 @@ contains
        ! velocity
        sum_xm = 0.0_dp_t
        sum_xp = 0.0_dp_t
-       do n = 1, nprim
+       do n = 1, nwaves
           sum_xm = sum_xm + beta_xm(n)*rvec(n,2)
           sum_xp = sum_xp + beta_xp(n)*rvec(n,2)
        enddo
@@ -434,7 +381,7 @@ contains
        ! pressure
        sum_xm = 0.0_dp_t
        sum_xp = 0.0_dp_t
-       do n = 1, nprim
+       do n = 1, nwaves
           sum_xm = sum_xm + beta_xm(n)*rvec(n,3)
           sum_xp = sum_xp + beta_xp(n)*rvec(n,3)
        enddo
