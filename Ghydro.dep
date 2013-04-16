@@ -53,6 +53,7 @@ $(odir)/plm.o : $(odir)/grid.o
 $(odir)/plm.o : $(odir)/variables.o
 $(odir)/plm.o : $(odir)/params.o
 $(odir)/plm.o : $(odir)/eos.o
+$(odir)/plm.o : $(odir)/eigen.o
  
 $(odir)/ppm.o : $(odir)/datatypes.o
 $(odir)/ppm.o : $(odir)/grid.o
