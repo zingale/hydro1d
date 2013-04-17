@@ -116,7 +116,7 @@ contains
 
        ! pressure
        e = (U%data(i,iuener) - &
-            0.5_dp_t*U%data(i,iumomx)**2/U%data(i,iudens))/U%data(i,iudens)
+            HALF*U%data(i,iumomx)**2/U%data(i,iudens))/U%data(i,iudens)
        call eos(eos_input_e, Q%data(i,iqpres), e, Q%data(i,iqdens))
     enddo
 
@@ -146,14 +146,14 @@ contains
 
           test = (Q%data(i+1,n) - Q%data(i,n))*(Q%data(i,n) - Q%data(i-1,n))
 
-          if (test > 0.0_dp_t) then
-             temp%data(i,1) = min(0.5_dp_t*abs(Q%data(i+1,n) - Q%data(i-1,n)), &
+          if (test > ZERO) then
+             temp%data(i,1) = min(HALF*abs(Q%data(i+1,n) - Q%data(i-1,n)), &
                                   min(2.0_dp_t*abs(Q%data(i+1,n) - Q%data(i,n)), &
                                       2.0_dp_t*abs(Q%data(i,n) - Q%data(i-1,n)))) * &
-                              sign(1.0_dp_t,Q%data(i+1,n) - Q%data(i-1,n))
+                              sign(ONE,Q%data(i+1,n) - Q%data(i-1,n))
 
           else
-             temp%data(i,1) = 0.0_dp_t
+             temp%data(i,1) = ZERO
           endif
 
        enddo
@@ -164,15 +164,15 @@ contains
           
           test = (Q%data(i+1,n) - Q%data(i,n))*(Q%data(i,n) - Q%data(i-1,n))
 
-          if (test > 0.0_dp_t) then
+          if (test > ZERO) then
              ldelta%data(i,n) = &
                   min((2.0_dp_t/3.0_dp_t)*abs(Q%data(i+1,n) - Q%data(i-1,n) - &
                       0.25_dp_t*(temp%data(i+1,1) + temp%data(i-1,1))), &
                   min(2.0*abs(Q%data(i+1,n) - Q%data(i,n)), &
                       2.0*abs(Q%data(i,n) - Q%data(i-1,n)))) * &
-                  sign(1.0_dp_t, Q%data(i+1,n) - Q%data(i-1,n))
+                  sign(ONE, Q%data(i+1,n) - Q%data(i-1,n))
           else
-             ldelta%data(i,n) = 0.0_dp_t
+             ldelta%data(i,n) = ZERO
           endif
 
        enddo
@@ -271,14 +271,14 @@ contains
        ! These expressions are the V_{L,R} in Colella (1990) at the 
        ! bottom of page 191.  They are also in Saltzman (1994) as
        ! V_ref on page 161.
-       r_xp = r + 0.5_dp_t*(1.0_dp_t - dtdx*max(eval(3), 0.0_dp_t))*ldr
-       r_xm = r - 0.5_dp_t*(1.0_dp_t + dtdx*min(eval(1), 0.0_dp_t))*ldr
+       r_xp = r + HALF*(ONE - dtdx*max(eval(3), ZERO))*ldr
+       r_xm = r - HALF*(ONE + dtdx*min(eval(1), ZERO))*ldr
 
-       u_xp = ux + 0.5_dp_t*(1.0_dp_t - dtdx*max(eval(3), 0.0_dp_t))*ldu
-       u_xm = ux - 0.5_dp_t*(1.0_dp_t + dtdx*min(eval(1), 0.0_dp_t))*ldu
+       u_xp = ux + HALF*(ONE - dtdx*max(eval(3), ZERO))*ldu
+       u_xm = ux - HALF*(ONE + dtdx*min(eval(1), ZERO))*ldu
 
-       p_xp = p + 0.5_dp_t*(1.0_dp_t - dtdx*max(eval(3), 0.0_dp_t))*ldp
-       p_xm = p - 0.5_dp_t*(1.0_dp_t + dtdx*min(eval(1), 0.0_dp_t))*ldp
+       p_xp = p + HALF*(ONE - dtdx*max(eval(3), ZERO))*ldp
+       p_xm = p - HALF*(ONE + dtdx*min(eval(1), ZERO))*ldp
 
        !                                                   ^
        ! Now compute the interface states.   These are the V expressions
@@ -297,20 +297,20 @@ contains
           ! here the sign() function makes sure we only add the right-moving
           ! waves
           beta_xp(m) = 0.25_dp_t*dtdx*(eval(3) - eval(m))* &
-               (sign(1.0_dp_t, eval(m)) + 1.0_dp_t)*sum
+               (sign(ONE, eval(m)) + ONE)*sum
 
           ! here the sign() function makes sure we only add the left-moving
           ! waves
           beta_xm(m) = 0.25_dp_t*dtdx*(eval(1) - eval(m))* &
-               (1.0_dp_t - sign(1.0_dp_t, eval(m)))*sum
+               (ONE - sign(ONE, eval(m)))*sum
 
        enddo
 
        ! finally, sum up all the jumps 
        
        ! density
-       sum_xm = 0.0_dp_t
-       sum_xp = 0.0_dp_t
+       sum_xm = ZERO
+       sum_xp = ZERO
        do n = 1, nwaves
           sum_xm = sum_xm + beta_xm(n)*rvec(n,1)
           sum_xp = sum_xp + beta_xp(n)*rvec(n,1)
@@ -321,8 +321,8 @@ contains
 
 
        ! velocity
-       sum_xm = 0.0_dp_t
-       sum_xp = 0.0_dp_t
+       sum_xm = ZERO
+       sum_xp = ZERO
        do n = 1, nwaves
           sum_xm = sum_xm + beta_xm(n)*rvec(n,2)
           sum_xp = sum_xp + beta_xp(n)*rvec(n,2)
@@ -333,8 +333,8 @@ contains
 
 
        ! pressure
-       sum_xm = 0.0_dp_t
-       sum_xp = 0.0_dp_t
+       sum_xm = ZERO
+       sum_xp = ZERO
        do n = 1, nwaves
           sum_xm = sum_xm + beta_xm(n)*rvec(n,3)
           sum_xp = sum_xp + beta_xp(n)*rvec(n,3)
@@ -354,8 +354,8 @@ contains
     ! apply the source terms
     !-------------------------------------------------------------------------
     do i = U%grid%lo, U%grid%hi+1
-       Q_l%data(i,iqxvel) = Q_l%data(i,iqxvel) + 0.5_dp_t*dt*grav
-       Q_r%data(i,iqxvel) = Q_r%data(i,iqxvel) + 0.5_dp_t*dt*grav
+       Q_l%data(i,iqxvel) = Q_l%data(i,iqxvel) + HALF*dt*grav
+       Q_r%data(i,iqxvel) = Q_r%data(i,iqxvel) + HALF*dt*grav
     enddo
 
     ! special fixes at the boundary -- gravity must be reflected
@@ -387,11 +387,11 @@ contains
        ! total energy
        call eos(eos_input_p, Q_l%data(i,iqpres), e, Q_l%data(i,iqdens))
        U_l%data(i,iuener) = Q_l%data(i,iqdens)*e + &
-            0.5_dp_t*Q_l%data(i,iqdens)*Q_l%data(i,iqxvel)**2
+            HALF*Q_l%data(i,iqdens)*Q_l%data(i,iqxvel)**2
 
        call eos(eos_input_p, Q_r%data(i,iqpres), e, Q_r%data(i,iqdens))
        U_r%data(i,iuener) = Q_r%data(i,iqdens)*e + &
-            0.5_dp_t*Q_r%data(i,iqdens)*Q_r%data(i,iqxvel)**2
+            HALF*Q_r%data(i,iqdens)*Q_r%data(i,iqxvel)**2
 
     enddo
     
