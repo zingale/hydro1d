@@ -48,14 +48,14 @@ contains
 
 
     ! compute the left eigenvectors
-    lvec(1,:) = [ ZERO, -HALF*r/cs, HALF/(cs*cs)  ]   ! u - c
-    lvec(2,:) = [ ONE, ZERO,       -ONE/(cs*cs) ]   ! u
-    lvec(3,:) = [ ZERO, HALF*r/cs,  HALF/(cs*cs)  ]   ! u + c
+    lvec(1,:) = [ ZERO, -HALF*r/cs, HALF/(cs*cs) ]   ! u - c
+    lvec(2,:) = [ ONE,  ZERO,       -ONE/(cs*cs) ]   ! u
+    lvec(3,:) = [ ZERO, HALF*r/cs,  HALF/(cs*cs) ]   ! u + c
 
     ! compute the right eigenvectors
-    rvec(1,:) = [ ONE, -cs/r,    cs*cs    ]   ! u - c 
-    rvec(2,:) = [ ONE, ZERO, ZERO ]   ! u  
-    rvec(3,:) = [ ONE, cs/r,     cs*cs    ]   ! u + c   
+    rvec(1,:) = [ ONE, -cs/r, cs*cs ]   ! u - c 
+    rvec(2,:) = [ ONE, ZERO,  ZERO  ]   ! u  
+    rvec(3,:) = [ ONE, cs/r,  cs*cs ]   ! u + c   
 
   end subroutine eigen
 end module eigen_module
