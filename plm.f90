@@ -251,10 +251,7 @@ contains
        ldu = ldelta%data(i,iqxvel)
        ldp = ldelta%data(i,iqpres)
 
-       dQ(1) = ldr
-       dQ(2) = ldu
-       dQ(3) = ldp
-
+       dQ(:) = [ ldr, ldu, ldp ]
 
        ! compute the sound speed
        cs = sqrt(gamma*p/r)
@@ -312,8 +309,8 @@ contains
        sum_xm = ZERO
        sum_xp = ZERO
        do n = 1, nwaves
-          sum_xm = sum_xm + beta_xm(n)*rvec(n,1)
-          sum_xp = sum_xp + beta_xp(n)*rvec(n,1)
+          sum_xm = sum_xm + beta_xm(n)*rvec(n,iqdens)
+          sum_xp = sum_xp + beta_xp(n)*rvec(n,iqdens)
        enddo
 
        Q_l%data(i+1,iqdens) = r_xp + sum_xp
@@ -324,8 +321,8 @@ contains
        sum_xm = ZERO
        sum_xp = ZERO
        do n = 1, nwaves
-          sum_xm = sum_xm + beta_xm(n)*rvec(n,2)
-          sum_xp = sum_xp + beta_xp(n)*rvec(n,2)
+          sum_xm = sum_xm + beta_xm(n)*rvec(n,iqxvel)
+          sum_xp = sum_xp + beta_xp(n)*rvec(n,iqxvel)
        enddo
 
        Q_l%data(i+1,iqxvel) = u_xp + sum_xp
@@ -336,8 +333,8 @@ contains
        sum_xm = ZERO
        sum_xp = ZERO
        do n = 1, nwaves
-          sum_xm = sum_xm + beta_xm(n)*rvec(n,3)
-          sum_xp = sum_xp + beta_xp(n)*rvec(n,3)
+          sum_xm = sum_xm + beta_xm(n)*rvec(n,iqpres)
+          sum_xp = sum_xp + beta_xp(n)*rvec(n,iqpres)
        enddo
 
        Q_l%data(i+1,iqpres) = p_xp + sum_xp
