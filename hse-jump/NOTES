@@ -7,3 +7,14 @@
    Also, pure reflecting BCs (i.e. no HSE support) cause sharp jumps
    right at the boundaries.
 
+-- for a constant entropy envelope, the solution looks like:
+
+   rho^{gamma-1} = rho_c^{gamma-1} + g (gamma-1)/gamma R /K
+
+   (where K is the constant in the EOS).
+
+   Since g < 0, the RHS has a zero.  This puts a limit on the range 
+   that we can model, because we cannot resolve past the edge of the 
+   star.
+
+   Perhaps we should switch back to a isothermal EOS at the edge?
