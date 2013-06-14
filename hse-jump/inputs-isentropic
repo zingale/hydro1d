@@ -17,7 +17,7 @@
  hse_bc_const = "temperature"	
  hse_vel_type = "reflect"
 
- xmax = 8.0
+ xmax = 8
 
  plot_dt = 1.e-4
  write_ghost = .true.
@@ -26,12 +26,12 @@
 &problem
 
  dens_base = 1.0d0
- pres_base = 1.d9
+ pres_base = 5.d9
 
  small_dens = 1.d-5
  
- x_jump = 1.0
- delta = 1.0
- e_factor = 5.0
+ x_jump = 0.0
+ delta = 0.0
+ e_factor = 1.0
 
 /

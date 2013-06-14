@@ -30,7 +30,7 @@
 
  small_dens = 1.d-5
  
- x_jump = 1.0
+ x_jump = 10.0
  delta = 1.0
  e_factor = 5.0
 
