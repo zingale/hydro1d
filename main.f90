@@ -11,6 +11,7 @@ program hydro1d
   use bcs_module
   use dt_module
   use interface_states_ppm_module
+  use interface_states_ppm_temp_module
   use riemann_module
   use update_module
 
@@ -29,11 +30,7 @@ program hydro1d
   call init_probparams()
 
   ! set the number of ghostcells
-  if (godunov_type == 0) then
-     ng = 1
-  else
-     ng = 4
-  endif
+  ng = 4
 
 
   ! build the grid and storage for grid variables, interface states,
@@ -78,8 +75,11 @@ program hydro1d
 
 
      ! construct the interface states
-     call make_interface_states_ppm(U, U_l, U_r, dt)
-
+     if (ppm_temp) then
+        call make_interface_states_ppm_temp(U, U_l, U_r, dt)
+     else
+        call make_interface_states_ppm(U, U_l, U_r, dt)
+     endif
 
      ! compute the fluxes
      call solve_riemann(U_l, U_r, fluxes)

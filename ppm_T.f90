@@ -1,4 +1,6 @@
-module interface_states_ppm_module
+module interface_states_ppm_temp_module
+  ! this version of the PPM reconstruction used (rho, u, T) instead of
+  ! the common (rho, u, p)
 
   use datatypes_module
   use grid_module
@@ -6,28 +8,29 @@ module interface_states_ppm_module
   use params_module
   use eos_module
   use eigen_module
+  use eigen_T_module
   use flatten_module
 
   implicit none
 
   private
 
-  public :: make_interface_states_ppm
+  public :: make_interface_states_ppm_temp
 
 contains
   
-  subroutine make_interface_states_ppm(U, U_l, U_r, dt)
+  subroutine make_interface_states_ppm_temp(U, U_l, U_r, dt)
 
     type(gridvar_t),     intent(in   ) :: U
     type(gridedgevar_t), intent(inout) :: U_l, U_r
     real (kind=dp_t),    intent(in   ) :: dt
 
-    type(gridvar_t) :: Q
+    type(gridvar_t) :: Q, Qhat
     type(gridedgevar_t) :: Q_l, Q_r
 
     real (kind=dp_t) :: rvec(nwaves,nprim), lvec(nwaves,nprim), eval(nwaves)
 
-    real (kind=dp_t) :: r, ux, p, cs
+    real (kind=dp_t) :: r, ux, p, cs, T, p_r, p_T
     real (kind=dp_t) :: beta_xm(nwaves), beta_xp(nwaves)
 
     real (kind=dp_t) :: dq0, dqp
@@ -43,7 +46,7 @@ contains
 
     real (kind=dp_t) :: dtdx
 
-    real (kind=dp_t) :: e
+    real (kind=dp_t) :: e, T_l, T_r
 
     integer :: i, m, n
 
@@ -66,6 +69,7 @@ contains
     ! convert to primitve variables
     !-------------------------------------------------------------------------
     call build(Q, U%grid, nprim)
+    call build(Qhat, U%grid, nprim)
 
     do i = U%grid%lo-U%grid%ng, U%grid%hi+U%grid%ng
        ! density
@@ -74,10 +78,13 @@ contains
        ! velocity
        Q%data(i,iqxvel) = U%data(i,iumomx)/U%data(i,iudens)
 
+       Qhat%data(i,iqdens) = Q%data(i,iqdens)
+       Qhat%data(i,iqxvel) = Q%data(i,iqxvel)
+
        ! pressure
        e = (U%data(i,iuener) - &
             HALF*U%data(i,iumomx)**2/U%data(i,iudens))/U%data(i,iudens)
-       call eos(eos_input_e, Q%data(i,iqpres), e, Q%data(i,iqdens))
+       call eos(eos_input_e, Q%data(i,iqpres), e, Q%data(i,iqdens), T = Qhat%data(i,iqtemp) )
     enddo
 
 
@@ -101,43 +108,43 @@ contains
        do i = U%grid%lo-2, U%grid%hi+2
 
           ! dq (C&W Eq. 1.7)
-          dq0 = HALF*(Q%data(i+1,n) - Q%data(i-1,n))
-          dqp = HALF*(Q%data(i+2,n) - Q%data(i,n))
+          dq0 = HALF*(Qhat%data(i+1,n) - Qhat%data(i-1,n))
+          dqp = HALF*(Qhat%data(i+2,n) - Qhat%data(i,n))
 
           ! limiting (C&W Eq. 1.8)
-          if ( (Q%data(i+1,n) - Q%data(i,n))* &
-               (Q%data(i,n) - Q%data(i-1,n)) > ZERO) then
+          if ( (Qhat%data(i+1,n) - Qhat%data(i,n))* &
+               (Qhat%data(i,n) - Qhat%data(i-1,n)) > ZERO) then
              dq0 = sign(ONE,dq0)* &
                   min( abs(dq0), &
-                       2.0_dp_t*abs(Q%data(i,n) - Q%data(i-1,n)), &
-                       2.0_dp_t*abs(Q%data(i+1,n) - Q%data(i,n)) )
+                       2.0_dp_t*abs(Qhat%data(i,n) - Qhat%data(i-1,n)), &
+                       2.0_dp_t*abs(Qhat%data(i+1,n) - Qhat%data(i,n)) )
           else
              dq0 = ZERO
           endif
 
-          if ( (Q%data(i+2,n) - Q%data(i+1,n))* &
-               (Q%data(i+1,n) - Q%data(i,n)) > ZERO) then
+          if ( (Qhat%data(i+2,n) - Qhat%data(i+1,n))* &
+               (Qhat%data(i+1,n) - Qhat%data(i,n)) > ZERO) then
              dqp = sign(ONE,dqp)* &
                   min( abs(dqp), &
-                       2.0_dp_t*abs(Q%data(i+1,n) - Q%data(i,n)), &
-                       2.0_dp_t*abs(Q%data(i+2,n) - Q%data(i+1,n)) )
+                       2.0_dp_t*abs(Qhat%data(i+1,n) - Qhat%data(i,n)), &
+                       2.0_dp_t*abs(Qhat%data(i+2,n) - Qhat%data(i+1,n)) )
           else
              dqp = ZERO
           endif
 
           ! cubic (C&W Eq. 1.6)
-          Qplus%data(i,n) = HALF*(Q%data(i,n) + Q%data(i+1,n)) - &
+          Qplus%data(i,n) = HALF*(Qhat%data(i,n) + Qhat%data(i+1,n)) - &
                (ONE/6.0_dp_t)*(dqp - dq0)
 
           Qminus%data(i+1,n) = Qplus%data(i,n)
 
           ! make sure that we didn't over or undersoot -- this may not
           ! be needed, but is discussed in Colella & Sekora (2008)
-          Qplus%data(i,n) = max(Qplus%data(i,n), min(Q%data(i,n),Q%data(i+1,n)))
-          Qplus%data(i,n) = min(Qplus%data(i,n), max(Q%data(i,n),Q%data(i+1,n)))
+          Qplus%data(i,n) = max(Qplus%data(i,n), min(Qhat%data(i,n),Qhat%data(i+1,n)))
+          Qplus%data(i,n) = min(Qplus%data(i,n), max(Qhat%data(i,n),Qhat%data(i+1,n)))
 
-          Qminus%data(i+1,n) = max(Qminus%data(i+1,n), min(Q%data(i,n),Q%data(i+1,n)))
-          Qminus%data(i+1,n) = min(Qminus%data(i+1,n), max(Q%data(i,n),Q%data(i+1,n)))
+          Qminus%data(i+1,n) = max(Qminus%data(i+1,n), min(Qhat%data(i,n),Qhat%data(i+1,n)))
+          Qminus%data(i+1,n) = min(Qminus%data(i+1,n), max(Qhat%data(i,n),Qhat%data(i+1,n)))
 
        enddo
     enddo
@@ -162,29 +169,29 @@ contains
     do n = 1, nprim
        do i = U%grid%lo-1, U%grid%hi+1
 
-          if ( (Qplus%data(i,n) - Q%data(i,n)) * &
-               (Q%data(i,n) - Qminus%data(i,n)) <= ZERO) then
-             Qminus%data(i,n) = Q%data(i,n)
-             Qplus%data(i,n) = Q%data(i,n)
+          if ( (Qplus%data(i,n) - Qhat%data(i,n)) * &
+               (Qhat%data(i,n) - Qminus%data(i,n)) <= ZERO) then
+             Qminus%data(i,n) = Qhat%data(i,n)
+             Qplus%data(i,n) = Qhat%data(i,n)
 
           else if ( (Qplus%data(i,n) - Qminus%data(i,n)) * &
-                    (Q%data(i,n) - &
+                    (Qhat%data(i,n) - &
                       HALF*(Qminus%data(i,n) + Qplus%data(i,n))) > &
                    (Qplus%data(i,n) - Qminus%data(i,n))**2/6.0_dp_t ) then
 
           ! alternate test from Colella & Sekora (2008)
-          !else if (abs(Qminus%data(i,n) - Q%data(i,n)) >= &
-          !     2.0*abs(Qplus%data(i,n) - Q%data(i,n))) then
-             Qminus%data(i,n) = 3.0_dp_t*Q%data(i,n) - 2.0_dp_t*Qplus%data(i,n)
+          !else if (abs(Qminus%data(i,n) - Qhat%data(i,n)) >= &
+          !     2.0*abs(Qplus%data(i,n) - Qhat%data(i,n))) then
+             Qminus%data(i,n) = 3.0_dp_t*Qhat%data(i,n) - 2.0_dp_t*Qplus%data(i,n)
 
           else if (-(Qplus%data(i,n) - Qminus%data(i,n))**2/6.0_dp_t > &
                     (Qplus%data(i,n) - Qminus%data(i,n)) * &
-                    (Q%data(i,n) - &
+                    (Qhat%data(i,n) - &
                            HALF*(Qminus%data(i,n) + Qplus%data(i,n))) ) then
 
-          !else if (abs(Qplus%data(i,n) - Q%data(i,n)) >= &
-          !     2.0*abs(Qminus%data(i,n) - Q%data(i,n))) then
-             Qplus%data(i,n) = 3.0_dp_t*Q%data(i,n) - 2.0_dp_t*Qminus%data(i,n)
+          !else if (abs(Qplus%data(i,n) - Qhat%data(i,n)) >= &
+          !     2.0*abs(Qminus%data(i,n) - Qhat%data(i,n))) then
+             Qplus%data(i,n) = 3.0_dp_t*Qhat%data(i,n) - 2.0_dp_t*Qminus%data(i,n)
 
           endif
 
@@ -197,7 +204,7 @@ contains
     do n = 1, nprim
        do i = U%grid%lo-1, U%grid%hi+1
 
-          Q6%data(i,n) = 6.0_dp_t*Q%data(i,n) - &
+          Q6%data(i,n) = 6.0_dp_t*Qhat%data(i,n) - &
                3.0_dp_t*(Qminus%data(i,n) + Qplus%data(i,n))
 
        enddo
@@ -228,17 +235,17 @@ contains
 
     do i = U%grid%lo-1, U%grid%hi+1
 
-       r  = Q%data(i,iqdens)
-       ux = Q%data(i,iqxvel)
-       p  = Q%data(i,iqpres)
+       r  = Qhat%data(i,iqdens)
+       ux = Qhat%data(i,iqxvel)
+       T  = Qhat%data(i,iqtemp)
 
+       ! for the EOS call
+       p  = Q%datA(i,iqpres)
 
-       ! compute the sound speed
-       cs = sqrt(gamma*p/r)
-
+       call eos(eos_input_p, p, e, r, p_r=p_r, p_T=p_T, c=cs)
 
        ! get the eigenvalues and eigenvectors
-       call eigen(r, ux, p, cs, lvec, rvec, eval)
+       call eigen_T(r, ux, T, p_r, p_T, cs, lvec, rvec, eval)
 
 
        ! integrate the parabola in the cell from the left interface
@@ -257,7 +264,7 @@ contains
                      (Qplus%data(i,n) - Qminus%data(i,n) - &
                      (ONE - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
              else
-                Iplus(m,n) = Q%data(i,n)
+                Iplus(m,n) = Qhat%data(i,n)
              endif
 
              if (eval(m) <= ZERO) then
@@ -265,7 +272,7 @@ contains
                      (Qplus%data(i,n) - Qminus%data(i,n) + &
                      (ONE - (2.0_dp_t/3.0_dp_t)*sigma)*Q6%data(i,n))
              else
-                Iminus(m,n) = Q%data(i,n)
+                Iminus(m,n) = Qhat%data(i,n)
              endif
 
           enddo
@@ -298,40 +305,23 @@ contains
        ! minimize the size of the jump that the projection operates on.
        if (.false.) then
           ! CASTRO method
-          Qref_xm(:) = Q%data(i,:)
-          Qref_xp(:) = Q%data(i,:)
+          Qref_xm(:) = Qhat%data(i,:)
+          Qref_xp(:) = Qhat%data(i,:)
        else
           ! Miller and Colella method
           if (eval(3) >= ZERO) then
              Qref_xp(:) = Iplus(3,:)
           else
-             Qref_xp(:) = Q%data(i,:)
+             Qref_xp(:) = Qhat%data(i,:)
           endif
 
           if (eval(1) <= ZERO) then
              Qref_xm(:) = Iminus(1,:)
           else
-             Qref_xm(:) = Q%data(i,:)
+             Qref_xm(:) = Qhat%data(i,:)
           endif             
        endif
 
-
-       ! HSE reference states
-       if (use_hse_fix == 1) then
-
-          ! left pressure state
-          sigma = abs(eval(3))*dtdx
-          Qref_xp(iqpres) = Qminus%data(i,iqpres) + &
-               (1.0d0 - 0.5*sigma)*(Qplus%data(i,iqpres) - Qminus%data(i,iqpres) + &
-                Q6%data(i,iqpres)*0.5*sigma) + grav*0.5d0*sigma*U%grid%dx*Iplus(3,iqdens)
-          
-          ! right pressure state
-          sigma=abs(eval(1))*dtdx
-          Qref_xm(iqpres) = Qminus%data(i,iqpres) + &
-               0.5*sigma*(Qplus%data(i,iqpres)-Qminus%data(i,iqpres) + &
-                Q6%data(i,iqpres)*(1.0-0.5*sigma))-grav*0.5*sigma*U%grid%dx*Iminus(1,iqdens)
-       endif
-       
 
        ! compute the dot product of each left eigenvector with (qref - I)
        do m = 1, nwaves    ! loop over waves
@@ -385,27 +375,35 @@ contains
 
 
        ! pressure
-       Q_l%data(i+1,iqpres) = ZERO
-       Q_r%data(i,iqpres) = ZERO
+       Q_l%data(i+1,iqtemp) = ZERO
+       Q_r%data(i,iqtemp) = ZERO
 
        do n = 1, nwaves
           if (eval(n) >= ZERO) then
-             Q_l%data(i+1,iqpres) = Q_l%data(i+1,iqpres) + &
-                  beta_xp(n)*rvec(n,iqpres)
+             Q_l%data(i+1,iqtemp) = Q_l%data(i+1,iqtemp) + &
+                  beta_xp(n)*rvec(n,iqtemp)
           endif
 
           if (eval(n) <= ZERO) then
-             Q_r%data(i,iqpres) = Q_r%data(i,iqpres) + &
-                  beta_xm(n)*rvec(n,iqpres)
+             Q_r%data(i,iqtemp) = Q_r%data(i,iqtemp) + &
+                  beta_xm(n)*rvec(n,iqtemp)
           endif
        enddo
 
-       Q_l%data(i+1,iqpres) = Qref_xp(iqpres) - Q_l%data(i+1,iqpres)
-       Q_r%data(i,iqpres)   = Qref_xm(iqpres) - Q_r%data(i,iqpres)
+       Q_l%data(i+1,iqtemp) = Qref_xp(iqtemp) - Q_l%data(i+1,iqtemp)
+       Q_r%data(i,iqtemp)   = Qref_xm(iqtemp) - Q_r%data(i,iqtemp)
        
        ! flatten
-       Q_l%data(i+1,:) = (ONE - xi%data(i,1))*Q%data(i,:) + xi%data(i,1)*Q_l%data(i+1,:)
-       Q_r%data(i,:)   = (ONE - xi%data(i,1))*Q%data(i,:) + xi%data(i,1)*Q_r%data(i,:)
+       Q_l%data(i+1,:) = (ONE - xi%data(i,1))*Qhat%data(i,:) + xi%data(i,1)*Q_l%data(i+1,:)
+       Q_r%data(i,:)   = (ONE - xi%data(i,1))*Qhat%data(i,:) + xi%data(i,1)*Q_r%data(i,:)
+
+       ! convert the temperature edge state into a pressure edge state via the EOS
+       T_l = Q_l%data(i+1,iqtemp)
+       T_r = Q_r%data(i,iqtemp)
+
+       call eos(eos_input_T, Q_l%data(i+1,iqpres), e, Q_l%data(i+1,iqdens), T = T_l)
+       call eos(eos_input_T, Q_r%data(i  ,iqpres), e, Q_r%data(i  ,iqdens), T = T_r)
+
     enddo
 
     ! clean-up
@@ -467,6 +465,6 @@ contains
     call destroy(Q_l)
     call destroy(Q_r)
 
-  end subroutine make_interface_states_ppm
+  end subroutine make_interface_states_ppm_temp
 
-end module interface_states_ppm_module
+end module interface_states_ppm_temp_module

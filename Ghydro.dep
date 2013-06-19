@@ -38,6 +38,7 @@ $(odir)/main.o : $(odir)/run_diag.o
 $(odir)/main.o : $(odir)/bcs.o
 $(odir)/main.o : $(odir)/dt.o
 $(odir)/main.o : $(odir)/ppm.o
+$(odir)/main.o : $(odir)/ppm_T.o
 $(odir)/main.o : $(odir)/riemann.o
 $(odir)/main.o : $(odir)/update.o
  
@@ -55,8 +56,15 @@ $(odir)/ppm.o : $(odir)/variables.o
 $(odir)/ppm.o : $(odir)/params.o
 $(odir)/ppm.o : $(odir)/eos.o
 $(odir)/ppm.o : $(odir)/eigen.o
-$(odir)/ppm.o : $(odir)/eigen_T.o
 $(odir)/ppm.o : $(odir)/flatten.o
+
+$(odir)/ppm_T.o : $(odir)/datatypes.o
+$(odir)/ppm_T.o : $(odir)/grid.o
+$(odir)/ppm_T.o : $(odir)/variables.o
+$(odir)/ppm_T.o : $(odir)/params.o
+$(odir)/ppm_T.o : $(odir)/eos.o
+$(odir)/ppm_T.o : $(odir)/eigen_T.o
+$(odir)/ppm_T.o : $(odir)/flatten.o
  
 $(odir)/riemann.o : $(odir)/datatypes.o
 $(odir)/riemann.o : $(odir)/grid.o

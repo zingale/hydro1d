@@ -33,7 +33,7 @@ module params_module
   real (kind=dp_t), save :: gamma = 1.4_dp_t
 
   ! hydro parameters
-  integer, save :: godunov_type = 0
+  logical, save :: ppm_temp = .true.
   real (kind=dp_t), save :: grav = 0.0_dp_t
   integer, save :: use_hse_fix = 0
   
@@ -52,7 +52,7 @@ module params_module
                     init_shrink, dt_change, tmax, &
                     cfl, &
                     gamma, &
-                    godunov_type, &
+                    ppm_temp, &
                     use_hse_fix, &
                     grav, &
                     problem_name, &

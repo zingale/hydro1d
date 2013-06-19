@@ -13,6 +13,7 @@ FSOURCE += main.f90 \
            output.f90 \
            params.f90 \
            ppm.f90 \
+           ppm_T.f90 \
            probparams.f90 \
 	   riemann.f90 \
 	   run_diag.f90 \

@@ -28,7 +28,11 @@ contains
 
     ! construct the filename and open for output
     write(unit=filenum,fmt="(i6.6)") n
-    outfile = trim(problem_name) // "_" // filenum
+    if (ppm_temp) then
+       outfile = trim(problem_name) // "_ppmT_" // filenum
+    else
+       outfile = trim(problem_name) // "_" // filenum
+    endif
 
     open(newunit=lun, file=trim(outfile), status="unknown", action="write")
 
