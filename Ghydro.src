@@ -5,6 +5,7 @@ FSOURCE += main.f90 \
            datatypes.f90 \
            dt.f90 \
 	   eigen.f90 \
+           eigen_T.f90 \
            eos.f90 \
 	   flatten.f90 \
            grid.f90 \

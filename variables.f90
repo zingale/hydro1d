@@ -16,6 +16,7 @@ module variables_module
   integer, parameter :: iqdens = 1
   integer, parameter :: iqxvel = 2
   integer, parameter :: iqpres = 3
+  integer, parameter :: iqtemp = 3
 
   ! characteristic waves
   integer, parameter :: nwaves = 3
