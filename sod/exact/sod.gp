@@ -17,18 +17,21 @@ set style line 1  lw 2 lc 1
 
 set origin 0.0, 0.666;
 set ylabel "density";
-plot 'sod_0070' using 1:2 notitle with points lc 1,\
-     'sod-exact.out' using 1:2 notitle with lines ls 1;
+plot 'sod_000070' using 1:2 title 'normal ppm' with points lc 1,\
+     'sod_ppmT_000070' using 1:2 title 'ppm-T' with points lc 2, \
+     'sod-exact.out' using 1:2 notitle with lines ls 1 lc 0;
 
 set origin 0.0, 0.333;
 set ylabel "velocity";
-plot 'sod_0070' using 1:5 notitle with points lc 1,\
-     'sod-exact.out' using 1:3 notitle with lines ls 1;
+plot 'sod_000070' using 1:5 title 'normal ppm' with points lc 1,\
+     'sod_ppmT_000070' using 1:5 title 'ppm-T' with points lc 2,\
+     'sod-exact.out' using 1:3 notitle with lines ls 1 lc 0;
 
 set origin 0.0, 0.0;
 set ylabel "pressure";
-plot 'sod_0070' using 1:6 notitle with points lc 1,\
-     'sod-exact.out' using 1:4 notitle with lines ls 1;
+plot 'sod_000070' using 1:6 title 'normal ppm' with points lc 1,\
+     'sod_ppmT_000070' using 1:6 title 'ppm-T' with points lc 2,\
+     'sod-exact.out' using 1:4 notitle with lines ls 1 lc 0;
 
 unset multiplot;
 set term x11;
