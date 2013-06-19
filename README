@@ -1,12 +1,8 @@
 hydro1d (M. Zingale, 2012-11-15)
 
-hydro1d is a simple 1-d, gamma-law gas hydrodynamics code for teaching
-purposes.  Piecewise constant (Godunov), piecewise linear, and
-piecewise parabolic (PPM) reconstruction is implemented.  
-
-*** This is a special hacked version that does a temperature-based
-reconstruction of the fluid state (instead of pressure)
-
+*** This is a special hacked version of my PPM code that does a
+temperature-based reconstruction of the fluid state (instead of
+pressure)
 
 Individual problems are built in subdirectories (e.g. sod/).  Type
 'make' there to build the source.  Object files and modules will be
