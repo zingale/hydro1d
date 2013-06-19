@@ -42,14 +42,12 @@ contains
 2   format("# time = ", f8.5)
 3   format("# n = ", i4)
 4   format("# nx = ", i4)
-45  format("# use_hse_fix = ", i4)
 5   format("# ", 9(a16,1x))
 
     write(unit=lun, fmt=1) trim(problem_name)
     write(unit=lun, fmt=2) t
     write(unit=lun, fmt=3) n
     write(unit=lun, fmt=4) U%grid%nx
-    write(unit=lun, fmt=45) use_hse_fix
     write(unit=lun, fmt=5) "x   ", "rho   ", "rho u   ", "rho E   ", "u   ", "p   ", "e   ", "cs  ", "M   "
 
     ! write out the data
