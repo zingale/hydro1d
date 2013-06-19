@@ -10,10 +10,8 @@ FSOURCE += main.f90 \
 	   flatten.f90 \
            grid.f90 \
            init.f90 \
-           godunov.f90 \
            output.f90 \
            params.f90 \
-           plm.f90 \
            ppm.f90 \
            probparams.f90 \
 	   riemann.f90 \

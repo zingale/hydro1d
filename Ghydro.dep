@@ -25,10 +25,6 @@ $(odir)/flatten.o : $(odir)/datatypes.o
 $(odir)/flatten.o : $(odir)/grid.o
 $(odir)/flatten.o : $(odir)/variables.o
  
-$(odir)/godunov.o : $(odir)/datatypes.o
-$(odir)/godunov.o : $(odir)/grid.o
-$(odir)/godunov.o : $(odir)/variables.o
- 
 $(odir)/grid.o : $(odir)/datatypes.o
  
 $(odir)/main.o : $(odir)/datatypes.o
@@ -41,8 +37,6 @@ $(odir)/main.o : $(odir)/output.o
 $(odir)/main.o : $(odir)/run_diag.o
 $(odir)/main.o : $(odir)/bcs.o
 $(odir)/main.o : $(odir)/dt.o
-$(odir)/main.o : $(odir)/godunov.o
-$(odir)/main.o : $(odir)/plm.o
 $(odir)/main.o : $(odir)/ppm.o
 $(odir)/main.o : $(odir)/riemann.o
 $(odir)/main.o : $(odir)/update.o
@@ -54,14 +48,6 @@ $(odir)/output.o : $(odir)/variables.o
 $(odir)/output.o : $(odir)/eos.o
  
 $(odir)/params.o : $(odir)/datatypes.o
- 
-$(odir)/plm.o : $(odir)/datatypes.o
-$(odir)/plm.o : $(odir)/grid.o
-$(odir)/plm.o : $(odir)/variables.o
-$(odir)/plm.o : $(odir)/params.o
-$(odir)/plm.o : $(odir)/eos.o
-$(odir)/plm.o : $(odir)/eigen.o
-$(odir)/plm.o : $(odir)/flatten.o
  
 $(odir)/ppm.o : $(odir)/datatypes.o
 $(odir)/ppm.o : $(odir)/grid.o

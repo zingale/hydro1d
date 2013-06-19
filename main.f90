@@ -10,8 +10,6 @@ program hydro1d
   use runtime_diag_module
   use bcs_module
   use dt_module
-  use interface_states_godunov_module
-  use interface_states_plm_module
   use interface_states_ppm_module
   use riemann_module
   use update_module
@@ -80,15 +78,7 @@ program hydro1d
 
 
      ! construct the interface states
-     if (godunov_type == 0) then
-        call make_interface_states_godunov(U, U_l, U_r, dt)
-
-     else if (godunov_type == 1) then
-        call make_interface_states_plm(U, U_l, U_r, dt)
-
-     else if (godunov_type == 2) then
-        call make_interface_states_ppm(U, U_l, U_r, dt)
-     endif
+     call make_interface_states_ppm(U, U_l, U_r, dt)
 
 
      ! compute the fluxes
