@@ -33,7 +33,7 @@ module params_module
   real (kind=dp_t), save :: gamma = 1.4_dp_t
 
   ! hydro parameters
-  logical, save :: ppm_temp = .true.
+  logical, save :: ppm_temp = .false.
   real (kind=dp_t), save :: grav = 0.0_dp_t
   
   ! problem-specific parameters
