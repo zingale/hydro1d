@@ -1,8 +1,6 @@
-hydro1d (M. Zingale, 2012-11-15)
+## hydro1d 
 
-*** This is a special hacked version of my PPM code that does a
-temperature-based reconstruction of the fluid state (instead of
-pressure)
+* A Fortran 95 1-d hydrodynamics code *
 
 Individual problems are built in subdirectories (e.g. sod/).  Type
 'make' there to build the source.  Object files and modules will be
