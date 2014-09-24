@@ -1,4 +1,4 @@
-## hydro1d 
+# hydro1d 
 
 * A Fortran 95 1-d hydrodynamics code *
 
