@@ -14,7 +14,7 @@ $(odir)/dt.o : $(odir)/variables.o
  
 $(odir)/eigen.o : $(odir)/datatypes.o
 $(odir)/eigen.o : $(odir)/variables.o
-
+ 
 $(odir)/eigen_T.o : $(odir)/datatypes.o
 $(odir)/eigen_T.o : $(odir)/variables.o
  
@@ -24,6 +24,10 @@ $(odir)/eos.o : $(odir)/params.o
 $(odir)/flatten.o : $(odir)/datatypes.o
 $(odir)/flatten.o : $(odir)/grid.o
 $(odir)/flatten.o : $(odir)/variables.o
+ 
+$(odir)/godunov.o : $(odir)/datatypes.o
+$(odir)/godunov.o : $(odir)/grid.o
+$(odir)/godunov.o : $(odir)/variables.o
  
 $(odir)/grid.o : $(odir)/datatypes.o
  
@@ -37,6 +41,8 @@ $(odir)/main.o : $(odir)/output.o
 $(odir)/main.o : $(odir)/run_diag.o
 $(odir)/main.o : $(odir)/bcs.o
 $(odir)/main.o : $(odir)/dt.o
+$(odir)/main.o : $(odir)/godunov.o
+$(odir)/main.o : $(odir)/plm.o
 $(odir)/main.o : $(odir)/ppm.o
 $(odir)/main.o : $(odir)/ppm_T.o
 $(odir)/main.o : $(odir)/riemann.o
@@ -50,6 +56,14 @@ $(odir)/output.o : $(odir)/eos.o
  
 $(odir)/params.o : $(odir)/datatypes.o
  
+$(odir)/plm.o : $(odir)/datatypes.o
+$(odir)/plm.o : $(odir)/grid.o
+$(odir)/plm.o : $(odir)/variables.o
+$(odir)/plm.o : $(odir)/params.o
+$(odir)/plm.o : $(odir)/eos.o
+$(odir)/plm.o : $(odir)/eigen.o
+$(odir)/plm.o : $(odir)/flatten.o
+ 
 $(odir)/ppm.o : $(odir)/datatypes.o
 $(odir)/ppm.o : $(odir)/grid.o
 $(odir)/ppm.o : $(odir)/variables.o
@@ -57,12 +71,13 @@ $(odir)/ppm.o : $(odir)/params.o
 $(odir)/ppm.o : $(odir)/eos.o
 $(odir)/ppm.o : $(odir)/eigen.o
 $(odir)/ppm.o : $(odir)/flatten.o
-
+ 
 $(odir)/ppm_T.o : $(odir)/datatypes.o
 $(odir)/ppm_T.o : $(odir)/grid.o
 $(odir)/ppm_T.o : $(odir)/variables.o
 $(odir)/ppm_T.o : $(odir)/params.o
 $(odir)/ppm_T.o : $(odir)/eos.o
+$(odir)/ppm_T.o : $(odir)/eigen.o
 $(odir)/ppm_T.o : $(odir)/eigen_T.o
 $(odir)/ppm_T.o : $(odir)/flatten.o
  

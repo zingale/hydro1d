@@ -8,10 +8,12 @@ FSOURCE += main.f90 \
            eigen_T.f90 \
            eos.f90 \
 	   flatten.f90 \
+	   godunov.f90 \
            grid.f90 \
            init.f90 \
            output.f90 \
            params.f90 \
+	   plm.f90 \
            ppm.f90 \
            ppm_T.f90 \
            probparams.f90 \
