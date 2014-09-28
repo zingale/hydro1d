@@ -22,7 +22,6 @@ namelist in the same inputs file.  See the sod problem for examples.
 
 ## Development
 
-There used to be pure Godunov and PLM reconstruction routines here,
-but I removed them a while back when experimenting with different
-PPM tricks.  These should be brought back in.
+The PPM implementation should be synced up to what was done in 
+Castro's PPM.
 
