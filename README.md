@@ -2,7 +2,8 @@
 
 *A Fortran 95 1-d hydrodynamics code*
 
-http://bender.astro.sunysb.edu/hydro1d/
+http://zingale.github.io/hydro1d/
+
 
 ## Problems
 
