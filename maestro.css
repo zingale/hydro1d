@@ -1,0 +1,198 @@
+BODY, H1, H2, H3, H4, H5  {font-family: "Bitstream Vera Sans",
+                                        "Arial",
+                                        "Helvetica",
+                                        sans-serif;}
+
+BODY 
+{
+   background-color: #cccccc;
+   color: black;
+   padding: 1 em;
+   text-align: center; /* IE hack -- margin-auto in container doesn't work */
+}
+
+
+#container
+{
+   border: 3px solid black;
+   border-radius: 25px;
+   -moz-border-radius: 25px; /* Mozilla */
+   -moz-box-shadow: 10px 10px 5px #888;
+   -webkit-box-shadow: 10px 10px 5px #888;
+   box-shadow: 10px 10px 5px #888;
+   width: 800px;
+   margin: 0;
+   margin-left: auto; 
+   margin-right: auto;
+   padding: 0;
+   text-align: left; /* undo IE hack to body */
+}
+
+#header
+{
+   background-color: #ffff66;
+   color: #000000;
+   border-radius: 25px 25px 0 0; 
+   -moz-border-radius: 25px 25px 0 0; /* Mozilla */
+   padding: 1em;
+   margin: 0;
+   border-bottom: 3px solid black;
+   text-align: center;
+   font-family: "Tahoma", Arial, Helvetica, sans-serif;
+}
+
+#header H1 {display: inline; line-height: 90%;}
+#header p {margin: 0; 
+           padding: 0;
+           margin-top: 1em;}
+
+
+#other {
+   background-color: #ffffff;
+   color: #000000;
+   padding: 1em;
+   line-height: 130%;
+   width: auto;
+   border-radius: 0 0 25px 25px; 
+   -moz-border-radius: 0 0 25px 25px; /* Mozilla */
+}
+
+#ref {
+   font-size: small;
+}
+
+#ref p {
+   padding: 0;
+   margin-bottom: 0.25em;
+   margin-top: 0.5em;
+   margin-left: 1em;
+}
+
+PRE {font-family: "Bitstream Vera Sans Mono",
+                  "Monospace",
+                  monospace;
+     color : #FFFFFF;}
+
+TT  {font-family: "Bitstream Vera Sans Mono", 
+                  "Monospace",
+                  monospace;
+     color : #000000;}
+
+
+A:LINK {text-decoration: none;
+        color: green;}
+A:VISITED {text-decoration: none;
+           color: Gray;}
+A:HOVER {text-decoration: underline;
+         color: Green;}
+
+A.menu:LINK {color: #5588ff;}
+A.menu:VISITED {color: #5588ff;}
+A.menu:HOVER {color: red;
+	      text-decoration: underline;}
+
+
+
+    
+H1   {font: normal 32px "Tahoma", Arial, Helvetica, sans-serif;
+      text-align: center;
+      color: blue;
+      font-weight: normal;}
+
+H1.title {display:inline;}
+
+H2   {font: normal 22px "Tahoma", Arial, Helvetica, sans-serif;
+      color: blue;
+      font-weight: normal;
+      display: inline; 	}
+
+H3   {font: normal 18px "Tahoma", Arial, Helvetica, sans-serif;
+      color: blue;
+      line-height: 1.5;
+      display: inline; 	
+      padding-bottom: 0em;
+      font-weight: normal;}
+
+
+em {color: red}
+
+em.paper {color: purple}
+
+div.eq {text-align: center;
+        margin: 0.5em;}
+
+blockquote {margin-top: 0em;
+            padding-top: 0em;
+            border: 0;}
+
+div.abstract {width: 75%;
+              margin-left: 12.5%;
+              color: purple;
+              padding: 4px;
+              border: none;}
+
+dt.paper {padding-top: 0.5em;
+          padding-left: 2em;
+          font-style: italic;
+          color: purple;}
+
+dd {padding-left: 2em;}
+
+div.right {float: right;
+           padding: 1em;
+           padding-top: 0em;
+           width: 425px;
+           color: #333333;
+           font-style: italic;
+           font-size: small;}
+
+div.right2 {float: right;
+            padding: 0;
+	    padding-left: 1em;
+	    padding-right: 1em;
+            width: 450px;
+            color: #333333;
+            font-style: italic;
+            font-size: small;}
+
+div.figcenter {text-align: center;
+               display: block;
+               color: blue;
+               font-style: italic;
+               width:85%;
+               margin-left: auto;
+               margin-right: auto;}
+
+div.figtext {display: block;
+             color: #333333;
+             font-style: italic;
+             font-size: small;
+             width:85%;
+             margin-left: auto;
+             margin-right: auto;}
+
+p.ack {margin-top: 3em;
+       font-size: small;}
+
+em.ack {color: gray}
+
+dt
+{
+   padding-top: 0.5em;
+   padding-left: 0.25em;
+   padding-right: 0.25em;
+   padding-bottom: 0.0em;
+   font-size: small;
+   display: run-in;
+}
+
+dd
+{
+   padding-left: 1.0em;
+   padding-bottom: 0.5em;
+   font-size: small;
+   margin: 0;
+   font-style: italic;
+}
+
+

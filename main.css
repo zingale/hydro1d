@@ -1,0 +1,110 @@
+BODY, H1, H2, H3, H4, H5  {font-family: "Bitstream Vera Sans",
+                                        "Arial",
+                                        "Helvetica",
+                                        sans-serif;}
+
+BODY {background-color: #000000;
+      color: #EEDDEE;}
+
+PRE {font-family: "Bitstream Vera Sans Mono",
+                  "Monospace",
+                  monospace;
+     color : #FFFFFF;}
+
+TT  {font-family: "Bitstream Vera Sans Mono", 
+                  "Monospace",
+                  monospace;
+     color : #FFFFFF;}
+
+
+A:LINK {text-decoration: none;
+        color: #99EEFF;}
+A:VISITED {text-decoration: none;
+           color: #99EEFF;}
+A:HOVER {text-decoration: underline;
+         color: white;}
+
+A.menu:LINK {color: #5588ff;}
+A.menu:VISITED {color: #5588ff;}
+A.menu:HOVER {color: red;
+	      text-decoration: underline;}
+
+
+
+    
+H1   {font-size: x-large;
+      color: red;
+      font-weight: normal;
+      font-variant: small-caps}
+
+H1.title {display:inline;}
+
+H2   {font-size: large;
+      color: red;
+      font-weight: normal;
+      font-variant: small-caps}
+
+H3   {font-size: medium;
+      color: yellow;
+      line-height: 1.0;
+      display: inline; 	
+      padding-bottom: 0em;
+      font-weight: normal;
+      font-variant: small-caps}
+
+TABLE.menu {border-collapse: collapse;
+            border: 5px outset blue; }
+
+TR.menu {background-color: #CCEEEE;}
+
+TABLE.title {border-collapse: collapse;
+             border: 0px;}
+
+TABLE.contact {color: black;}
+
+TR.title {background-color: #000000;}
+TD.title {font-size: large;}
+
+
+A.title:LINK {color: yellow;
+             text-shadow: red 0px 0px 5px;}
+A.title:VISITED {color: yellow;	
+                 text-shadow: red 0px 0px 5px;}
+A.title:HOVER {background: yellow;
+               color: black;
+               text-decoration: none;}
+	      
+
+
+TABLE.classtitle {border-collapse: collapse;
+                  border: 0px;}
+
+TR.classtitle {background-color: #000000;}
+TD.classtitle {font-size: x-large;}
+
+
+A.classtitle:LINK {background: #66CCFF;
+                   color: blue;}
+A.classtitle:VISITED {background: #66CCFF;
+                      color: blue;}	
+A.classtitle:HOVER {background: blue;
+                    color: #66CCFF;
+                    text-decoration: none;}
+	      
+
+A.pub:LINK {color: #00FFFF;
+             text-shadow: red 0px 0px 5px;}
+A.pub:VISITED {color: #00FFFF;	
+                 text-shadow: red 0px 0px 5px;}
+A.pub:HOVER {background: #00FFFF;
+               color: black;
+               text-decoration: none;}
+	      
+
+IMG.me {float: right;
+        margin: 2em; }
+
+
+FONT.caption {font-size: small}
+
+li {padding: 0.5em;}

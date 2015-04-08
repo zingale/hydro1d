@@ -14,7 +14,7 @@
 <div id="container">
 <div id="header">
   <h1>hydro1d: A simple, 1-d, finite-volume,<br>gamma-law hydrodynamics solver</h1>
-  <p> <a href="http://astro.sunysb.edu/mzingale">Michael Zingale</a> (Stony Brook)
+  <p>Michael Zingale <a href="http://astro.sunysb.edu/mzingale">(SUNY SB)</a>
 </div>
 
 <div id="other">
@@ -51,22 +51,30 @@ of a density pulse.  The included <tt>README</tt> file explains how
 to get started.
 
 
-<P><H2>Notes</H2>
-
-<p>Some notes on the piecewise linear and piecewise parabolic methods
-for the Euler equations are available
-here: <a href="http://bender.astro.sunysb.edu/hydro_by_example/CompHydroTutorial.pdf">CompHydroTutorial.pdf</a>
-
-<p>For a 2-d hydrodynamics code (written mostly in python) written
-as a teaching code, see the <a href="/hydro_by_example/">pyro2 code webpage</a>
-
-<p>If you are interested in a production 3-d hydrodymamics code that
-implements unsplit ppm, download the <a href="https://ccse.lbl.gov/Downloads/downloadCASTRO.html">Castro Code</a>
 
 <P><H2>Download</H2>
 
-<p>You can get <tt>hydro1d</tt> from github: <a href="https://github.com/zingale">hydro1d github page</a>
+<p><a href="./hydro1d-2012-03-20.tar.gz">hydro1d-2012-03-20.tar.gz</a>
 
+<p><a href="./hydro1d/">browse the source</a>
+
+<p>This link will be updated periodically with fixes / enhancements.
+
+<p><H2>ChangeLog</h2>
+<dl>
+<dt>2012-03-20:</dt>
+<dd>commenting<br>
+    minor PPM tweaks
+</dd>
+
+<dt>2012-03-12:</dt>
+<dd>added gravity<br>
+    fixed reflecting BCs
+</dd>
+
+<dt>2012-03-09:</dt>
+<dd>initial release</dd>
+</dl>
 
 <P><H2>References</H2>
 
@@ -104,12 +112,13 @@ Saltzman, J., "An Unsplit 3D Upwind Method for Hyperbolic Conservation Laws",
 <p>You are welcome to use this code for any teaching purposes.  Feedback and
 an acknowledgement would be appreciated.
 
-<P>Send any comments / bug fixes to: Michael.Zingale&nbsp;AT&nbsp;stonybrook.edu
+<P>Send any comments / bug fixes to: mzingale&nbsp;AT&nbsp;mail&nbsp;.&nbsp;astro&nbsp;.&nbsp;sunysb&nbsp;.&nbsp;edu
 
 <p>Acknowledgements: MZ thanks Ann Almgren, John Bell, and Andy Nonaka
 for many helpful discussions over the years.  
 
-
+<p><!--#config timefmt="%A %B %d, %Y" -->
+This file last modified <!--#flastmod file="./index.html" -->
 </div>
 
 </div>   <!-- container -->
