@@ -2,13 +2,6 @@
 
 # automatically generate Makefile dependencies for Fortran 90 source.
 #
-# usage:
-#
-#  dep.py [--prefix X] *.f90
-#
-# the option "--prefix X" will prepend both the object and source with
-# the prefix X.
-#
 # this will output all the dependency pairs amongst the source files.
 #
 # M. Zingale (2012-03-21)
@@ -17,9 +10,9 @@ import sys
 import re
 import string
 import os
-import getopt
+import argparse
 
-def doit(prefix,files):
+def doit(prefix, files):
 
     # regular expression for ' use modulename, only: stuff, other stuff'
     # see (txt2re.com)
@@ -40,9 +33,7 @@ def doit(prefix,files):
 
         f = open(file, "r")
         
-        line = f.readline()
-
-        while (line):
+        for line in f:
 
             # strip off the comments
             idx = string.find(line, "!")
@@ -50,15 +41,11 @@ def doit(prefix,files):
 
             rebreak = module_re.search(line)
             rebreak2 = module_proc_re.search(line)
-            if (rebreak and not rebreak2):
+            if rebreak and not rebreak2:
                 modulefiles[rebreak.group(4)] = file
 
-            line = f.readline()
-
-
         f.close()
-
-
+        
     # go back through the files now and look for the use statements.
     # Assume only one use statement per line.  Ignore any only clauses.
     # Build a list of dependencies for the current file and output it.
@@ -66,42 +53,32 @@ def doit(prefix,files):
 
         f = open(file, "r")
 
-        line = f.readline()
-        while (line):
+        for line in f:
 
             # strip off the comments
             idx = string.find(line, "!")
             line = line[:idx]
 
             rebreak = use_re.search(line)
-            if (rebreak):
+            if rebreak:
                 print prefix+os.path.basename(file).replace(".f90", ".o"), ':', \
                     prefix+os.path.basename(modulefiles[rebreak.group(4)]).replace(".f90", ".o")
-
-            line = f.readline()
-
 
         f.close()
         print " "
 
 if __name__ == "__main__":
 
-    try: opts, next = getopt.getopt(sys.argv[1:], "", ["prefix="])
-    except getopt.GetoptError:
-        print("invalid options")
-        sys.exit(2)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--prefix",
+                        help="prefix to prepend to each dependency pair, e.g., for a build directory",
+                        default="")
+    parser.add_argument("files", metavar="source files", type=str, nargs="*",
+                        help="F90 source files to find dependencies amongst")
 
-    prefix = ""
-
-    for o, a in opts:
-
-        if o == "--prefix":
-            prefix = a
-
-            
-    files = next[:]
-
-    doit(prefix, files)
+    args = parser.parse_args()
+    
+    doit(args.prefix, args.files)
 
 
 
