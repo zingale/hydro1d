@@ -120,6 +120,10 @@ contains
        call eos(eos_input_e, Q%data(i,iqpres), e, Q%data(i,iqdens))
     enddo
 
+    ! convert to the moving reference frame
+    do i = U%grid%lo-U%grid%ng, U%grid%hi+U%grid%ng
+       Q%data(i,iqxvel) = Q%data(i,iqxvel) - v_face
+    enddo
 
     !-------------------------------------------------------------------------
     ! compute the flattening coefficients
@@ -339,7 +343,6 @@ contains
 
        Q_l%data(i+1,iqpres) = p_xp + sum_xp
        Q_r%data(i,iqpres) = p_xm + sum_xm
-
        
     enddo
 
@@ -367,6 +370,11 @@ contains
             Q_r%data(U%grid%hi+1,iqxvel) - dt*grav
     endif
 
+    ! put the face velocities back into the Eulerian frame:
+    do i = U%grid%lo, U%grid%hi+1
+       Q_l%data(i,iqxvel) = Q_l%data(i,iqxvel) 
+       Q_r%data(i,iqxvel) = Q_r%data(i,iqxvel) 
+    enddo
 
     !-------------------------------------------------------------------------
     ! transform the states into conserved variables

@@ -14,7 +14,7 @@ contains
   
   subroutine solve_riemann(Uin_l, Uin_r, fluxes)
 
-    use params_module, only: gamma
+    use params_module, only: gamma, v_face
     use eos_module
 
     type(gridedgevar_t), intent(in   ) :: Uin_l, Uin_r
@@ -93,7 +93,11 @@ contains
        pstar = (W_l*p_r + W_r*p_l + W_l*W_r*(u_l - u_r))/(W_l + W_r)
        pstar = max(pstar, smallp)
        ustar = (W_l*u_l + W_r*u_r + (p_l - p_r))/(W_l + W_r)
-       
+
+       ustar = ustar + v_face
+       u_l = u_l + v_face
+       u_r = u_r + v_face
+
        ! now compute the remaining state to the left and right of the
        ! contact (in the star region)
        rhostar_l = rho_l + (pstar - p_l)/c_l**2
@@ -245,11 +249,19 @@ contains
        !   u_state = 0.0_dp_t
        !endif
 
+       ! at this point, everything is still in the Lagrangian frame
+       u_state = u_state
+
        ! compute the fluxes
        fluxes%data(i,iudens) = rho_state*u_state
        fluxes%data(i,iumomx) = rho_state*u_state*u_state + p_state
        fluxes%data(i,iuener) = rhoe_state*u_state + &
             0.5_dp_t*rho_state*u_state**3 + p_state*u_state
+
+       ! now convert back to the Eulerian
+       !fluxes%data(i,iudens) = fluxes%data(i,iudens) + rho_state*v_face
+       !fluxes%data(i,iumomx) = fluxes%data(i,iumomx) + rho_state*u_state*v_face
+       !fluxes%data(i,iuener) = fluxes%data(i,iuener) + (rhoe_state + 0.5_dp_t*rho_state*u_state**2)*v_face
 
     enddo
 
