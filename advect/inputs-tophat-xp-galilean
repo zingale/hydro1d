@@ -1,7 +1,7 @@
 &params
 
  nx = 128
- tmax = 1.0d0
+ tmax = 10.0  
   
  godunov_type = 1
 
@@ -12,7 +12,7 @@
  
  v_face = 10.0
 
- cfl = 0.1
+ cfl = 0.5
 
 /
 

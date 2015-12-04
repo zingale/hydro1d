@@ -82,7 +82,8 @@ contains
           
           write(unit=lun, fmt=6) U%grid%x(i), &
                U%data(i,iudens), U%data(i,iumomx), U%data(i,iuener), &
-               U%data(i,iumomx)/U%data(i,iudens), p, e, sqrt(gamma*p/rho)
+               U%data(i,iumomx)/U%data(i,iudens), p, e, sqrt(gamma*p/rho), &
+               abs(U%data(i,iumomx)/U%data(i,iudens))/sqrt(gamma*p/rho)
           
        enddo
 
