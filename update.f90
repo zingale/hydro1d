@@ -29,7 +29,7 @@ contains
        Uold%data(i,:) = U%data(i,:)
     enddo
     
-    ! update
+    ! update -- this should be (A_l F_l - A_r F_r)/dV + any gradient terms
     do i = U%grid%lo, U%grid%hi
        U%data(i,:) = U%data(i,:) + &
             (dt/U%grid%dx)*(fluxes%data(i,:) - fluxes%data(i+1,:))

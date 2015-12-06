@@ -154,16 +154,15 @@ contains
 
     if (grid%geometry == 1) then
        do i = grid%lo-ng, grid%hi+ng
-          grid%Al(i) = 4.0_dp_t*pi*grid%xl(i)**2
-          grid%Ar(i) = 4.0_dp_t*pi*grid%xr(i)**2
+          grid%Al(i) = grid%xl(i)**2
+          grid%Ar(i) = grid%xr(i)**2
           
-          grid%V(i) = (4.0_dp_t*pi/3.0_dp_t)* &
-               (grid%xr(i)**2 + grid%xl(i)*grid%xr(i) + grid%xl(i)**2)*grid%dx
+          grid%dV(i) = grid%x(i)**2 * grid%dx
        enddo
     else
        grid%Al(:) = 1.0_dp_t
        grid%Ar(:) = 1.0_dp_t
-       grid%V(:) = grid%dx
+       grid%dV(:) = grid%dx
     endif
 
   end subroutine build_grid
