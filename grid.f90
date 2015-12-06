@@ -43,18 +43,32 @@ module grid_module
 
   implicit none
 
+  real (kind=dp_t) :: pi = 3.141592653589793238462643383279502884_dp_t
+
   ! the datatype for the grid coordinate information
   type grid_t 
      integer :: lo = -1
      integer :: hi = -1
      integer :: nx = -1
      integer :: ng = -1
+
      real (kind=dp_t) :: xmin, xmax, dx
+
+     ! geometry: 0 = Cartesian; 1 = spherical
+     integer :: geometry = 0
+
      real (kind=dp_t), pointer :: x(:) => Null()
      real (kind=dp_t), pointer :: xl(:) => Null()
      real (kind=dp_t), pointer :: xr(:) => Null()  
+
+     real (kind=dp_t), pointer :: Al(:) => Null()
+     real (kind=dp_t), pointer :: Ar(:) => Null()
+
+     real (kind=dp_t), pointer :: V(:) => Null()
+
      character (len=32) :: xlboundary
      character (len=32) :: xrboundary
+
   end type grid_t
 
   ! the datatype for a variable that lives in a zone on the grid 
@@ -118,11 +132,24 @@ contains
     allocate(grid%xl(-ng:nx+ng-1))
     allocate(grid%xr(-ng:nx+ng-1))
 
+    allocate(grid%Al(-ng:nx+ng-1))
+    allocate(grid%Ar(-ng:nx+ng-1))
+    allocate(grid%V(-ng:nx+ng-1))
+
     do i = grid%lo-ng, grid%hi+ng
        grid%xl(i) = dble(i  )*grid%dx + xmin
        grid%xr(i) = dble(i+1)*grid%dx + xmin
 
        grid%x(i) = 0.5_dp_t*(grid%xl(i) + grid%xr(i))
+    enddo
+
+    do i = grid%lo-ng, grid%hi+ng
+       grid%Al(i) = 4.0_dp_t*pi*grid%xl(i)**2
+       grid%Ar(i) = 4.0_dp_t*pi*grid%xr(i)**2
+       
+       grid%V(i) = (4.0_dp_t*pi/3.0_dp_t)* &
+            (grid%xr(i)**2 + grid%xl(i)*grid%xr(i) + grid%xl(i)**2)*grid%dx
+
     enddo
 
   end subroutine build_grid
@@ -135,7 +162,11 @@ contains
     deallocate(grid%xl)
     deallocate(grid%xr)
     deallocate(grid%x)
-    
+
+    deallocate(grid%Al)
+    deallocate(grid%Ar)
+    deallocate(grid%V)
+
   end subroutine destroy_grid
 
 
