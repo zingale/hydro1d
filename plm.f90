@@ -369,6 +369,23 @@ contains
 
 
     !-------------------------------------------------------------------------
+    ! geometry source terms 
+    !-------------------------------------------------------------------------
+    ! see, e.g. Colella & Woodward Eq. 3.4
+
+    ! this is a loop over zones
+    if (U%grid%geometry == 1) then
+       do i = U%grid%lo-1, U%grid%hi+1
+          Q_l%data(i+1,iqdens) = Q_l%data(i+1,iqdens) - HALF*dt*(TWO*r*ux/U%grid%x(i))
+          Q_l%data(i+1,iqpres) = Q_l%data(i+1,iqpres) - HALF*dt*(TWO*gamma*p*ux/U%grid%x(i))
+
+          Q_l%data(i,iqdens) = Q_l%data(i,iqdens) - HALF*dt*(TWO*r*ux/U%grid%x(i))
+          Q_l%data(i,iqpres) = Q_l%data(i,iqpres) - HALF*dt*(TWO*gamma*p*ux/U%grid%x(i))
+       enddo
+    endif
+    
+
+    !-------------------------------------------------------------------------
     ! transform the states into conserved variables
     !-------------------------------------------------------------------------
     do i = U%grid%lo, U%grid%hi+1
