@@ -106,7 +106,7 @@ module grid_module
 
 contains  
 
-  subroutine build_grid(grid,nx,ng,xmin,xmax,xlbc,xrbc)
+  subroutine build_grid(grid,nx,ng,xmin,xmax,xlbc,xrbc,is_spherical)
     
     type(grid_t),       intent(inout) :: grid
     integer,            intent(in   ) :: nx
@@ -114,6 +114,15 @@ contains
     real (kind=dp_t),   intent(in   ) :: xmin, xmax
     character (len=32), intent(in   ) :: xlbc, xrbc
     integer :: i
+    logical, optional,  intent(in   ) :: is_spherical
+
+    if (present(is_spherical)) then
+       if (is_spherical) then
+          grid%geometry = 1
+       else
+          grid%geometry = 0
+       endif
+    endif
 
     grid%lo = 0
     grid%hi = nx-1
@@ -143,14 +152,19 @@ contains
        grid%x(i) = 0.5_dp_t*(grid%xl(i) + grid%xr(i))
     enddo
 
-    do i = grid%lo-ng, grid%hi+ng
-       grid%Al(i) = 4.0_dp_t*pi*grid%xl(i)**2
-       grid%Ar(i) = 4.0_dp_t*pi*grid%xr(i)**2
-       
-       grid%V(i) = (4.0_dp_t*pi/3.0_dp_t)* &
-            (grid%xr(i)**2 + grid%xl(i)*grid%xr(i) + grid%xl(i)**2)*grid%dx
-
-    enddo
+    if (grid%geometry == 1) then
+       do i = grid%lo-ng, grid%hi+ng
+          grid%Al(i) = 4.0_dp_t*pi*grid%xl(i)**2
+          grid%Ar(i) = 4.0_dp_t*pi*grid%xr(i)**2
+          
+          grid%V(i) = (4.0_dp_t*pi/3.0_dp_t)* &
+               (grid%xr(i)**2 + grid%xl(i)*grid%xr(i) + grid%xl(i)**2)*grid%dx
+       enddo
+    else
+       grid%Al(:) = 1.0_dp_t
+       grid%Ar(:) = 1.0_dp_t
+       grid%V(:) = grid%dx
+    endif
 
   end subroutine build_grid
 
