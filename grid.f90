@@ -43,8 +43,6 @@ module grid_module
 
   implicit none
 
-  real (kind=dp_t) :: pi = 3.141592653589793238462643383279502884_dp_t
-
   ! the datatype for the grid coordinate information
   type grid_t 
      integer :: lo = -1
@@ -64,7 +62,7 @@ module grid_module
      real (kind=dp_t), pointer :: Al(:) => Null()
      real (kind=dp_t), pointer :: Ar(:) => Null()
 
-     real (kind=dp_t), pointer :: V(:) => Null()
+     real (kind=dp_t), pointer :: dV(:) => Null()
 
      character (len=32) :: xlboundary
      character (len=32) :: xrboundary
@@ -143,7 +141,7 @@ contains
 
     allocate(grid%Al(-ng:nx+ng-1))
     allocate(grid%Ar(-ng:nx+ng-1))
-    allocate(grid%V(-ng:nx+ng-1))
+    allocate(grid%dV(-ng:nx+ng-1))
 
     do i = grid%lo-ng, grid%hi+ng
        grid%xl(i) = dble(i  )*grid%dx + xmin
@@ -178,7 +176,7 @@ contains
 
     deallocate(grid%Al)
     deallocate(grid%Ar)
-    deallocate(grid%V)
+    deallocate(grid%dV)
 
   end subroutine destroy_grid
 
