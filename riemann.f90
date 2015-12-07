@@ -12,13 +12,14 @@ module riemann_module
 
 contains
   
-  subroutine solve_riemann(Uin_l, Uin_r, fluxes)
+  subroutine solve_riemann(Uin_l, Uin_r, fluxes, godunov_state)
 
     use params_module, only: gamma
     use eos_module
 
     type(gridedgevar_t), intent(in   ) :: Uin_l, Uin_r
     type(gridedgevar_t), intent(inout) :: fluxes
+    type(gridedgevar_t), intent(inout) :: godunov_state
 
     !  Solve riemann shock tube problem for a general equation of
     !  state using the method of Colella, Glaz, and Ferguson.  See
@@ -250,6 +251,12 @@ contains
        fluxes%data(i,iumomx) = rho_state*u_state*u_state + p_state
        fluxes%data(i,iuener) = rhoe_state*u_state + &
             0.5_dp_t*rho_state*u_state**3 + p_state*u_state
+
+       ! we need the pressure on the interface for Riemann problems
+       godunov_state%data(i,iqdens) = rho_state
+       godunov_state%data(i,iqxvel) = u_state
+       godunov_state%data(i,iqpres) = p_state
+
 
     enddo
 

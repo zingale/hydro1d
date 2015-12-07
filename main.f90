@@ -21,7 +21,7 @@ program hydro1d
 
   type(grid_t) :: grid
   type(gridvar_t) :: U
-  type(gridedgevar_t) :: U_l, U_r, fluxes
+  type(gridedgevar_t) :: U_l, U_r, fluxes, godunov_state
 
   integer :: n, ng
   real (kind=dp_t) :: t, dt, dt_new
@@ -48,6 +48,7 @@ program hydro1d
   call build(U_r, grid, ncons)
 
   call build(fluxes, grid, ncons)
+  call build(godunov_state, grid, nprim)
 
 
   ! set the initial conditions
@@ -95,7 +96,7 @@ program hydro1d
 
 
      ! compute the fluxes
-     call solve_riemann(U_l, U_r, fluxes)
+     call solve_riemann(U_l, U_r, fluxes, godunov_state)
 
 
      ! do the conservative update
