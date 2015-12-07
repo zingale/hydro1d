@@ -5,6 +5,18 @@
 http://zingale.github.io/hydro1d/
 
 
+## About
+
+`hydro1d` is a simple one-dimensional finite-volume Eulerian
+hydrodynamics code that implements piecewise constant, piecewise
+linear, and piecewise parabolic (PPM) reconstruction, and supports
+both Cartesian and spherical geometries.
+
+It is written in modern Fortran (a F2003+ compiler is needed).
+
+At the moment, a constant-gamma equation of state is assumed.
+
+
 ## Problems
 
 Individual problems are built in subdirectories.  For example,
