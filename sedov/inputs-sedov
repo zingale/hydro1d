@@ -1,0 +1,17 @@
+&params
+
+ nx = 128
+ tmax = 0.1d0
+  
+ is_spherical = T
+
+ problem_name = "sedov"
+
+ plot_dt = 0.05d0
+
+/
+
+&problem
+
+
+/
