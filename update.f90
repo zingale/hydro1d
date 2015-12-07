@@ -13,10 +13,11 @@ module update_module
 
 contains
   
-  subroutine update(U, fluxes, dt)
+  subroutine update(U, fluxes, godunov_state, dt)
 
     type(gridvar_t),     intent(inout) :: U
     type(gridedgevar_t), intent(in   ) :: fluxes
+    type(gridedgevar_t), intent(in   ) :: godunov_state
     real (kind=dp_t),    intent(in   ) :: dt
 
     type(gridvar_t) :: Uold
@@ -29,10 +30,17 @@ contains
        Uold%data(i,:) = U%data(i,:)
     enddo
     
-    ! update -- this should be (A_l F_l - A_r F_r)/dV + any gradient terms
+    ! this is (A_l F_l - A_r F_r)/dV + any gradient terms
     do i = U%grid%lo, U%grid%hi
        U%data(i,:) = U%data(i,:) + &
-            (dt/U%grid%dx)*(fluxes%data(i,:) - fluxes%data(i+1,:))
+            (dt/U%grid%dV(i))*(U%grid%Al(i)  *fluxes%data(i,  :) - &
+                               U%grid%Al(i+1)*fluxes%data(i+1,:)) 
+
+       if (U%grid%geometry == 1) then
+          U%data(i,iumomx) = U%data(i,iumomx) + &
+            (dt/U%grid%dx)*(godunov_state%data(i+1,iqpres) - &
+                            godunov_state%data(i  ,iqpres))
+       endif
     enddo
 
 

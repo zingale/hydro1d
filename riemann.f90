@@ -248,7 +248,15 @@ contains
 
        ! compute the fluxes
        fluxes%data(i,iudens) = rho_state*u_state
-       fluxes%data(i,iumomx) = rho_state*u_state*u_state + p_state
+
+       ! for spherical, don't include the pressure term, since it is
+       ! a gradient, not a divergence
+       if (Uin_l%grid%geometry == 1) then
+          fluxes%data(i,iumomx) = rho_state*u_state*u_state
+       else
+          fluxes%data(i,iumomx) = rho_state*u_state*u_state + p_state
+       endif
+
        fluxes%data(i,iuener) = rhoe_state*u_state + &
             0.5_dp_t*rho_state*u_state**3 + p_state*u_state
 

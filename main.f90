@@ -100,7 +100,7 @@ program hydro1d
 
 
      ! do the conservative update
-     call update(U, fluxes, dt)
+     call update(U, fluxes, godunov_state, dt)
 
      t = t + dt
      n = n + 1
