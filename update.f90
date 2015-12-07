@@ -37,7 +37,7 @@ contains
                                U%grid%Al(i+1)*fluxes%data(i+1,:)) 
 
        if (U%grid%geometry == 1) then
-          U%data(i,iumomx) = U%data(i,iumomx) + &
+          U%data(i,iumomx) = U%data(i,iumomx) - &
             (dt/U%grid%dx)*(godunov_state%data(i+1,iqpres) - &
                             godunov_state%data(i  ,iqpres))
        endif

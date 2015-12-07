@@ -1,7 +1,15 @@
 &params
 
  nx = 128
+
+ xlboundary = "reflect"
+ xrboundary = "outflow"
+
+ init_shrink = 0.1d0
  tmax = 0.1d0
+ 
+ godunov_type = 1
+
   
  is_spherical = T
 
