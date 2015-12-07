@@ -41,7 +41,7 @@ program hydro1d
 
   ! build the grid and storage for grid variables, interface states,
   ! and fluxes
-  call build(grid, nx, ng, xmin, xmax, xlboundary, xrboundary)
+  call build(grid, nx, ng, xmin, xmax, xlboundary, xrboundary, is_spherical)
 
   call build(U, grid, ncons)
   call build(U_l, grid, ncons)

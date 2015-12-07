@@ -18,6 +18,10 @@ module params_module
   integer, save :: nx = 16
   real (kind=dp_t), save :: xmin = 0.0_dp_t
   real (kind=dp_t), save :: xmax = 1.0_dp_t
+
+  ! geometry
+  logical, save :: is_spherical = .false.
+
   character (len=32), save :: xlboundary = "outflow"
   character (len=32), save :: xrboundary = "outflow"
   character (len=32), save :: hse_bc_const = "temperature"
@@ -46,7 +50,7 @@ module params_module
 
 
   ! namelist
-  namelist /params/ nx, xmin, xmax, &
+  namelist /params/ nx, xmin, xmax, is_spherical, &
                     xlboundary, xrboundary, &
                     hse_bc_const, hse_vel_type, &
                     init_shrink, dt_change, tmax, &
