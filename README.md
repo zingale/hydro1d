@@ -35,6 +35,7 @@ Things are setup for gfortran by default -- you will need to edit the
 of Fortran 2003 and 2008 are used, so an up-to-date compiler is
 needed.
 
+
 ## Runtime Parameters
 
 A number of runtime options can be specified -- look in `params.f90`
@@ -43,6 +44,7 @@ the inputs file.  Problems can specify their own runtime parameters
 (with a `probparams.f90` in the problem directory).  These have a
 separate namelist in the same inputs file.  See the sod problem for
 examples.
+
 
 ## Development
 
