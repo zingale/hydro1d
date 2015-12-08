@@ -144,6 +144,8 @@ contains
     allocate(grid%dV(-ng:nx+ng-1))
 
     do i = grid%lo-ng, grid%hi+ng
+
+       ! zone left, right and center coordinate
        grid%xl(i) = dble(i  )*grid%dx + xmin
        grid%xr(i) = dble(i+1)*grid%dx + xmin
 
@@ -152,9 +154,12 @@ contains
 
     if (grid%geometry == 1) then
        do i = grid%lo-ng, grid%hi+ng
+
+          ! face area
           grid%Al(i) = grid%xl(i)**2
           grid%Ar(i) = grid%xr(i)**2
           
+          ! d(volume)
           grid%dV(i) = grid%x(i)**2 * grid%dx
        enddo
     else
