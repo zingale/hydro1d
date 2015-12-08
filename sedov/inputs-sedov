@@ -6,7 +6,7 @@
  xrboundary = "outflow"
 
  init_shrink = 0.1d0
- tmax = 0.1d0
+ tmax = 0.01d0
  
  godunov_type = 2
 

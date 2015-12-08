@@ -22,11 +22,12 @@ contains
     real (kind=dp_t) :: rhoe
 
     real (kind=dp_t), parameter :: E_sedov = ONE
-    real (kind=dp_t) :: p, p_exp, p_amb
+    real (kind=dp_t) :: p, p_exp, p_amb, V_exp
 
     ! we do the balloon method -- find the pressure corresponding to
     ! the energy
-    p_exp = (gamma - ONE)*E_sedov/(pi*r_init**2)
+    V_exp = 4.0*pi/3.0 * r_init**3
+    p_exp = (gamma - ONE)*E_sedov/V_exp
     p_amb = 1.e-5_dp_t
 
     do i = U%grid%lo, U%grid%hi
@@ -35,7 +36,7 @@ contains
        U%data(i,iudens) = ONE
        U%data(i,iumomx) = ZERO
        
-       if (U%grid%x(i) < r_init) then
+       if (U%grid%xr(i) <= r_init) then
           p = p_exp
        else
           p = p_amb
