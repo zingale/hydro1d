@@ -24,10 +24,8 @@ contains
     real (kind=dp_t), parameter :: E_sedov = ONE
     real (kind=dp_t) :: p, p_exp, p_amb, V_exp
 
-    ! we do the balloon method -- find the pressure corresponding to
-    ! the energy
-    V_exp = 4.0*pi/3.0 * r_init**3
-    p_exp = (gamma - ONE)*E_sedov/V_exp
+    ! we'll put all of the energy in the first zone
+    V_exp = 4.0*pi/3.0 * U%grid%dx**3
     p_amb = 1.e-5_dp_t
 
     do i = U%grid%lo, U%grid%hi
@@ -36,13 +34,11 @@ contains
        U%data(i,iudens) = ONE
        U%data(i,iumomx) = ZERO
        
-       if (U%grid%xr(i) <= r_init) then
-          p = p_exp
+       if (i == U%grid%lo) then
+          rhoe = E_sedov/V_exp
        else
-          p = p_amb
+          rhoe = p_amb/(gamma - ONE)
        endif
-
-       rhoe = p/(gamma - ONE)
 
        U%data(i,iuener) = rhoe
           

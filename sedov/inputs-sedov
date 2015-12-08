@@ -1,6 +1,6 @@
 &params
 
- nx = 128
+ nx = 256
 
  xlboundary = "reflect"
  xrboundary = "outflow"
