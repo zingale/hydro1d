@@ -9,4 +9,6 @@ subroutine gravity(U, g)
   type(gridedgevar_t), intent(in) :: U
   type(gridedgevar_t), intent(out) :: g
 
+  ! compute the gravitational acceleration on edges
+
 end subroutine gravity

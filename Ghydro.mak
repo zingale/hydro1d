@@ -11,12 +11,17 @@ vpath %.f90 . ..
 odir := _build
 
 
-# source files
-include ../Ghydro.src
+# source files and dependencies
+SRC_DIRS := . ../
 
+FSOURCE_DIR := $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.f90))
+FSOURCE := $(sort $(notdir $(FSOURCE_DIR)))
 
-# dependencies
-include ../Ghydro.dep
+$(odir)/deps: $(FSOURCE)                                                                                
+	@if [ ! -d $(odir) ]; then mkdir -p $(odir); fi                                                        
+	../util/dep.py --prefix $(odir)/  --search_path "$(SRC_DIRS)" $(FSOURCE) > $(odir)/deps
+
+include $(odir)/deps    
 
 
 # set the compiler flags for those compilers we know about
@@ -54,8 +59,10 @@ hydro1d: $(OBJECTS)
 
 # targets for cleaning up
 clean:
-	rm -f $(odir)/*.o $(odir)/*.mod
+	rm -f $(odir)/*.o $(odir)/*.mod $(odir)/deps
 
 realclean: clean
 	@if [ -d $(odir) ]; then rmdir $(odir); echo "removing $(odir)"; fi
 	rm -f hydro1d
+
+print-%: ; @echo $* is $($*)                                                                                   

@@ -9,6 +9,7 @@
 
 module eos_module
 
+  use constants_module
   use datatypes_module
   use params_module, only: gamma
   implicit none
@@ -38,12 +39,9 @@ contains
     real (kind=dp_t), intent(inout), optional :: p_T
     real (kind=dp_t), intent(inout), optional :: c
 
-    ! physical constants
-    real (kind=dp_t), parameter :: mu = 1.0_dp_t
-    real (kind=dp_t), parameter :: m_amu = 1.66053886e-24_dp_t   ! g
-    real (kind=dp_t), parameter :: k = 1.3806503e-16_dp_t        ! erg / K
-
     real (kind=dp_t) :: c_v 
+
+    real (kind=dp_t), parameter :: mu = 1.0_dp_t
 
     ! c_v = de/dT |_rho, so since e = p / (rho (gamma - 1)), and
     ! using p = rho k T / (mu m_amu), we have e = k/(mu m (gamma - 1))

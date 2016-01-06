@@ -12,7 +12,7 @@ import string
 import os
 import argparse
 
-def doit(prefix, files):
+def doit(prefix, search_path, files):
 
     # regular expression for ' use modulename, only: stuff, other stuff'
     # see (txt2re.com)
@@ -29,9 +29,18 @@ def doit(prefix, files):
     # dictionary of 'module name':filename.
     modulefiles = {}
 
-    for file in files:
+    all_files = []
 
-        f = open(file, "r")
+    for cf in files:
+        
+        # find the file in the first part of the search path it exists
+        for p in search_path:
+            full_file = "{}/{}".format(p, cf)
+            if os.path.isfile(full_file): 
+                all_files.append(full_file)
+                break
+
+        f = open(full_file, "r")
         
         for line in f:
 
@@ -42,16 +51,16 @@ def doit(prefix, files):
             rebreak = module_re.search(line)
             rebreak2 = module_proc_re.search(line)
             if rebreak and not rebreak2:
-                modulefiles[rebreak.group(4)] = file
+                modulefiles[rebreak.group(4)] = cf
 
         f.close()
         
     # go back through the files now and look for the use statements.
     # Assume only one use statement per line.  Ignore any only clauses.
     # Build a list of dependencies for the current file and output it.
-    for file in files:
+    for cf in all_files:
 
-        f = open(file, "r")
+        f = open(cf, "r")
 
         for line in f:
 
@@ -61,7 +70,7 @@ def doit(prefix, files):
 
             rebreak = use_re.search(line)
             if rebreak:
-                print prefix+os.path.basename(file).replace(".f90", ".o"), ':', \
+                print prefix+os.path.basename(cf).replace(".f90", ".o"), ':', \
                     prefix+os.path.basename(modulefiles[rebreak.group(4)]).replace(".f90", ".o")
 
         f.close()
@@ -73,12 +82,15 @@ if __name__ == "__main__":
     parser.add_argument("--prefix",
                         help="prefix to prepend to each dependency pair, e.g., for a build directory",
                         default="")
+    parser.add_argument("--search_path",
+                        help="ordered path to search for the files",
+                        default="")
     parser.add_argument("files", metavar="source files", type=str, nargs="*",
                         help="F90 source files to find dependencies amongst")
 
     args = parser.parse_args()
-    
-    doit(args.prefix, args.files)
+
+    doit(args.prefix, args.search_path.split(), args.files)
 
 
 
