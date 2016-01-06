@@ -39,8 +39,11 @@ module params_module
   ! hydro parameters
   integer, save :: godunov_type = 2
   logical, save :: ppm_temp = .false.
+
+  ! gravity
+  integer, save :: gravity_monopole = 0
   real (kind=dp_t), save :: grav = 0.0_dp_t
-  
+
   ! problem-specific parameters
   character (len=32), save :: problem_name = "sod"
 
@@ -58,7 +61,7 @@ module params_module
                     gamma, &
                     godunov_type, &
                     ppm_temp, &
-                    grav, &
+                    grav, gravity_monopole, &
                     problem_name, &
                     write_ghost, &
                     plot_dt

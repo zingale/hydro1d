@@ -22,6 +22,7 @@ program hydro1d
   type(grid_t) :: grid
   type(gridvar_t) :: U
   type(gridedgevar_t) :: U_l, U_r, fluxes, godunov_state
+  type(gridedgevar_t) :: g
 
   integer :: n, ng
   real (kind=dp_t) :: t, dt, dt_new
@@ -79,6 +80,13 @@ program hydro1d
      endif
 
      if (t + dt > tmax) dt = tmax - t
+
+
+     ! construct the gravitational acceleration (if we are doing a
+     ! monopole).  Not g here lives on edges.
+     if (gravity_monopole == 1) then
+        call gravity(U, g)
+     endif
 
 
      ! construct the interface states
