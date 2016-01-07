@@ -58,10 +58,6 @@ program hydro1d
   t = 0.0_dp_t
   call init_data(U)
 
-  ! set the boundary conditions
-  call fillBCs(U)
-
-
   ! output the initial model
   call output(U, t, n)
 
@@ -69,8 +65,13 @@ program hydro1d
   ! main evolution loop
   do while (t < tmax)
 
+     ! construct the gravitational acceleration at cell-centers
+     if (do_gravity) then
+        call gravity(U, g)
+     endif
+
      ! set the boundary conditions
-     call fillBCs(U)
+     call fillBCs(U, g)
 
      ! compute the timestep
      call compute_dt(U, n, dt_new)
@@ -83,21 +84,16 @@ program hydro1d
      if (t + dt > tmax) dt = tmax - t
 
 
-     ! construct the gravitational acceleration at cell-centers
-     if (do_gravity) then
-        call gravity(U, g)
-     endif
-
      ! construct the interface states
      if (godunov_type == 0) then
         call make_interface_states_godunov(U, U_l, U_r, dt)
      else if (godunov_type == 1) then
-        call make_interface_states_plm(U, U_l, U_r, dt)
+        call make_interface_states_plm(U, g, U_l, U_r, dt)
      else if (godunov_type == 2) then
         if (ppm_temp) then
-           call make_interface_states_ppm_temp(U, U_l, U_r, dt)
+           call make_interface_states_ppm_temp(U, g, U_l, U_r, dt)
         else
-           call make_interface_states_ppm(U, U_l, U_r, dt)
+           call make_interface_states_ppm(U, g, U_l, U_r, dt)
         endif
      endif
 
@@ -107,7 +103,7 @@ program hydro1d
 
 
      ! do the conservative update
-     call update(U, fluxes, godunov_state, dt)
+     call update(U, g, fluxes, godunov_state, dt)
 
      t = t + dt
      n = n + 1

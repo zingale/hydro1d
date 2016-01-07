@@ -62,7 +62,7 @@ module params_module
                     gamma, &
                     godunov_type, &
                     ppm_temp, &
-                    grav, gravity_monopole, &
+                    do_gravity, grav, gravity_monopole, &
                     problem_name, &
                     write_ghost, &
                     plot_dt

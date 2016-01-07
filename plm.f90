@@ -16,9 +16,9 @@ module interface_states_plm_module
 
 contains
   
-  subroutine make_interface_states_plm(U, U_l, U_r, dt)
+  subroutine make_interface_states_plm(U, g, U_l, U_r, dt)
 
-    type(gridvar_t),     intent(in   ) :: U
+    type(gridvar_t),     intent(in   ) :: U, g
     type(gridedgevar_t), intent(inout) :: U_l, U_r
     real (kind=dp_t),    intent(in   ) :: dt
 
@@ -351,21 +351,9 @@ contains
     ! apply the source terms
     !-------------------------------------------------------------------------
     do i = U%grid%lo, U%grid%hi+1
-       Q_l%data(i,iqxvel) = Q_l%data(i,iqxvel) + HALF*dt*grav
-       Q_r%data(i,iqxvel) = Q_r%data(i,iqxvel) + HALF*dt*grav
+       Q_l%data(i,iqxvel) = Q_l%data(i,iqxvel) + HALF*dt*g%data(i-1,1)
+       Q_r%data(i,iqxvel) = Q_r%data(i,iqxvel) + HALF*dt*g%data(i,1)
     enddo
-
-    ! special fixes at the boundary -- gravity must be reflected
-    ! (correct the above too)
-    if (U%grid%xlboundary == "reflect") then
-       Q_l%data(U%grid%lo,iqxvel) = &
-            Q_l%data(U%grid%lo,iqxvel) - dt*grav
-    endif
-
-    if (U%grid%xrboundary == "reflect") then
-       Q_r%data(U%grid%hi+1,iqxvel) = &
-            Q_r%data(U%grid%hi+1,iqxvel) - dt*grav
-    endif
 
 
     !-------------------------------------------------------------------------

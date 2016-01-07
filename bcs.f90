@@ -15,9 +15,9 @@ module bcs_module
    
 contains
 
-  subroutine fillBCs(U)
+  subroutine fillBCs(U, g)
 
-    type(gridvar_t), intent(inout) :: U
+    type(gridvar_t), intent(inout) :: U, g
     
     integer :: i, ir, ip, ic
     real (kind=dp_t) :: p, e, p_above, e_above, p_below, e_below

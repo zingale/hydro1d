@@ -11,7 +11,7 @@ subroutine gravity(U, g)
   implicit none
 
   type(gridvar_t), intent(in) :: U
-  type(gridvar_t), intent(out) :: g
+  type(gridvar_t), intent(inout) :: g
 
   type(grid_t) :: grid
 

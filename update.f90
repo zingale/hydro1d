@@ -13,9 +13,9 @@ module update_module
 
 contains
   
-  subroutine update(U, fluxes, godunov_state, dt)
+  subroutine update(U, g, fluxes, godunov_state, dt)
 
-    type(gridvar_t),     intent(inout) :: U
+    type(gridvar_t),     intent(inout) :: U, g
     type(gridedgevar_t), intent(in   ) :: fluxes
     type(gridedgevar_t), intent(in   ) :: godunov_state
     real (kind=dp_t),    intent(in   ) :: dt
