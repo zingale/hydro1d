@@ -25,9 +25,9 @@ contains
     
     ! sanity check
     if ( (U%grid%xlboundary == "periodic" .and. &
-         U%grid%xrboundary /= "periodic") .or. &
+          U%grid%xrboundary /= "periodic") .or. &
          (U%grid%xrboundary == "periodic" .and. &
-         U%grid%xlboundary /= "periodic") ) then
+          U%grid%xlboundary /= "periodic") ) then
        print *, "ERROR: both boundaries must be periodic"
        stop
     endif

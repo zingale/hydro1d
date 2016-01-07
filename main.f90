@@ -47,6 +47,7 @@ program hydro1d
   call build(U, grid, ncons)
   call build(U_l, grid, ncons)
   call build(U_r, grid, ncons)
+  call build(g, grid, 1)
 
   call build(fluxes, grid, ncons)
   call build(godunov_state, grid, nprim)
@@ -82,11 +83,8 @@ program hydro1d
      if (t + dt > tmax) dt = tmax - t
 
 
-     ! construct the gravitational acceleration (if we are doing a
-     ! monopole).  Not g here lives on edges.
-     if (gravity_monopole == 1) then
-        call gravity(U, g)
-     endif
+     ! construct the gravitational acceleration
+     call gravity(U, g)
 
 
      ! construct the interface states
