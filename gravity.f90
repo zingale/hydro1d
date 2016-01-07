@@ -36,6 +36,6 @@ subroutine gravity(U, g)
   enddo
 
 
-  ! fill boundary conditions
+  ! fill boundary conditions -- note that g is edge-centered here
 
 end subroutine gravity
