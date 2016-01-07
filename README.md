@@ -48,9 +48,12 @@ examples.
 
 ## Development
 
- -- The PPM implementation should be synced up to what was done in 
-    Castro's PPM.
+ * The PPM implementation should be synced up to what was done in 
+   Castro's PPM.
 
- -- The boundary filling stuff should be generalized so we can use the
-    same logic for gravity as for the main conserved state.
-	
+ * The boundary filling stuff should be generalized so we can use the
+   same logic for gravity as for the main conserved state.
+
+ * The monopole gravity is not quite right for the conservative update.
+   We need to time-center the gravitational acceleration.
+   
