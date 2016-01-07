@@ -41,6 +41,7 @@ module params_module
   logical, save :: ppm_temp = .false.
 
   ! gravity
+  logical, save :: do_gravity = .false.
   integer, save :: gravity_monopole = 0
   real (kind=dp_t), save :: grav = 0.0_dp_t
 

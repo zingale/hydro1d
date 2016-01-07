@@ -22,7 +22,7 @@ program hydro1d
   type(grid_t) :: grid
   type(gridvar_t) :: U
   type(gridedgevar_t) :: U_l, U_r, fluxes, godunov_state
-  type(gridedgevar_t) :: g
+  type(gridvar_t) :: g
 
   integer :: n, ng
   real (kind=dp_t) :: t, dt, dt_new
@@ -83,9 +83,10 @@ program hydro1d
      if (t + dt > tmax) dt = tmax - t
 
 
-     ! construct the gravitational acceleration
-     call gravity(U, g)
-
+     ! construct the gravitational acceleration at cell-centers
+     if (do_gravity) then
+        call gravity(U, g)
+     endif
 
      ! construct the interface states
      if (godunov_type == 0) then

@@ -48,6 +48,9 @@ examples.
 
 ## Development
 
-The PPM implementation should be synced up to what was done in 
-Castro's PPM.
+ -- The PPM implementation should be synced up to what was done in 
+    Castro's PPM.
 
+ -- The boundary filling stuff should be generalized so we can use the
+    same logic for gravity as for the main conserved state.
+	
