@@ -58,9 +58,6 @@ program hydro1d
   t = 0.0_dp_t
   call init_data(U)
 
-  ! output the initial model -- note: redundant fill of ghost cells here
-  ! because we need them optionally in output
-
   ! construct the gravitational acceleration at cell-centers
   if (do_gravity) then
      call gravity(U, g)
@@ -74,14 +71,6 @@ program hydro1d
 
   ! main evolution loop
   do while (t < tmax)
-
-     ! construct the gravitational acceleration at cell-centers
-     if (do_gravity) then
-        call gravity(U, g)
-     endif
-
-     ! set the boundary conditions
-     call fillBCs(U, g)
 
      ! compute the timestep
      call compute_dt(U, n, dt_new)
@@ -114,6 +103,14 @@ program hydro1d
 
      ! do the conservative update
      call update(U, g, fluxes, godunov_state, dt)
+
+     ! construct the gravitational acceleration at cell-centers
+     if (do_gravity) then
+        call gravity(U, g)
+     endif
+
+     ! set the boundary conditions
+     call fillBCs(U, g)
 
      t = t + dt
      n = n + 1

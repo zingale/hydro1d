@@ -57,3 +57,6 @@ examples.
  * The monopole gravity is not quite right for the conservative update.
    We need to time-center the gravitational acceleration.
    
+ * We do not trace under the geometry or gravity source terms in the
+   interface state construction
+   

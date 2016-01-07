@@ -57,7 +57,12 @@ contains
         
 
     case ("hse")
-        
+
+       if (gravity_monopole == 1) then
+          print *, "HSE boundary conditions not supported for monopole gravity"
+          stop
+       endif
+
        ir = U%grid%lo
        ic = U%grid%lo
              
@@ -215,6 +220,11 @@ contains
 
 
     case ("hse")
+
+       if (gravity_monopole == 1) then
+          print *, "HSE boundary conditions not supported for monopole gravity"
+          stop
+       endif
 
        ir = U%grid%hi
        ic = U%grid%hi

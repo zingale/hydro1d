@@ -44,13 +44,13 @@ contains
     enddo
 
 
-    ! time-centered source terms 
+    ! time-centered source terms (note: gravity is NOT currently time-centered)
     do i = U%grid%lo, U%grid%hi
        U%data(i,iumomx) = U%data(i,iumomx) + &
-            0.5_dp_t*dt*(U%data(i,iudens) + Uold%data(i,iudens))*grav
+            0.5_dp_t*dt*(U%data(i,iudens) + Uold%data(i,iudens))*g%data(i,1)
 
        U%data(i,iuener) = U%data(i,iuener) + &
-            0.5_dp_t*dt*(U%data(i,iumomx) + Uold%data(i,iumomx))*grav
+            0.5_dp_t*dt*(U%data(i,iumomx) + Uold%data(i,iumomx))*g%data(i,1)
     enddo
 
 
