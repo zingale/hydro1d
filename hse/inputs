@@ -15,6 +15,8 @@
 
  xmax = 10.0
 
+ plot_dt = 5.e-3
+
 /
 
 &problem
