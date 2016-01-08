@@ -5,7 +5,7 @@ subroutine gravity(U, g)
   use datatypes_module
   use grid_module
   use variables_module
-  use params_module, only : grav, gravity_monopole, hse_vel_type
+  use params_module, only : grav, gravity_monopole
   use constants_module
 
   implicit none
@@ -69,27 +69,7 @@ subroutine gravity(U, g)
         ir = ir + 1
      enddo
         
-  case ("hse")
-        
-     ir = U%grid%lo
-     ic = U%grid%lo
-             
-     do i = U%grid%lo-1, U%grid%lo-U%grid%ng, -1
-        ! acceleration depends on hse_vel_type
-        select case (hse_vel_type)
-        case ("outflow")
-           g%data(i,1) = g%data(ic,1)
-        case ("reflect")
-           g%data(i,1) = -g%data(ir,1)
-           ir = ir + 1
-        case default
-           print *, "ERROR: invalid hse_vel_type"
-           stop
-        end select
-
-     enddo
-
-    case ("outflow", "user")
+    case ("outflow", "hse", "user")
        do i = U%grid%lo-1, U%grid%lo-U%grid%ng, -1
           ! give all quantities a zero-gradient
           g%data(i,1) = g%data(i+1,1)
@@ -121,27 +101,7 @@ subroutine gravity(U, g)
           ir = ir - 1
        enddo
 
-    case ("hse")
-
-       ir = U%grid%hi
-       ic = U%grid%hi
-        
-       do i = U%grid%hi+1, U%grid%hi+U%grid%ng
-          ! acceleration depends on hse_vel_type
-          select case (hse_vel_type)
-          case ("outflow")
-             g%data(i,1) = g%data(ic,1)
-          case ("reflect")
-             g%data(i,1) = -g%data(ir,1)
-             ir = ir - 1
-          case default
-             print *, "ERROR: invalid hse_vel_type"
-             stop
-          end select
-
-       enddo
-
-    case ("outflow", "user", "diode")
+    case ("outflow", "hse", "user", "diode")
        do i = U%grid%hi+1, U%grid%hi+U%grid%ng
           ! give all quantities a zero-gradient
           g%data(i,1) = g%data(i-1,1)
