@@ -5,7 +5,7 @@
  nx = 128
  tmax = 0.15d0
 
- ppm_temp = T
+ ppm_temp = F
 
  problem_name = "test2"
 
