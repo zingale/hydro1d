@@ -17,9 +17,10 @@ module probparams_module
   !---------------------------------------------------------------------------
 
   real (kind=dp_t), save :: r_init = 0.1_dp_t
+  logical, save :: single_point = .true.
 
   ! namelist
-  namelist /problem/ r_init
+  namelist /problem/ r_init, single_point
 
 contains
 
