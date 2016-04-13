@@ -364,11 +364,15 @@ contains
     ! this is a loop over zones
     if (U%grid%geometry == 1) then
        do i = U%grid%lo-1, U%grid%hi+1
+          r  = Q%data(i,iqdens)
+          ux = Q%data(i,iqxvel)
+          p  = Q%data(i,iqpres)
+
           Q_l%data(i+1,iqdens) = Q_l%data(i+1,iqdens) - HALF*dt*(TWO*r*ux/U%grid%x(i))
           Q_l%data(i+1,iqpres) = Q_l%data(i+1,iqpres) - HALF*dt*(TWO*gamma*p*ux/U%grid%x(i))
 
-          Q_l%data(i,iqdens) = Q_l%data(i,iqdens) - HALF*dt*(TWO*r*ux/U%grid%x(i))
-          Q_l%data(i,iqpres) = Q_l%data(i,iqpres) - HALF*dt*(TWO*gamma*p*ux/U%grid%x(i))
+          Q_r%data(i,iqdens) = Q_r%data(i,iqdens) - HALF*dt*(TWO*r*ux/U%grid%x(i))
+          Q_r%data(i,iqpres) = Q_r%data(i,iqpres) - HALF*dt*(TWO*gamma*p*ux/U%grid%x(i))
        enddo
     endif
     
