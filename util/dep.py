@@ -6,24 +6,30 @@
 #
 # M. Zingale (2012-03-21)
 
-import sys
 import re
-import string
 import os
 import argparse
 
+# modules to ignore in the dependencies
+IGNORES = ["iso_c_binding", "iso_fortran_env", "omp_lib", "mpi"]
+
+# regular expression for "{}module{}name", where {} can be any number
+# of spaces.  We use 4 groups here, denoted by (), so the name of the
+# module is the 4th group
+module_re = re.compile(r"^(\s*)([Mm][Oo][Dd][Uu][Ll][Ee])(\s+)((?:[a-z][a-z_0-9]+))",
+                       re.IGNORECASE|re.DOTALL)
+
+# regular expression for "{}module{}procedure{}name"
+module_proc_re = re.compile(r"(\s*)(module)(\s+)(procedure)(\s+)((?:[a-z][a-z_0-9]+))",
+                            re.IGNORECASE|re.DOTALL)
+
+# regular expression for "{}use{}modulename...".  Note this will work for
+# use modulename, only: stuff, other stuff'
+# see (txt2re.com)
+use_re = re.compile(r"^(\s*)([Uu][Ss][Ee])(\s+)((?:[a-z_][a-z_0-9]+))",
+                    re.IGNORECASE|re.DOTALL)
+
 def doit(prefix, search_path, files):
-
-    # regular expression for ' use modulename, only: stuff, other stuff'
-    # see (txt2re.com)
-    use_re = re.compile("( )(use)(\s+)((?:[a-z_][a-z_0-9]+))", 
-                        re.IGNORECASE|re.DOTALL)
-
-    module_re = re.compile("( )(module)(\s+)((?:[a-z][a-z_0-9]+))",
-                           re.IGNORECASE|re.DOTALL)
-
-    module_proc_re = re.compile("( )(module)(\s+)(procedure)(\s+)((?:[a-z][a-z_0-9]+))",
-                                re.IGNORECASE|re.DOTALL)
 
     # first parse the files and find all the module statements.  Keep a
     # dictionary of 'module name':filename.
@@ -45,7 +51,7 @@ def doit(prefix, search_path, files):
         for line in f:
 
             # strip off the comments
-            idx = string.find(line, "!")
+            idx = line.find("!")
             line = line[:idx]
 
             rebreak = module_re.search(line)
@@ -65,7 +71,7 @@ def doit(prefix, search_path, files):
         for line in f:
 
             # strip off the comments
-            idx = string.find(line, "!")
+            idx = line.find("!")
             line = line[:idx]
 
             rebreak = use_re.search(line)
