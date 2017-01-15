@@ -3,7 +3,7 @@
 
 ALL: hydro1d
 
-# vpath is the list of directories to search for source files.  
+# vpath is the list of directories to search for source files.
 vpath %.f90 . ..
 
 
@@ -17,11 +17,11 @@ SRC_DIRS := . ../
 FSOURCE_DIR := $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.f90))
 FSOURCE := $(sort $(notdir $(FSOURCE_DIR)))
 
-$(odir)/deps: $(FSOURCE)                                                                                
-	@if [ ! -d $(odir) ]; then mkdir -p $(odir); fi                                                        
+$(odir)/deps: $(FSOURCE)
+	@if [ ! -d $(odir) ]; then mkdir -p $(odir); fi
 	../util/dep.py --prefix $(odir)/  --search_path "$(SRC_DIRS)" $(FSOURCE) > $(odir)/deps
 
-include $(odir)/deps    
+include $(odir)/deps
 
 
 # set the compiler flags for those compilers we know about
@@ -40,7 +40,7 @@ endif
 # default rule for building the object files
 $(odir)/%.o: %.f90
 	@if [ ! -d $(odir) ]; then mkdir -p $(odir); fi
-	$(FC) $(FFLAGS) -o $@ $< 
+	$(FC) $(FFLAGS) -o $@ $<
 
 
 # create the list of dependencies for the final build (all the .o files)
@@ -65,4 +65,4 @@ realclean: clean
 	@if [ -d $(odir) ]; then rmdir $(odir); echo "removing $(odir)"; fi
 	rm -f hydro1d
 
-print-%: ; @echo $* is $($*)                                                                                   
+print-%: ; @echo $* is $($*)
