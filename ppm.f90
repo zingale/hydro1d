@@ -189,6 +189,13 @@ contains
           endif
 
        enddo
+
+    enddo
+
+    ! flatten
+    do i = U%grid%lo-1, U%grid%hi+1
+       Qminus%data(i,:) = (ONE - xi%data(i,1))*Q%data(i,:) + xi%data(i,1)*Qminus%data(i,:)
+       Qplus%data(i,:)  = (ONE - xi%data(i,1))*Q%data(i,:) + xi%data(i,1)*Qplus%data(i,:)
     enddo
 
     ! define Q6
@@ -386,9 +393,6 @@ contains
        Q_l%data(i+1,iqpres) = Qref_xp(iqpres) - Q_l%data(i+1,iqpres)
        Q_r%data(i,iqpres)   = Qref_xm(iqpres) - Q_r%data(i,iqpres)
        
-       ! flatten
-       Q_l%data(i+1,:) = (ONE - xi%data(i,1))*Q%data(i,:) + xi%data(i,1)*Q_l%data(i+1,:)
-       Q_r%data(i,:)   = (ONE - xi%data(i,1))*Q%data(i,:) + xi%data(i,1)*Q_r%data(i,:)
     enddo
 
     ! clean-up
