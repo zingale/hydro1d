@@ -49,7 +49,8 @@ examples.
 ## Development
 
  * The PPM implementation should be synced up to what was done in 
-   Castro's PPM.
+   Castro's PPM -- in particular, support for using the reference
+   state in the eigenvectors
 
  * The boundary filling stuff should be generalized so we can use the
    same logic for gravity as for the main conserved state.
