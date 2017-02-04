@@ -136,7 +136,12 @@ program hydro1d
 
 
   ! clean-up
+  call destroy(g)
   call destroy(U)
+  call destroy(U_l)
+  call destroy(U_r)
   call destroy(grid)
+  call destroy(fluxes)
+  call destroy(godunov_state)
 
 end program hydro1d
