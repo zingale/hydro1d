@@ -7,7 +7,7 @@
 
  ppm_temp = F
 
- problem_name = "test2"
+ problem_name = "double_rare"
 
  init_shrink = 0.1d0
 /
