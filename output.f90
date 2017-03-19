@@ -14,6 +14,20 @@ module output_module
 
 contains
 
+  function sanitize(x) result (xnew)
+    ! Fortran prints numbers less than 1.0e-99 as, e.g., 1.0-100
+    ! (dropping the 'e').  Prevent that here
+
+    real (kind=dp_t), intent(in) :: x
+    real (kind=dp_t) :: xnew
+
+    if (x == 0.0_dp_t) then
+       xnew = x
+    else
+       xnew = sign(1.0_dp_t, x)*max(abs(x), 1.e-99_dp_t)
+    endif
+  end function sanitize
+
   subroutine output(U, t, n)
 
     type(gridvar_t),  intent(in) :: U
@@ -81,9 +95,14 @@ contains
           call eos(eos_input_e, p, e, rho)
           
           write(unit=lun, fmt=6) U%grid%x(i), &
-               U%data(i,iudens), U%data(i,iumomx), U%data(i,iuener), &
-               U%data(i,iumomx)/U%data(i,iudens), p, e, sqrt(gamma*p/rho), &
-               abs(U%data(i,iumomx)/U%data(i,iudens))/sqrt(gamma*p/rho)
+               sanitize(U%data(i,iudens)), &
+               sanitize(U%data(i,iumomx)), &
+               sanitize(U%data(i,iuener)), &
+               sanitize(U%data(i,iumomx)/U%data(i,iudens)), &
+               sanitize(p), &
+               sanitize(e), &
+               sanitize(sqrt(gamma*p/rho)), &
+               sanitize(abs(U%data(i,iumomx)/U%data(i,iudens))/sqrt(gamma*p/rho))
           
        enddo
 
