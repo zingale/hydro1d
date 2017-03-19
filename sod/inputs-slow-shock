@@ -1,0 +1,26 @@
+&params
+
+ nx = 128
+ tmax = 0.2d0
+  
+ ppm_temp = F
+
+ problem_name = "sod"
+
+ plot_dt = 0.05d0
+
+ godunov_type = 2
+
+/
+
+&problem
+
+ rho_l = 5.6698d0
+ u_l   = -1.5336d0
+ p_l   = 100.0d0
+
+ rho_r = 1.0d0
+ u_r   = -10.5636d0
+ p_r   = 1.0d0
+
+/
