@@ -59,7 +59,7 @@ module params_module
                     xlboundary, xrboundary, &
                     hse_bc_const, hse_vel_type, &
                     init_shrink, dt_change, tmax, &
-                    cfl, &
+                    cfl, cvisc, &
                     gamma, &
                     godunov_type, &
                     ppm_temp, &
