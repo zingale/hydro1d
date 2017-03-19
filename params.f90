@@ -39,6 +39,7 @@ module params_module
   ! hydro parameters
   integer, save :: godunov_type = 2
   logical, save :: ppm_temp = .false.
+  real (kind=dp_t), save :: cvisc = 0.0_dp_t
 
   ! gravity
   logical, save :: do_gravity = .false.
