@@ -7,7 +7,7 @@
   
  ppm_temp = F
 
- problem_name = "sod"
+ problem_name = "slowshock"
 
  plot_dt = 0.05d0
 

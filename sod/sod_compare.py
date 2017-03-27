@@ -15,7 +15,7 @@ mpl.rcParams['mathtext.fontset'] = 'cm'
 mpl.rcParams['mathtext.rm'] = 'serif'
 
 
-def plot_sim(filename, axes, label):
+def plot_sim(filename, axes, label, skip_e):
 
     data = np.loadtxt(filename)
 
@@ -34,11 +34,12 @@ def plot_sim(filename, axes, label):
     ax = axes[2]
     ax.scatter(x, p, marker="x", s=7, label=label, color="C1")
 
-    ax = axes[3]
-    ax.scatter(x, e, marker="x", s=7, label=label, color="C1")
+    if not skip_e:
+        ax = axes[3]
+        ax.scatter(x, e, marker="x", s=7, label=label, color="C1")
 
 
-def plot_exact(filename, axes):
+def plot_exact(filename, axes, skip_e):
 
     # get the exact solution
     exact = np.loadtxt(filename)
@@ -55,8 +56,10 @@ def plot_exact(filename, axes):
     ax.plot(x_exact, rho_exact, label="exact")
 
     ax.set_ylabel(r"$\rho$")
+    if max(rho_exact) <= 1.0:
+        ax.set_ylim(0,1.1)
+
     ax.set_xlim(0,1.0)
-    ax.set_ylim(0,1.1)
 
     ax = axes[1]
     
@@ -72,13 +75,15 @@ def plot_exact(filename, axes):
     ax.set_ylabel(r"$p$")
     ax.set_xlim(0,1.0)
     
-    ax = axes[3]
+    if not skip_e:
+        ax = axes[3]
 
-    ax.plot(x_exact, e_exact, label="exact")
+        ax.plot(x_exact, e_exact, label="exact")
+
+        ax.set_ylabel(r"$e$")
+        ax.set_xlim(0,1.0)
 
     ax.set_xlabel(r"x")
-    ax.set_ylabel(r"$e$")
-    ax.set_xlim(0,1.0)
 
 
 if __name__ == "__main__":
@@ -87,17 +92,21 @@ if __name__ == "__main__":
     p.add_argument("--sim", help="simulation output file", default=None, type=str)
     p.add_argument("--exact", help="exact solution", default=None, type=str)
     p.add_argument("--label", help="label for the simulation", default="simulation", type=str)
+    p.add_argument("--skip_e", help="don't plot internal energy", action="store_true")
     p.add_argument("-o", help="output png file name", default="plot.png", type=str)
     args = p.parse_args()
     
     # plot
-    fig, axes = plt.subplots(nrows=4, ncols=1, num=1)
+    if not args.skip_e:
+        fig, axes = plt.subplots(nrows=4, ncols=1, num=1)
+    else:
+        fig, axes = plt.subplots(nrows=3, ncols=1, num=1)
 
     if args.sim is not None:
-        plot_sim(args.sim, axes, args.label)
+        plot_sim(args.sim, axes, args.label, args.skip_e)
     
     if args.exact is not None:
-        plot_exact(args.exact, axes)
+        plot_exact(args.exact, axes, args.skip_e)
 
 
     axes[0].legend(frameon=False, fontsize="medium")
