@@ -9,6 +9,8 @@
 
  problem_name = "double_rare"
 
+ godunov_type = 2
+
  init_shrink = 0.1d0
 /
 

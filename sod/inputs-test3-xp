@@ -6,7 +6,8 @@
  tmax = 0.012d0
 
  ppm_temp = F
- 
+
+ godunov_type = 0 
  problem_name = "test3"
 
 /
