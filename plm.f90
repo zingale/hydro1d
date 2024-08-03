@@ -181,11 +181,13 @@ contains
 
 
     ! apply flattening to the slopes
-    do n = 1, nprim
-       do i = Q%grid%lo-2, Q%grid%hi+2
-          ldelta%data(i,n) = xi%data(i,1)*ldelta%data(i,n)
+    if (do_flattening) then
+       do n = 1, nprim
+          do i = Q%grid%lo-2, Q%grid%hi+2
+             ldelta%data(i,n) = xi%data(i,1)*ldelta%data(i,n)
+          enddo
        enddo
-    enddo
+    end if
 
     call destroy(temp)
     call destroy(xi)

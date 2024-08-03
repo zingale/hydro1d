@@ -40,6 +40,7 @@ module params_module
   integer, save :: godunov_type = 2
   logical, save :: ppm_temp = .false.
   real (kind=dp_t), save :: cvisc = 0.0_dp_t
+  logical, save :: do_flattening = .true.
 
   ! gravity
   logical, save :: do_gravity = .false.
@@ -59,7 +60,7 @@ module params_module
                     xlboundary, xrboundary, &
                     hse_bc_const, hse_vel_type, &
                     init_shrink, dt_change, tmax, &
-                    cfl, cvisc, &
+                    cfl, cvisc, do_flattening, &
                     gamma, &
                     godunov_type, &
                     ppm_temp, &

@@ -193,10 +193,12 @@ contains
     enddo
 
     ! flatten
-    do i = U%grid%lo-1, U%grid%hi+1
-       Qminus%data(i,:) = (ONE - xi%data(i,1))*Q%data(i,:) + xi%data(i,1)*Qminus%data(i,:)
-       Qplus%data(i,:)  = (ONE - xi%data(i,1))*Q%data(i,:) + xi%data(i,1)*Qplus%data(i,:)
-    enddo
+    if (do_flattening) then
+       do i = U%grid%lo-1, U%grid%hi+1
+          Qminus%data(i,:) = (ONE - xi%data(i,1))*Q%data(i,:) + xi%data(i,1)*Qminus%data(i,:)
+          Qplus%data(i,:)  = (ONE - xi%data(i,1))*Q%data(i,:) + xi%data(i,1)*Qplus%data(i,:)
+       enddo
+    end if
 
     ! define Q6
     call build(Q6,  U%grid, nprim)
