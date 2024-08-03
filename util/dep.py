@@ -38,16 +38,16 @@ def doit(prefix, search_path, files):
     all_files = []
 
     for cf in files:
-        
+
         # find the file in the first part of the search path it exists
         for p in search_path:
-            full_file = "{}/{}".format(p, cf)
-            if os.path.isfile(full_file): 
+            full_file = f"{p}/{cf}"
+            if os.path.isfile(full_file):
                 all_files.append(full_file)
                 break
 
-        f = open(full_file, "r")
-        
+        f = open(full_file)
+
         for line in f:
 
             # strip off the comments
@@ -60,13 +60,13 @@ def doit(prefix, search_path, files):
                 modulefiles[rebreak.group(4)] = cf
 
         f.close()
-        
+
     # go back through the files now and look for the use statements.
     # Assume only one use statement per line.  Ignore any only clauses.
     # Build a list of dependencies for the current file and output it.
     for cf in all_files:
 
-        f = open(cf, "r")
+        f = open(cf)
 
         for line in f:
 
@@ -76,11 +76,11 @@ def doit(prefix, search_path, files):
 
             rebreak = use_re.search(line)
             if rebreak:
-                print prefix+os.path.basename(cf).replace(".f90", ".o"), ':', \
-                    prefix+os.path.basename(modulefiles[rebreak.group(4)]).replace(".f90", ".o")
+                print(prefix+os.path.basename(cf).replace(".f90", ".o"), ':',
+                    prefix+os.path.basename(modulefiles[rebreak.group(4)]).replace(".f90", ".o"))
 
         f.close()
-        print " "
+        print(" ")
 
 if __name__ == "__main__":
 
@@ -97,6 +97,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     doit(args.prefix, args.search_path.split(), args.files)
-
-
-
