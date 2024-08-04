@@ -100,7 +100,6 @@ program hydro1d
      ! compute the fluxes
      call solve_riemann(U_l, U_r, fluxes, godunov_state)
 
-
      ! do the conservative update
      call update(U, g, fluxes, godunov_state, dt)
 

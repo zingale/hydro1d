@@ -9,11 +9,11 @@
 !
 ! For the cell-centered grid variables, the overall grid looks like this:
 !
-!    
+!
 !    |     |      |     X     |     |      |     |     X     |      |     |
 !    +--*--+- // -+--*--X--*--+--*--+- // -+--*--+--*--X--*--+- // -+--*--+
 !      -ng          -1     0     1           ...  nx-1    nx        nx+ng-1
-!                        (lo)                     (hi)    
+!                        (lo)                     (hi)
 !    |                  |                              |                  |
 !    |<- ng ghostcells->|<---- nx interior zones ----->|<- ng ghostcells->|
 !    |                  |                              |                  |
@@ -22,18 +22,18 @@
 !
 ! For the edge-centered variables, the overall grid looks like:
 !
-!    
+!
 !    |     |      |     X     |     |      |     |     X     |      |     |
 !    +-----+- // -+-----X-----+-----+- // -+-----+-----X-----+- // -+-----+
 !   -ng          -1     0     1           ...  nx-1    nx        nx+ng-1 nx+ng
-!                      (lo)                          (hi+1)    
+!                      (lo)                          (hi+1)
 !    |                  |                              |                  |
 !    |<- ng ghostcells->|<---- nx interior zones ----->|<- ng ghostcells->|
 !    |                  |                              |                  |
 !
 !
 !
-! The different datatypes that live on the grid are build from the
+! The different datatypes that live on the grid are built from the
 ! grid type itself.  It is assumed that all quantities on the grid
 ! will have the same number of ghostcells, for simplicity.
 
@@ -44,7 +44,7 @@ module grid_module
   implicit none
 
   ! the datatype for the grid coordinate information
-  type grid_t 
+  type grid_t
      integer :: lo = -1
      integer :: hi = -1
      integer :: nx = -1
@@ -57,7 +57,7 @@ module grid_module
 
      real (kind=dp_t), pointer :: x(:) => Null()
      real (kind=dp_t), pointer :: xl(:) => Null()
-     real (kind=dp_t), pointer :: xr(:) => Null()  
+     real (kind=dp_t), pointer :: xr(:) => Null()
 
      real (kind=dp_t), pointer :: Al(:) => Null()
      real (kind=dp_t), pointer :: Ar(:) => Null()
@@ -69,7 +69,7 @@ module grid_module
 
   end type grid_t
 
-  ! the datatype for a variable that lives in a zone on the grid 
+  ! the datatype for a variable that lives in a zone on the grid
   type gridvar_t
      integer :: nvar
      real (kind=dp_t), allocatable :: data(:,:)
@@ -95,17 +95,17 @@ module grid_module
      module procedure destroy_gridvar
      module procedure destroy_gridedgevar
   end interface destroy
-  
+
   private
 
   public :: grid_t, gridvar_t, gridedgevar_t
   public :: build, destroy
 
 
-contains  
+contains
 
   subroutine build_grid(grid,nx,ng,xmin,xmax,xlbc,xrbc,is_spherical)
-    
+
     type(grid_t),       intent(inout) :: grid
     integer,            intent(in   ) :: nx
     integer,            intent(in   ) :: ng
@@ -158,7 +158,7 @@ contains
           ! face area
           grid%Al(i) = grid%xl(i)**2
           grid%Ar(i) = grid%xr(i)**2
-          
+
           ! d(volume)
           grid%dV(i) = grid%x(i)**2 * grid%dx
        enddo
@@ -244,7 +244,7 @@ contains
     type(gridedgevar_t), intent(inout) :: gridedgevar
 
     deallocate(gridedgevar%data)
-    
+
   end subroutine destroy_gridedgevar
-   
+
 end module grid_module

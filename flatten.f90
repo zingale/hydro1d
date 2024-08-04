@@ -31,7 +31,7 @@ contains
     call build(xi_t, Q%grid, 1)
 
     do i = Q%grid%lo-2, Q%grid%hi+2
-       
+
        dp  = abs(Q%data(i+1,iqpres) - Q%data(i-1,iqpres))
        dp2 = abs(Q%data(i+2,iqpres) - Q%data(i-2,iqpres))
        z = dp/max(dp2,smallp)
@@ -59,9 +59,8 @@ contains
        endif
 
     enddo
-    
+
     call destroy(xi_t)
   end subroutine flatten
 
 end module flatten_module
-    
