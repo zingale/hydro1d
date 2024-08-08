@@ -38,7 +38,7 @@ contains
        r = abs(U%grid%x(i) - xcenter)
 
        if (r <= 0.5_dp_t) then
-          rho = rho0 + drho * exp(-16.0_dp_t * r) * cos(pi * r)**6
+          rho = rho0 + drho * exp(-16.0_dp_t * r**2) * cos(pi * r)**6
        else
           rho = rho0
        endif
