@@ -62,7 +62,7 @@ program hydro1d
   if (do_gravity) then
      call gravity(U, g)
   endif
-  
+
   ! set the boundary conditions
   call fillBCs(U, g)
 
@@ -73,12 +73,16 @@ program hydro1d
   do while (t < tmax)
 
      ! compute the timestep
-     call compute_dt(U, n, dt_new)
-     if (n > 0) then
-        dt = min(dt_change*dt, dt_new)
+     if (fixed_dt > 0) then
+        dt = fixed_dt
      else
-        dt = dt_new
-     endif
+        call compute_dt(U, n, dt_new)
+        if (n > 0) then
+           dt = min(dt_change*dt, dt_new)
+        else
+           dt = dt_new
+        endif
+     end if
 
      if (t + dt > tmax) dt = tmax - t
 

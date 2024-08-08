@@ -32,6 +32,7 @@ module params_module
   real (kind=dp_t), save :: dt_change = 1.2_dp_t
   real (kind=dp_t), save :: tmax = 1.0_dp_t
   real (kind=dp_t), save :: cfl = 0.8_dp_t
+  real (kind=dp_t), save :: fixed_dt = -1.0_dp_t
 
   ! eos parameters
   real (kind=dp_t), save :: gamma = 1.4_dp_t
@@ -59,7 +60,7 @@ module params_module
   namelist /params/ nx, xmin, xmax, is_spherical, &
                     xlboundary, xrboundary, &
                     hse_bc_const, hse_vel_type, &
-                    init_shrink, dt_change, tmax, &
+                    init_shrink, dt_change, fixed_dt, tmax, &
                     cfl, cvisc, do_flattening, &
                     gamma, &
                     godunov_type, &
