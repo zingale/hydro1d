@@ -1,0 +1,21 @@
+&params
+
+ nx = 128
+ tmax = 0.24
+
+ fixed_dt = 0.0015
+ godunov_type = 2
+
+ xlboundary = "periodic"
+ xrboundary = "periodic"
+
+  problem_name = "acoustic_pulse_128"
+
+/
+
+&problem
+
+ rho0 = 1.4
+ drho = 0.14
+
+/
