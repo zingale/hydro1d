@@ -5,6 +5,10 @@
 http://zingale.github.io/hydro1d/
 
 
+Important: this project is no longer developed.  It has largely been
+replaced by a python implementation of PPM: https://zingale.github.io/ppmpy/
+
+
 ## About
 
 `hydro1d` is a simple one-dimensional finite-volume Eulerian
